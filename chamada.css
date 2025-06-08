@@ -1,0 +1,178 @@
+@import 'vars';
+
+.lista-chamada-flex {
+    display: flex;
+    flex-direction: row;
+    gap: 24px;
+    align-items: flex-start;
+    justify-content: center;
+}
+
+.lista-chamada td {
+    vertical-align: middle;
+    text-align: center;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.fotos-escoteiros {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    align-items: center;
+    margin-top: 8px;
+}
+
+.foto-escoteiro {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    background: #e6e6e6;
+}
+
+.chamada-container {
+    width: $largura_container;
+    margin: 60px auto;
+    background: #8ca68b;
+    border-radius: 30px;
+    box-shadow: 0 0 15px 0 rgba(0,0,0,0.2);
+    padding: 32px 24px 24px 24px;
+    position: relative;
+}
+
+.chamada-header {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    margin-bottom: 24px;
+
+    img {
+        width: 90px;
+        margin-bottom: 10px;
+    }
+    h1 {
+        color: #fff;
+        font-size: 2em;
+        margin-bottom: 8px;
+    }
+}
+
+.lista-chamada {
+    
+    vertical-align: middle; /* Alinha o conteúdo da célula ao meio verticalmente */
+    text-align: center;     /* Centraliza horizontalmente */    
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    th, td {
+        padding: 12px 8px;
+        text-align: left;
+        color: #353535;
+        font-size: 1.1em;
+    }
+    th {
+        color: #fff;
+        background: #6a8569;
+        border-radius: 10px 10px 0 0;
+    }
+    tr:nth-child(even) {
+        background: #e6e6e6;
+    }
+}
+
+.presente-checkbox {
+    width: 22px;
+    height: 22px;
+    accent-color: #4e9a51;
+    cursor: pointer;
+}
+
+.btn-chamada {
+    width: 100%;
+    height: 48px;
+    border-radius: 10px;
+    border: none;
+    background-color: #d8a751;
+    color: #fff;
+    font-size: 1.2em;
+    font-weight: 500;
+    cursor: pointer;
+    box-shadow: 0 3px 5px 3px rgba(0,0,0,0.10);
+    margin-top: 12px;
+    transition: background 0.2s;
+
+    &:hover {
+        background: #e6b85c;
+    }
+}
+
+@media (max-width: 800px) {
+    .lista-chamada-flex {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .fotos-escoteiros {
+        flex-direction: row;
+        justify-content: center;
+        margin-bottom: 16px;
+        margin-top: 0;
+    }
+}
+
+@media (max-width: 600px) {
+    .chamada-container {
+        width: 98vw;
+        padding: 10px 2vw;
+    }
+    .lista-chamada table, .lista-chamada th, .lista-chamada td {
+        font-size: 1em;
+    }
+}
+
+.foto-escoteiro {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 0;
+    margin-bottom: 0;
+    width: 45px;
+    height: 60px;
+    border-radius: 8px;
+    object-fit: cover;
+    border: 3px solid #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    background: #e6e6e6;
+}
+
+.nome-desc-escoteiro {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 60px;
+    width: 100%;
+    text-align: center;
+    margin: 0;
+}
+
+.nome-escoteiro {
+    font-weight: bold;
+    font-size: 1.1em;
+    color: #2e5d34;
+    margin-bottom: 4px;
+    width: 100%;
+    text-align: center;
+}
+
+.desc-escoteiro {
+    font-size: 0.95em;
+    color: #555;
+    margin-bottom: 4px;
+    width: 100%;
+    text-align: center;
+}
