@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chamada | Desbravadores</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/chamada.css">
+</head>
+<body>
+    <div class="main">
+        <div class="chamada-container">
+            <div class="chamada-header">
+                <img src="assets/img/logo.png" alt="Logo Escoteiros">
+                <h1>Lista de Chamada</h1>
+                <p style="color:#fff;">Marque os escoteiros presentes na atividade de hoje.</p>
+            </div>
+            <form>
+                <div class="lista-chamada">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Foto</th>
+                                <th>Nome</th>
+                                <th>Presente</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <img src="assets/img/escoteiro1.jpg" alt="Lucas Silva" class="foto-escoteiro">
+                                </td>
+                                <td>
+                                    <div class="nome-desc-escoteiro">
+                                        <span class="nome-escoteiro">Lucas Silva</span>
+                                        <span class="desc-escoteiro">Patrulha Lobo</span>
+                                    </div>
+                                </td>
+                                <td><input type="checkbox" class="presente-checkbox" name="presente[]" value="Lucas Silva"></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <img src="assets/img/escoteiro1.jpg" alt="Maria Souza" class="foto-escoteiro">
+                                </td>
+                                <td>
+                                    <div class="nome-desc-escoteiro">
+                                        <span class="nome-escoteiro">Maria Souza</span>
+                                        <span class="desc-escoteiro">Patrulha Águia</span>
+                                    </div>
+                                </td>
+                                <td><input type="checkbox" class="presente-checkbox" name="presente[]" value="Maria Souza"></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <img src="assets/img/escoteiro1.jpg" alt="João Pedro" class="foto-escoteiro">
+                                </td>
+                                <td>
+                                    <div class="nome-desc-escoteiro">
+                                        <span class="nome-escoteiro">João Pedro</span>
+                                        <span class="desc-escoteiro">Patrulha Tigre</span>
+                                    </div>
+                                </td>
+                                <td><input type="checkbox" class="presente-checkbox" name="presente[]" value="João Pedro"></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <img src="assets/img/escoteiro1.jpg" alt="Ana Clara" class="foto-escoteiro">
+                                </td>
+                                <td>
+                                    <div class="nome-desc-escoteiro">
+                                        <span class="nome-escoteiro">Ana Clara</span>
+                                        <span class="desc-escoteiro">Patrulha Falcão</span>
+                                    </div>
+                                </td>
+                                <td><input type="checkbox" class="presente-checkbox" name="presente[]" value="Ana Clara"></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <img src="assets/img/escoteiro1.jpg" alt="Gabriel Lima" class="foto-escoteiro">
+                                </td>
+                                <td>
+                                    <div class="nome-desc-escoteiro">
+                                        <span class="nome-escoteiro">Gabriel Lima</span>
+                                        <span class="desc-escoteiro">Patrulha Leão</span>
+                                    </div>
+                                </td>
+                                <td><input type="checkbox" class="presente-checkbox" name="presente[]" value="Gabriel Lima"></td>
+                            </tr>
+                            <!-- Adicione mais nomes conforme necessário -->
+                        </tbody>
+                    </table>
+                </div>
+                <button type="submit" class="btn-chamada">Salvar Chamada</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
