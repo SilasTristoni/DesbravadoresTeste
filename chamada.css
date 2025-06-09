@@ -64,6 +64,14 @@
     
     vertical-align: middle; /* Alinha o conteúdo da célula ao meio verticalmente */
     text-align: center;     /* Centraliza horizontalmente */    
+    
+    max-height: 350px;      /* Defina a altura máxima*/
+    overflow-y: auto;       /* Ativa o scroll */
+    background: #a0b196;
+    border-radius: 20px;
+    padding: 24px 16px;
+    margin-bottom: 24px;
+
 
     table {
         width: 100%;
