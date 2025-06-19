@@ -1,0 +1,238 @@
+.profile-container {
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.profile-identity-block {
+  background: var(--scout-green);
+  border-radius: 20px;
+  padding: 2rem;
+  color: white;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  transition: background 0.5s ease;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1.5rem;
+}
+.avatar-img {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 5px solid var(--scout-gold);
+}
+.info-and-edit-wrapper {
+  flex-grow: 1;
+}
+.info-display h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+.info-display p {
+  font-size: 1.1rem;
+  opacity: 0.8;
+}
+.edit-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.3s;
+  flex-shrink: 0;
+}
+.edit-btn:hover {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.edit-form {
+  display: none;
+}
+.edit-form .form-group {
+  margin-bottom: 1rem;
+  text-align: left;
+}
+.edit-form label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+.edit-form input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 2px solid transparent;
+  background: rgba(0, 0, 0, 0.15);
+  color: white;
+  font-size: 1rem;
+}
+.edit-form .form-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 1rem;
+}
+.edit-form button {
+  flex-grow: 1;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+}
+.btn-save-sidebar {
+  background: var(--scout-gold);
+  color: var(--scout-green);
+}
+.btn-cancel-sidebar {
+  background: rgba(0, 0, 0, 0.2);
+  color: white;
+}
+
+.profile-achievements-block {
+  background-color: var(--bg-secondary);
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.07);
+}
+.section-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--scout-green);
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--scout-tan);
+}
+.featured-badges {
+  width: 100%;
+}
+.badges-display {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  background-color: var(--bg-primary);
+  padding: 1.5rem;
+  border-radius: 12px;
+}
+.badge-item {
+  text-align: center;
+}
+.badge-icon {
+  width: 70px;
+  height: 70px;
+  background: linear-gradient(135deg, var(--scout-gold), #ffed4e);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  border: 4px solid var(--scout-brown);
+  margin: 0 auto 0.5rem auto;
+}
+.badge-name {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--scout-brown);
+}
+
+.tabs {
+  margin-top: 2.5rem;
+  border-bottom: 3px solid var(--scout-tan);
+}
+.tab-nav {
+  display: flex;
+}
+.tab-btn {
+  padding: 1rem;
+  background: transparent;
+  border: none;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--text-secondary);
+  border-bottom: 3px solid transparent;
+  margin-bottom: -3px;
+}
+.tab-btn.active {
+  color: var(--scout-green);
+  border-bottom-color: var(--scout-green);
+}
+
+.tab-content {
+  display: none;
+  padding-top: 1.5rem;
+}
+.tab-content.active {
+  display: block;
+}
+.achievements-grid,
+.backgrounds-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+}
+.achievement-card {
+  background-color: var(--bg-primary);
+  padding: 1rem;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  cursor: pointer;
+}
+.achievement-card.locked,
+.background-card.locked {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.achievement-icon {
+  font-size: 1.5rem;
+}
+.achievement-info h4 {
+  font-size: 1rem;
+  font-weight: 600;
+}
+.achievement-info p {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.background-card {
+  border: 3px solid transparent;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: border-color 0.3s;
+}
+.background-preview {
+  height: 100px;
+}
+.background-info {
+  padding: 15px;
+  background: var(--bg-primary);
+  text-align: center;
+}
+
+body.profile-edit-mode .background-card:not(.locked) {
+  cursor: pointer;
+  border-color: var(--scout-tan);
+}
+body.profile-edit-mode .background-card:not(.locked):hover {
+  border-color: var(--scout-gold);
+}
+body.profile-edit-mode .background-card.selected {
+  border-color: var(--scout-green);
+  box-shadow: 0 0 15px rgba(45, 80, 22, 0.4);
+}
+.achievement-card.is-featured {
+  border-color: var(--scout-gold);
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+}

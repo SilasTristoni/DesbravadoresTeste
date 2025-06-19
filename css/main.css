@@ -1,0 +1,203 @@
+:root {
+  --scout-green: #2d5016;
+  --scout-light-green: #6b8e23;
+  --scout-brown: #8b4513;
+  --scout-tan: #d2b48c;
+  --scout-gold: #ffd700;
+  --scout-orange: #ff6b35;
+  --bg-primary: #fdfaf6;
+  --bg-secondary: #ffffff;
+  --text-primary: #2c3e50;
+  --text-secondary: #7f8c8d;
+  --border-color: #e0e0e0;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.app-container {
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+.section-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--scout-green);
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 3px solid var(--scout-tan);
+}
+
+.main-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+.header-brand {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--scout-green);
+  text-decoration: none;
+}
+.nav-btn {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.nav-btn:hover {
+  color: var(--text-primary);
+  background-color: var(--scout-cream);
+}
+.nav-btn.active {
+  background-color: var(--scout-green);
+  color: white;
+}
+
+.content-container {
+  padding: 2rem;
+}
+.view {
+  display: none;
+  animation: fadeIn 0.5s ease-in-out;
+}
+.view.active {
+  display: block;
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Modal */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 2000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+}
+.modal.active {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.modal-content {
+  background-color: #fefefe;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+  max-width: 500px;
+  border-radius: 15px;
+}
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+}
+.modal-title {
+  color: var(--scout-green);
+}
+.close-btn {
+  color: #aaa;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.modal-description {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin-bottom: 1.5rem;
+}
+
+.modal-status {
+  font-size: 1rem;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  font-weight: 500;
+}
+
+.modal-status.unlocked {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.modal-status.locked {
+  background-color: #fbe9e7;
+  color: #c62828;
+}
+
+.modal-details {
+  font-size: 1rem;
+  color: var(--text-primary);
+}
+
+.modal-details strong {
+  color: var(--scout-green);
+}
+
+.modal .progress-section {
+  margin-top: 1rem;
+}
+.modal .progress-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+.modal .progress-bar-small {
+  background: #e0e0e0;
+  height: 8px;
+  border-radius: 4px;
+}
+.modal .progress-fill-small {
+  background: var(--scout-light-green);
+  height: 100%;
+  border-radius: 4px;
+}
+body.dark-mode {
+  --bg-primary: #121212;
+  --bg-secondary: #1e1e1e;
+  --text-primary: #e0e0e0;
+  --text-secondary: #a0a0a0;
+  --border-color: #333333;
+}
+
+body.dark-mode .achievement-card,
+body.dark-mode .badges-display {
+  background-color: #2a2a2a;
+}

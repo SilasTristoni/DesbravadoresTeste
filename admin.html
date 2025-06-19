@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Adventure Camp</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+    <div class="app-container">
+        <header class="main-header">
+            <a class="header-brand" href="#">Painel do Admin 🛡️</a>
+            <nav class="main-nav">
+                <button class="nav-btn active" data-view="dashboard">📊 Dashboard</button>
+                <button class="nav-btn" data-view="manage-tasks">📅 Tarefas</button>
+                <button class="nav-btn" data-view="manage-users">👥 Usuários</button>
+            </nav>
+        </header>
+
+        <main class="content-container">
+            <section id="view-dashboard" class="view active"></section>
+            <section id="view-manage-tasks" class="view"></section>
+            <section id="view-manage-users" class="view"></section>
+        </main>
+    </div>
+
+    <script type="module" src="js/admin-main.js"></script>
+</body>
+</html>

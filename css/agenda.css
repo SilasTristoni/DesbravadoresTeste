@@ -1,0 +1,162 @@
+.agenda-container {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 2rem;
+  align-items: flex-start;
+  height: calc(100vh - 150px);
+}
+
+.calendar-wrapper {
+  background-color: var(--bg-secondary);
+  border-radius: 20px;
+  padding: 1.5rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.07);
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding: 0 0.5rem;
+}
+
+.month-year {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--scout-green);
+}
+
+.month-nav-arrow {
+  background: none;
+  border: 2px solid var(--scout-green);
+  color: var(--scout-green);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.month-nav-arrow:hover {
+  background-color: var(--scout-green);
+  color: white;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+}
+
+.calendar-weekday {
+  text-align: center;
+  font-weight: 600;
+  color: var(--text-secondary);
+  padding-bottom: 0.5rem;
+}
+
+.calendar-day {
+  height: 80px;
+  padding: 8px;
+  border-radius: 10px;
+  background-color: var(--bg-primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+.day-number {
+  width: 100%;
+  text-align: left;
+  font-weight: 500;
+}
+.calendar-day.other-month {
+  color: #ccc;
+  background-color: transparent;
+}
+.calendar-day:not(.other-month):hover {
+  background-color: var(--scout-cream);
+}
+.calendar-day.selected {
+  background-color: var(--scout-green);
+  color: white;
+  font-weight: 700;
+}
+
+.activity-count-badge {
+  background-color: var(--scout-orange);
+  color: white;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.calendar-day.selected .activity-count-badge {
+  background-color: white;
+  color: var(--scout-green);
+}
+
+.schedule-wrapper {
+  background-color: var(--bg-secondary);
+  border-radius: 20px;
+  padding: 1.5rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.07);
+  height: 100%;
+  overflow-y: auto;
+}
+
+.schedule-header {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--border-color);
+}
+.schedule-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.timeline-item {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+}
+.timeline-time {
+  font-weight: 700;
+  color: var(--scout-green);
+  width: 60px;
+}
+.timeline-content {
+  border-left: 3px solid var(--scout-light-green);
+  padding-left: 1.5rem;
+  flex-grow: 1;
+  background-color: var(--bg-primary);
+  border-radius: 8px;
+  padding: 1rem 1rem 1rem 1.5rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+.timeline-content:hover {
+  background-color: var(--scout-cream);
+}
+.timeline-title {
+  font-weight: 600;
+}
+.timeline-description {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+@media (max-width: 1024px) {
+  .agenda-container {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+}
