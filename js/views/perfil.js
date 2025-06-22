@@ -1,5 +1,5 @@
 import { appState } from '../state.js';
-import { showAchievementModal } from '../../../components/modal.js';
+import { showAchievementModal } from '../components/modal.js';
 
 const MAX_FEATURED = 3; 
 

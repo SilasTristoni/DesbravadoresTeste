@@ -1,3 +1,4 @@
+// js/views/admin/dashboard.js - SINTAXE CORRIGIDA
 import { appState } from "../../state.js";
 
 export function renderDashboardView(viewElement) {
@@ -6,7 +7,8 @@ export function renderDashboardView(viewElement) {
     (user) => user.rank !== "Chefe de Seção"
   );
 
-  viewElement.innerHTML = (
+  // O HTML deve ser uma string (usando crases ``)
+  viewElement.innerHTML = `
     <div class="admin-widget">
       <h2>Visão Geral dos Usuários</h2>
       <table class="user-table">
@@ -21,7 +23,7 @@ export function renderDashboardView(viewElement) {
         <tbody id="user-list-body"></tbody>
       </table>
     </div>
-  );
+  `;
 
   const tableBody = viewElement.querySelector("#user-list-body");
   if (!tableBody) return;
@@ -32,18 +34,18 @@ export function renderDashboardView(viewElement) {
 
     const row = document.createElement("tr");
     row.innerHTML = `
-            <td>
-                <div class="user-info-cell">
-                    <img src="${user.avatar}" alt="Avatar" class="avatar-img-small" />
-                    <span>${user.name} ${user.surname}</span>
-                </div>
-            </td>
-            <td>${groupName}</td>
-            <td>${user.rank}</td>
-            <td>
-                <button class="action-btn">Gerenciar</button>
-            </td>
-        `;
+        <td>
+            <div class="user-info-cell">
+                <img src="${user.avatar}" alt="Avatar" class="avatar-img-small" />
+                <span>${user.name} ${user.surname}</span>
+            </div>
+        </td>
+        <td>${groupName}</td>
+        <td>${user.rank}</td>
+        <td>
+            <button class="action-btn">Gerenciar</button>
+        </td>
+    `;
     tableBody.appendChild(row);
   });
 }

@@ -1,74 +1,17 @@
 export const appState = {
-  currentUserId: "user-1",
-
-  users: {
-    "user-1": {
-      id: "user-1",
-      name: "João",
-      surname: "Silva",
-      avatar:
-        "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=120&h=120&fit=crop&crop=face",
-      birthDate: "2009-08-15",
-      level: 8,
-      rank: "Lobinho",
-      xp: 1840,
-      nextLevelXp: 2000,
-      groupId: "group-1",
-      selectedBackground: "forest",
-      displayedBadges: ["badge-1", "badge-3", "badge-5"],
+    currentUserId: 'user-1', 
+    users: {
+        'user-1': {
+            id: 'user-1', name: 'João', surname: 'Silva',
+            avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=120&h=120&fit=crop&crop=face',
+            birthDate: '2009-08-15', level: 8, rank: 'Lobinho', xp: 1840, nextLevelXp: 2000,
+            groupId: 'group-1', selectedBackground: 'forest', displayedBadges: ['badge-1', 'badge-3', 'badge-5'] 
+        },
     },
-    "user-2": {
-      id: "user-2",
-      name: "Maria",
-      surname: "Oliveira",
-      avatar:
-        "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&h=120&fit=crop&crop=face",
-      birthDate: "2008-10-20",
-      level: 9,
-      rank: "Escoteira",
-      xp: 2100,
-      nextLevelXp: 2500,
-      groupId: "group-1",
-      selectedBackground: "mountain",
-      displayedBadges: ["badge-1", "badge-2"],
+    groups: {
+        'group-1': { id: 'group-1', name: 'Patrulha Lince', leaderId: 'user-admin', gradient: 'linear-gradient(120deg, #2193b0 0%, #6dd5ed 100%)' },
+        'group-2': { id: 'group-2', name: 'Patrulha Águia', leaderId: 'user-admin', gradient: 'linear-gradient(120deg, #11998e 0%, #38ef7d 100%)' }
     },
-    "user-3": {
-      id: "user-3",
-      name: "Carlos",
-      surname: "Andrade",
-      avatar:
-        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&h=120&fit=crop&crop=face",
-      birthDate: "2009-03-12",
-      level: 7,
-      rank: "Lobinho",
-      xp: 1500,
-      nextLevelXp: 2000,
-      groupId: "group-2",
-      selectedBackground: "camping",
-      displayedBadges: ["badge-1"],
-    },
-    "user-admin": {
-      id: "user-admin",
-      name: "Ricardo",
-      surname: "Borges",
-      avatar:
-        "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=120&h=120&fit=crop&crop=face",
-      rank: "Chefe de Seção",
-    },
-  },
-
-  groups: {
-    "group-1": {
-      id: "group-1",
-      name: "Patrulha Lince",
-      leaderId: "user-admin",
-    },
-    "group-2": {
-      id: "group-2",
-      name: "Patrulha Águia",
-      leaderId: "user-admin",
-    },
-  },
   currentUser: {
     name: "João",
     surname: "Silva",
