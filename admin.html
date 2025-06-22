@@ -6,6 +6,7 @@
     <title>Admin - Adventure Camp</title>
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/admin.css">
+    <link rel="stylesheet" href="css/chamada.css"> <link rel="stylesheet" href="css/settings.css">
 </head>
 <body>
     <div class="app-container">
@@ -13,15 +14,19 @@
             <a class="header-brand" href="#">Painel do Admin 🛡️</a>
             <nav class="main-nav">
                 <button class="nav-btn active" data-view="dashboard">📊 Dashboard</button>
+                <button class="nav-btn" data-view="chamada">✔️ Chamada</button>
                 <button class="nav-btn" data-view="manage-tasks">📅 Tarefas</button>
                 <button class="nav-btn" data-view="manage-users">👥 Usuários</button>
+                <button class="nav-btn" data-view="settings">⚙️ Configurações</button>
             </nav>
         </header>
 
         <main class="content-container">
             <section id="view-dashboard" class="view active"></section>
+            <section id="view-chamada" class="view"></section>
             <section id="view-manage-tasks" class="view"></section>
             <section id="view-manage-users" class="view"></section>
+            <section id="view-admin-settings" class="view"></section>
         </main>
     </div>
 

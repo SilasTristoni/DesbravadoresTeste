@@ -9,6 +9,8 @@
 <body>
     <main class="login-page">
         <div class="login-card">
+            <button class="theme-toggle-btn" id="theme-toggle">🌙</button>
+
             <div class="login-card-image">
                 <img src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=2070&auto=format&fit=crop" alt="Paisagem de um lago nas montanhas">
                 <div class="login-logo-wrapper">
@@ -23,13 +25,21 @@
                         <label for="email">Email</label>
                         <input type="email" id="email" required>
                     </div>
-                    <div class="input-field">
+                    <div class="input-field password-field">
                         <label for="password">Senha</label>
                         <input type="password" id="password" required>
+                        <button type="button" class="toggle-password">👁️</button>
                     </div>
-                    <a href="#" class="forgot-password">Esqueceu sua senha?</a>
+
+                    <div class="form-options">
+                        <label class="remember-me">
+                            <input type="checkbox" id="rememberMe"> Lembrar-me
+                        </label>
+                        <a href="#" class="forgot-password">Esqueceu sua senha?</a>
+                    </div>
+
                     <button type="submit" class="login-button">Entrar</button>
-                    <p class="register-link">Não possui conta? <a href="#">Registrar-se</a></p>
+                    <p class="register-link">Não possui conta? <a href="register.html">Registrar-se</a></p>
                 </form>
             </div>
         </div>

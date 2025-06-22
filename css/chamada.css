@@ -1,0 +1,113 @@
+/* css/chamada.css */
+.chamada-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+.chamada-search-bar {
+    position: relative;
+    margin-bottom: 2rem;
+}
+
+.chamada-search-input {
+    width: 100%;
+    padding: 15px 20px 15px 50px;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    background: var(--bg-secondary);
+    font-size: 1rem;
+    color: var(--text-primary);
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.chamada-search-input:focus {
+    box-shadow: 0 0 0 2px var(--scout-green);
+}
+
+.chamada-search-icon {
+    position: absolute;
+    left: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
+    font-size: 1.2rem;
+}
+
+.student-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.student-card {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    background: var(--bg-secondary);
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-left: 5px solid transparent;
+}
+
+.student-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+}
+
+.student-card.present {
+    background: var(--scout-light-green);
+    color: white;
+    border-left-color: var(--scout-gold);
+}
+
+.student-card .student-photo {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 15px;
+    border: 3px solid var(--border-color);
+}
+
+.student-card.present .student-photo {
+    border-color: var(--scout-gold);
+}
+
+.student-card .student-info {
+    flex: 1;
+}
+
+.student-card .student-role {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+    font-weight: 500;
+}
+
+.student-card .student-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.student-card.present .student-name,
+.student-card.present .student-role {
+    color: white;
+}
+
+.student-card .check-icon {
+    font-size: 2rem;
+    color: white;
+    opacity: 0;
+    transform: scale(0.5);
+    transition: all 0.3s ease;
+}
+
+.student-card.present .check-icon {
+    opacity: 1;
+    transform: scale(1);
+}

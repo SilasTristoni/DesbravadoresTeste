@@ -1,5 +1,7 @@
 import { appState } from '../state.js';
-import { showModal } from '../components/modal.js';
+// CAMINHO CORRIGIDO:
+import { showModal } from '../../components/modal.js';
+
 function renderTimeline(year, month, day) {
     const timelineContainer = document.getElementById('timeline');
     const scheduleTitle = document.getElementById('scheduleTitle');

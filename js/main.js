@@ -1,11 +1,11 @@
-// js/main.js - CORRIGIDO
 import { appState } from './state.js';
+// CAMINHO CORRIGIDO:
+import { setupModal } from '../components/modal.js';
 import { renderHomeView } from './views/home.js';
 import { renderAgendaView } from './views/agenda.js';
 import { renderProfileView } from './views/perfil.js';
 import { renderGruposView } from './views/grupos.js';
 import { renderSettingsView } from './views/settings.js';
-import { setupModal } from './components/modal.js';
 
 const views = {
     home: document.getElementById('view-home'),
