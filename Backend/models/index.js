@@ -1,7 +1,7 @@
 const sequelize = require("../config/database");
-const UserFactory = require("./user.model");
-const GroupFactory = require("./group.model");
-const TaskFactory = require("./task.model");
+const UserFactory = require("./user");
+const GroupFactory = require("./group");
+const TaskFactory = require("./task");
 
 const User = UserFactory(sequelize);
 const Group = GroupFactory(sequelize);

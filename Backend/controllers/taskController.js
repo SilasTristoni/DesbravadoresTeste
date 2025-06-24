@@ -1,7 +1,7 @@
 const { Task } = require('../models');
 
 // Criar uma nova tarefa
-exports.createTask = async (req, res) => {
+const createTask = async (req, res) => {
   try {
     const task = await Task.create(req.body);
     res.status(201).json(task);
@@ -11,7 +11,7 @@ exports.createTask = async (req, res) => {
 };
 
 // Obter todas as tarefas
-exports.getAllTasks = async (req, res) => {
+const getAllTasks = async (req, res) => {
   try {
     const tasks = await Task.findAll({ order: [['date', 'ASC'], ['time', 'ASC']] });
     res.status(200).json(tasks);
@@ -21,7 +21,7 @@ exports.getAllTasks = async (req, res) => {
 };
 
 // Obter uma tarefa por ID
-exports.getTaskById = async (req, res) => {
+const getTaskById = async (req, res) => {
   try {
     const task = await Task.findByPk(req.params.id);
     if (!task) {
@@ -34,7 +34,7 @@ exports.getTaskById = async (req, res) => {
 };
 
 // Atualizar uma tarefa
-exports.updateTask = async (req, res) => {
+const updateTask = async (req, res) => {
   try {
     const [updated] = await Task.update(req.body, {
       where: { id: req.params.id },
@@ -50,7 +50,7 @@ exports.updateTask = async (req, res) => {
 };
 
 // Deletar uma tarefa
-exports.deleteTask = async (req, res) => {
+const deleteTask = async (req, res) => {
   try {
     const deleted = await Task.destroy({
       where: { id: req.params.id },
@@ -62,4 +62,12 @@ exports.deleteTask = async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
+};
+
+module.exports = {
+  createTask,
+  getAllTasks,
+  getTaskById,
+  updateTask,
+  deleteTask,
 };

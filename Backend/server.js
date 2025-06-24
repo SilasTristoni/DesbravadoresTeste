@@ -4,10 +4,10 @@ const db = require('./models');
 require('dotenv').config();
 
 // Rotas
-const authRoutes = require('./routes/auth.routes');
-const userRoutes = require('./routes/user.routes');
-const groupRoutes = require('./routes/group.routes');
-const taskRoutes = require('./routes/task.routes');
+const authRoutes = require('./routes/authRoutes');
+const userRoutes = require('./routes/userRoutes');
+const groupRoutes = require('./routes/groupRoutes');
+const taskRoutes = require('./routes/taskRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
