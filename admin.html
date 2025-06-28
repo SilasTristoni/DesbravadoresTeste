@@ -6,7 +6,9 @@
     <title>Admin - Adventure Camp</title>
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/admin.css">
-    <link rel="stylesheet" href="css/chamada.css"> <link rel="stylesheet" href="css/settings.css">
+    <link rel="stylesheet" href="css/chamada.css">
+    <link rel="stylesheet" href="css/settings.css">
+    <link rel="stylesheet" href="css/perfil.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body>
@@ -18,6 +20,8 @@
                 <button class="nav-btn" data-view="chamada"><i class="fa-solid fa-check"></i> Chamada</button>
                 <button class="nav-btn" data-view="manage-tasks"><i class="fa-solid fa-calendar-days"></i> Tarefas</button>
                 <button class="nav-btn" data-view="manage-users"><i class="fa-solid fa-users"></i> Usuários</button>
+                <button class="nav-btn" data-view="perfil"><i class="fa-solid fa-user"></i> Meu Perfil</button>
+                <button class="nav-btn" data-view="create-item"><i class="fa-solid fa-plus"></i> Criar Item</button>
                 <button class="nav-btn" data-view="settings"><i class="fa-solid fa-gears"></i> Configurações</button>
             </nav>
         </header>
@@ -27,8 +31,21 @@
             <section id="view-chamada" class="view"></section>
             <section id="view-manage-tasks" class="view"></section>
             <section id="view-manage-users" class="view"></section>
+            <section id="view-perfil" class="view"></section>
+            <section id="view-create-item" class="view"></section>
             <section id="view-admin-settings" class="view"></section>
+            <section id="view-manage-achievements" class="view"></section>
         </main>
+    </div>
+
+    <div class="modal" id="activityModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title" id="modalTitle"></h3>
+          <button class="close-btn" id="closeModalBtn">&times;</button>
+        </div>
+        <div class="modal-body" id="modalBody"></div>
+      </div>
     </div>
 
     <script type="module" src="js/admin-main.js"></script>

@@ -3,16 +3,24 @@ import { renderDashboardView } from "./views/admin/dashboard.js";
 import { renderChamadaView } from "./views/admin/chamada.js";
 import { renderManageTasksView } from "./views/admin/manage-tasks.js";
 import { renderManageUsersView } from "./views/admin/manage-users.js";
-// 1. IMPORTAR A NOVA FUNÇÃO DE RENDERIZAÇÃO
 import { renderAdminSettingsView } from "./views/admin/settings.js";
+import { renderProfileView } from "./views/perfil.js";
+import { appState } from './state.js';
+import { setupModal } from '../components/modal.js';
+import { renderManageAchievementsView } from './views/admin/manage-achievements.js';
+// 1. IMPORTAR A NOVA VIEW DE CRIAÇÃO
+import { renderCreateItemView } from './views/admin/create-item.js';
 
 const views = {
   dashboard: document.getElementById("view-dashboard"),
   chamada: document.getElementById("view-chamada"),
   "manage-tasks": document.getElementById("view-manage-tasks"),
   "manage-users": document.getElementById("view-manage-users"),
-  // 2. ADICIONAR A NOVA VIEW AO OBJETO
+  perfil: document.getElementById("view-perfil"),
   settings: document.getElementById("view-admin-settings"),
+  "manage-achievements": document.getElementById("view-manage-achievements"),
+  // 2. ADICIONAR A NOVA VIEW AO OBJETO
+  "create-item": document.getElementById("view-create-item"),
 };
 
 const viewRenderers = {
@@ -20,41 +28,71 @@ const viewRenderers = {
   chamada: renderChamadaView,
   "manage-tasks": renderManageTasksView,
   "manage-users": renderManageUsersView,
-  // 3. ADICIONAR O NOVO RENDERIZADOR AO OBJETO
+  perfil: renderProfileView,
   settings: renderAdminSettingsView,
+  "manage-achievements": renderManageAchievementsView,
+  // 3. ADICIONAR O NOVO RENDERIZADOR
+  "create-item": renderCreateItemView,
 };
 
-function switchView(viewId) {
+function switchView(viewId, data = null) {
+  // Desativa todas as views
   for (const id in views) {
-    views[id].classList.remove("active");
-  }
-  const targetView = views[viewId];
-  if (targetView) {
-    targetView.classList.add("active");
-    // Renderiza a view apenas na primeira vez que for aberta
-    if (targetView.innerHTML.trim() === "" && viewRenderers[viewId]) {
-      viewRenderers[viewId](targetView);
+    if (views[id]) {
+        views[id].classList.remove("active");
     }
   }
-  document.querySelector(".nav-btn.active")?.classList.remove("active");
-  document
-    .querySelector(`.nav-btn[data-view="${viewId}"]`)
-    ?.classList.add("active");
+
+  const targetView = views[viewId];
+  
+  if (targetView) {
+    targetView.classList.add("active");
+    
+    const isFirstRender = targetView.innerHTML.trim() === '';
+    const hasNewData = data !== null;
+
+    if ((isFirstRender || hasNewData) && viewRenderers[viewId]) {
+        viewRenderers[viewId](targetView, data);
+    }
+  }
+
+  const activeButton = document.querySelector(".nav-btn.active");
+  if (activeButton) {
+      activeButton.classList.remove("active");
+  }
+  
+  const newActiveButton = document.querySelector(`.nav-btn[data-view="${viewId}"]`);
+  if (newActiveButton) {
+      newActiveButton.classList.add("active");
+  }
 }
 
 function initializeAdminApp() {
-  // --- LÓGICA PARA APLICAR TEMA NA INICIALIZAÇÃO ---
-  // Verifica o tema salvo no localStorage e aplica à página
   if (localStorage.getItem('theme') === 'dark') {
       document.body.classList.add('dark-mode');
   }
 
+  // Navegação principal
   document.querySelectorAll(".nav-btn").forEach((button) => {
     button.addEventListener("click", () => {
-      switchView(button.dataset.view);
+        const viewId = button.dataset.view;
+        if (viewId === 'perfil') {
+            switchView(viewId, 'user-admin');
+        } else {
+            switchView(viewId);
+        }
     });
   });
 
+  // Delegação de evento para o botão "Gerenciar" no dashboard
+  document.querySelector('.content-container').addEventListener('click', (e) => {
+      if (e.target && e.target.matches('.manage-user-btn')) {
+          const userId = e.target.dataset.userId;
+          switchView('manage-achievements', userId);
+      }
+  });
+
+  setupModal();
   switchView("dashboard");
 }
 

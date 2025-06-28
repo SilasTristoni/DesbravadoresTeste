@@ -1,4 +1,4 @@
-// js/views/admin/dashboard.js - SINTAXE CORRIGIDA
+// js/views/admin/dashboard.js
 import { appState } from "../../state.js";
 
 export function renderDashboardView(viewElement) {
@@ -7,7 +7,6 @@ export function renderDashboardView(viewElement) {
     (user) => user.rank !== "Chefe de Seção"
   );
 
-  // O HTML deve ser uma string (usando crases ``)
   viewElement.innerHTML = `
     <div class="admin-widget">
       <h2>Visão Geral dos Usuários</h2>
@@ -43,7 +42,7 @@ export function renderDashboardView(viewElement) {
         <td>${groupName}</td>
         <td>${user.rank}</td>
         <td>
-            <button class="action-btn">Gerenciar</button>
+            <button class="action-btn manage-user-btn" data-user-id="${user.id}">Gerenciar</button>
         </td>
     `;
     tableBody.appendChild(row);
