@@ -1,9 +1,9 @@
 .hero-section {
   height: 50vh;
   border-radius: 20px;
-  background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.4)),
-    url("https://images.unsplash.com/photo-1476041920953-4423b5a2b0a9?q=80&w=2070&auto=format&fit=crop")
-      center/cover;
+  /* A IMAGEM É APLICADA AQUI, COMO FUNDO */
+  background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.5)),
+    url("../img/home-banner.png") center/cover;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -26,6 +26,46 @@
   display: grid;
   grid-template-columns: 2fr 1fr;
   gap: 2rem;
+  align-items: start;
+}
+
+.main-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.reminders-section {
+    background: var(--bg-secondary);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.reminders-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+}
+
+.reminder-card {
+    background-color: var(--bg-primary);
+    border-left: 5px solid var(--scout-light-green);
+    padding: 1rem;
+    border-radius: 8px;
+}
+
+.reminder-date {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--scout-green);
+    margin-bottom: 0.5rem;
+}
+
+.reminder-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
 }
 
 .category-card {
@@ -37,7 +77,6 @@
   border-radius: 12px;
   border-left: 5px solid var(--category-color, var(--scout-orange));
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-  margin-bottom: 1rem;
   cursor: pointer;
   transition: all 0.3s ease;
 }
@@ -78,6 +117,43 @@
 }
 .stat-item:last-child {
   border-bottom: none;
+}
+
+.scout-of-the-month-widget {
+    background: var(--bg-secondary);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    margin-top: 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.scout-of-the-month-widget:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.sotm-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 4px solid var(--scout-gold);
+    margin-bottom: 1rem;
+}
+
+.sotm-name {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--scout-green);
+}
+
+.sotm-reason {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-top: 0.5rem;
+    font-style: italic;
 }
 
 @media (max-width: 1024px) {
