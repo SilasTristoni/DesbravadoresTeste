@@ -1,4 +1,4 @@
-/* Estilos originais para widgets, tabelas e formulários */
+/* Estilos base para widgets, tabelas e formulários */
 .admin-widget {
   background-color: var(--bg-secondary);
   border-radius: 15px;
@@ -50,15 +50,6 @@
   border-radius: 50%;
 }
 
-.user-table .action-btn {
-  background-color: var(--scout-green);
-  color: white;
-  border: none;
-  padding: 8px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
 .task-form,
 .user-form {
   display: flex;
@@ -98,20 +89,41 @@
   resize: vertical;
 }
 
-/* --- ESTILOS ATUALIZADOS E NOVOS --- */
+/* --- ESTILOS PARA BOTÕES DE AÇÃO --- */
 
-/* Botão Criar Item customizado */
-#create-item-form .action-btn {
+.user-table .action-btn {
+  background-color: var(--scout-green);
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+#create-item-form .action-btn,
+.task-form .action-btn,
+.user-form .action-btn {
     background-color: var(--scout-green);
     color: white;
     font-weight: bold;
-    padding: 15px; /* Botão maior */
+    padding: 15px;
     font-size: 1.1rem;
     width: 100%;
     margin-top: 1rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s;
 }
 
-/* Preview do nome do item */
+#create-item-form .action-btn:hover,
+.task-form .action-btn:hover,
+.user-form .action-btn:hover {
+    background-color: var(--scout-light-green);
+}
+
+/* --- ESTILOS PARA "CRIAR ITEM" --- */
+
 #item-name-preview {
     font-weight: bold;
     color: var(--scout-brown);
@@ -120,59 +132,12 @@
     min-height: 20px;
 }
 
-/* Contêiner da pré-visualização (incluindo nome) */
 .preview-container {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
 }
-
-/* --- SEÇÃO CORRIGIDA PARA FORMATOS DE EMBLEMA --- */
-
-.achievement-icon-shape {
-    width: 90px;
-    height: 90px;
-    position: relative;
-    background-color: var(--scout-green); /* A cor de fundo é a cor da borda */
-    padding: 4px; /* A espessura da borda */
-    box-sizing: border-box;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.achievement-icon-shape::before {
-    display: none;
-}
-
-.achievement-icon-shape .emblem-icon {
-    width: 100%;
-    height: 100%;
-    object-fit: cover; /* Faz a imagem preencher o espaço, cortando o excesso */
-    position: relative;
-}
-
-.shape-circle,
-.shape-circle .emblem-icon {
-    border-radius: 50%;
-    clip-path: none;
-}
-
-.shape-hexagon,
-.shape-hexagon .emblem-icon {
-    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-    border-radius: 0;
-}
-
-.shape-shield,
-.shape-shield .emblem-icon {
-    clip-path: polygon(0% 0%, 100% 0%, 100% 75%, 50% 100%, 0% 75%);
-    border-radius: 0;
-}
-
-
-/* --- NOVOS ESTILOS PARA PREVIEW DO BANNER DE FUNDO --- */
 
 #background-preview-wrapper {
   padding: 1rem;
@@ -181,43 +146,60 @@
   margin-top: 1rem;
 }
 
-/* Simula o bloco de identidade do perfil */
 .background-preview-block {
   background: var(--scout-green);
   border-radius: 20px;
-  padding: 2rem;
+  padding: 1.5rem;
   color: white;
   transition: background 0.5s ease;
   background-size: cover;
   background-position: center;
 }
 
-/* Simula o cabeçalho dentro do bloco */
 .background-preview-header {
   display: flex;
   align-items: center;
   gap: 1.5rem;
 }
 
-/* Simula o avatar */
 .background-preview-avatar {
-  width: 80px;
-  height: 80px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
-  border: 4px solid rgba(255, 255, 255, 0.8);
+  border: 3px solid rgba(255, 255, 255, 0.8);
 }
 
-/* Simula as informações do usuário */
 .background-preview-info h2 {
-    font-size: 1.8rem;
+    font-size: 1.5rem;
     font-weight: 700;
     margin: 0 0 0.25rem 0;
     text-shadow: 1px 1px 3px rgba(0,0,0,0.4);
 }
 
 .background-preview-info p {
-    font-size: 1rem;
+    font-size: 0.9rem;
     opacity: 0.9;
     margin: 0;
     text-shadow: 1px 1px 3px rgba(0,0,0,0.4);
+}
+
+
+/* --- ESTILOS PARA MODAL --- */
+
+#activityModal .action-btn {
+    background-color: var(--scout-green);
+    color: white;
+    font-weight: bold;
+    padding: 12px;
+    font-size: 1rem;
+    width: 100%;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    margin-bottom: 0.5rem;
+}
+
+#activityModal .action-btn:hover {
+    background-color: var(--scout-light-green);
 }

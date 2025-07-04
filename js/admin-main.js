@@ -4,12 +4,12 @@ import { renderChamadaView } from "./views/admin/chamada.js";
 import { renderManageTasksView } from "./views/admin/manage-tasks.js";
 import { renderManageUsersView } from "./views/admin/manage-users.js";
 import { renderAdminSettingsView } from "./views/admin/settings.js";
-import { renderProfileView } from "./views/perfil.js";
 import { appState } from './state.js';
 import { setupModal } from '../components/modal.js';
 import { renderManageAchievementsView } from './views/admin/manage-achievements.js';
-// 1. IMPORTAR A NOVA VIEW DE CRIAÇÃO
 import { renderCreateItemView } from './views/admin/create-item.js';
+// 1. IMPORTA O COMPONENTE DE PERFIL PADRÃO
+import { renderProfileView } from './views/perfil.js';
 
 const views = {
   dashboard: document.getElementById("view-dashboard"),
@@ -19,7 +19,6 @@ const views = {
   perfil: document.getElementById("view-perfil"),
   settings: document.getElementById("view-admin-settings"),
   "manage-achievements": document.getElementById("view-manage-achievements"),
-  // 2. ADICIONAR A NOVA VIEW AO OBJETO
   "create-item": document.getElementById("view-create-item"),
 };
 
@@ -28,15 +27,14 @@ const viewRenderers = {
   chamada: renderChamadaView,
   "manage-tasks": renderManageTasksView,
   "manage-users": renderManageUsersView,
+  // 2. USA O RENDERIZADOR DE PERFIL PADRÃO
   perfil: renderProfileView,
   settings: renderAdminSettingsView,
   "manage-achievements": renderManageAchievementsView,
-  // 3. ADICIONAR O NOVO RENDERIZADOR
   "create-item": renderCreateItemView,
 };
 
 function switchView(viewId, data = null) {
-  // Desativa todas as views
   for (const id in views) {
     if (views[id]) {
         views[id].classList.remove("active");
@@ -44,14 +42,10 @@ function switchView(viewId, data = null) {
   }
 
   const targetView = views[viewId];
-  
   if (targetView) {
     targetView.classList.add("active");
-    
-    const isFirstRender = targetView.innerHTML.trim() === '';
-    const hasNewData = data !== null;
 
-    if ((isFirstRender || hasNewData) && viewRenderers[viewId]) {
+    if (viewRenderers[viewId]) {
         viewRenderers[viewId](targetView, data);
     }
   }
@@ -60,7 +54,7 @@ function switchView(viewId, data = null) {
   if (activeButton) {
       activeButton.classList.remove("active");
   }
-  
+
   const newActiveButton = document.querySelector(`.nav-btn[data-view="${viewId}"]`);
   if (newActiveButton) {
       newActiveButton.classList.add("active");
@@ -72,19 +66,18 @@ function initializeAdminApp() {
       document.body.classList.add('dark-mode');
   }
 
-  // Navegação principal
   document.querySelectorAll(".nav-btn").forEach((button) => {
     button.addEventListener("click", () => {
         const viewId = button.dataset.view;
+        // 3. PASSA O ID DO ADMIN AO CHAMAR A VIEW DE PERFIL
         if (viewId === 'perfil') {
-            switchView(viewId, 'user-admin');
+            switchView('perfil', 'user-admin');
         } else {
             switchView(viewId);
         }
     });
   });
 
-  // Delegação de evento para o botão "Gerenciar" no dashboard
   document.querySelector('.content-container').addEventListener('click', (e) => {
       if (e.target && e.target.matches('.manage-user-btn')) {
           const userId = e.target.dataset.userId;

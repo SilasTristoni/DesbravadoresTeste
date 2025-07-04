@@ -43,9 +43,10 @@ function renderScoutOfTheMonth(viewElement) {
     if (user) {
         container.innerHTML = `
             <div class="scout-of-the-month-widget">
-                <h3 class="stats-title">⭐ Desbravador do Mês</h3>
+                <h3 class="stats-title"><span class="sotm-star">⭐</span> Desbravador do Mês</h3>
                 <img src="${user.avatar}" alt="Avatar de ${user.name}" class="sotm-avatar">
                 <div class="sotm-name">${user.name} ${user.surname}</div>
+                <div class="sotm-level">Nível ${user.level}</div>
                 <p class="sotm-reason">"${reason}"</p>
             </div>
         `;
