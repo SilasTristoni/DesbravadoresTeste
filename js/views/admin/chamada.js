@@ -1,7 +1,7 @@
-// js/views/admin/chamada.js
-import { appState } from '../../state.js';
+// Remova: import { appState } from '../../state.js';
+// A função agora receberá o estado como parâmetro do admin-main.js
 
-export function renderChamadaView(viewElement) {
+export function renderChamadaView(viewElement, data, appState) {
     // Filtra para pegar apenas os desbravadores, excluindo o chefe de seção
     const studentList = Object.values(appState.users).filter(user => user.rank !== 'Chefe de Seção');
 
@@ -26,6 +26,7 @@ export function renderChamadaView(viewElement) {
                         </div>
                     `).join('')}
                 </div>
+                <button id="saveAttendanceBtn" class="action-btn" style="margin-top: 1.5rem;">Salvar Chamada</button>
             </div>
         </div>
     `;
@@ -50,5 +51,35 @@ export function renderChamadaView(viewElement) {
                 card.style.display = 'none';
             }
         });
+    });
+
+    // --- NOVO: LÓGICA PARA SALVAR A CHAMADA ---
+    const saveBtn = viewElement.querySelector('#saveAttendanceBtn');
+    saveBtn.addEventListener('click', async () => {
+        const presentCards = viewElement.querySelectorAll('.student-card.present');
+        const presentUserIds = Array.from(presentCards).map(card => card.dataset.studentId);
+
+        if (presentUserIds.length === 0) {
+            alert("Nenhum desbravador marcado como presente.");
+            return;
+        }
+
+        try {
+            const response = await fetch('http://localhost:3000/api/admin/chamada', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ presentUserIds }),
+            });
+
+            const result = await response.json();
+            if (response.ok) {
+                alert(result.message);
+            } else {
+                throw new Error(result.message);
+            }
+        } catch (error) {
+            console.error('Erro ao salvar presença:', error);
+            alert(`Não foi possível salvar a presença: ${error.message}`);
+        }
     });
 }

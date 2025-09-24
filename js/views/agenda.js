@@ -1,11 +1,17 @@
-import { appState } from '../state.js';
-// CAMINHO CORRIGIDO:
 import { showModal } from '../../components/modal.js';
 
-function renderTimeline(year, month, day) {
+/**
+ * Atualiza a lista de atividades (timeline) para um dia específico.
+ */
+function renderTimeline(year, month, day, appState) {
     const timelineContainer = document.getElementById('timeline');
     const scheduleTitle = document.getElementById('scheduleTitle');
     if (!timelineContainer || !scheduleTitle) return;
+
+    if (!appState?.agenda?.dayNames) {
+        timelineContainer.innerHTML = "<p>Carregando dados da agenda...</p>";
+        return;
+    }
 
     const { dayNames, months, activities } = appState.agenda;
     const date = new Date(year, month, day);
@@ -22,7 +28,7 @@ function renderTimeline(year, month, day) {
     timelineContainer.innerHTML = dayActivities.map(act => `
         <div class="timeline-item">
             <div class="timeline-time">${act.time}</div>
-            <div class="timeline-content" data-title="${act.title}" data-description="${act.description}">
+            <div class="timeline-content" data-title="${act.title}" data-description="${act.description || ''}">
                 <div class="timeline-title">${act.title}</div>
             </div>
         </div>
@@ -37,13 +43,21 @@ function renderTimeline(year, month, day) {
     });
 }
 
-function renderCalendar() {
-    const { currentYear, currentMonth, selectedDay, activities } = appState.agenda;
+/**
+ * Desenha o calendário (a grade de dias) para o mês e ano atuais.
+ */
+function renderCalendar(appState, onDateUpdate) {
+    if (!appState?.agenda?.months) {
+        console.error("renderCalendar: Dados da agenda ausentes ou incompletos.", appState);
+        return;
+    }
+
+    const { currentYear, currentMonth, selectedDay, activities, months } = appState.agenda;
     const calendarGrid = document.getElementById('calendarGrid');
     const monthYearDisplay = document.getElementById('monthYear');
     if (!calendarGrid || !monthYearDisplay) return;
 
-    monthYearDisplay.textContent = `${appState.agenda.months[currentMonth]} ${currentYear}`;
+    monthYearDisplay.textContent = `${months[currentMonth]} ${currentYear}`;
     calendarGrid.innerHTML = '';
 
     ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'].forEach(day => {
@@ -62,29 +76,30 @@ function renderCalendar() {
         dayEl.className = 'calendar-day';
         
         const numActivities = activities[currentYear]?.[currentMonth]?.[day]?.length || 0;
-        let activityBadge = '';
         if (numActivities > 0) {
             dayEl.classList.add('has-events');
-            activityBadge = `<div class="activity-count-badge">${numActivities}</div>`;
+            dayEl.innerHTML = `<span class="day-number">${day}</span><div class="activity-count-badge">${numActivities}</div>`;
+        } else {
+            dayEl.innerHTML = `<span class="day-number">${day}</span>`;
         }
 
-        dayEl.innerHTML = `<span class="day-number">${day}</span>${activityBadge}`;
-
-        if (day === selectedDay && currentMonth === appState.agenda.currentMonth && currentYear === appState.agenda.currentYear) {
+        if (day === selectedDay) {
             dayEl.classList.add('selected');
         }
 
         dayEl.addEventListener('click', () => {
             appState.agenda.selectedDay = day;
-            renderCalendar(); 
-            renderTimeline(currentYear, currentMonth, day);
+            onDateUpdate();
         });
 
         calendarGrid.appendChild(dayEl);
     }
 }
 
-export function renderAgendaView(viewElement) {
+/**
+ * Função principal que renderiza toda a view da agenda.
+ */
+export function renderAgendaView(viewElement, data, appState) {
     viewElement.innerHTML = `
         <div class="agenda-container">
             <div class="calendar-wrapper">
@@ -104,13 +119,31 @@ export function renderAgendaView(viewElement) {
         </div>
     `;
 
+    // --- CORREÇÃO FINAL APLICADA AQUI ---
+    const updateAgendaUI = () => {
+        // Verifica se a propriedade 'agenda' existe no estado antes de tentar usá-la.
+        if (appState && appState.agenda) {
+            renderCalendar(appState, updateAgendaUI);
+            renderTimeline(appState.agenda.currentYear, appState.agenda.currentMonth, appState.agenda.selectedDay, appState);
+        } else {
+            // Se não existir, exibe a mensagem de erro que vimos no console.
+            console.error("Tentativa de renderizar a agenda, mas appState.agenda não está definido.", appState);
+            viewElement.innerHTML = "<p>Ocorreu um erro ao carregar os dados da agenda.</p>";
+        }
+    };
+    
+    if (!appState.agenda) {
+        viewElement.innerHTML = "<p>Não foi possível carregar os dados da agenda.</p>";
+        return;
+    }
+
     document.getElementById('prevMonthBtn').addEventListener('click', () => {
         appState.agenda.currentMonth--;
         if (appState.agenda.currentMonth < 0) {
             appState.agenda.currentMonth = 11;
             appState.agenda.currentYear--;
         }
-        renderCalendar();
+        updateAgendaUI();
     });
 
     document.getElementById('nextMonthBtn').addEventListener('click', () => {
@@ -119,9 +152,9 @@ export function renderAgendaView(viewElement) {
             appState.agenda.currentMonth = 0;
             appState.agenda.currentYear++;
         }
-        renderCalendar();
+        updateAgendaUI();
     });
 
-    renderCalendar();
-    renderTimeline(appState.agenda.currentYear, appState.agenda.currentMonth, appState.agenda.selectedDay);
+    // Renderização inicial
+    updateAgendaUI();
 }

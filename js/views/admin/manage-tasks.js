@@ -1,4 +1,4 @@
-import { appState } from "../../state.js";
+// Remova: import { appState } from "../../state.js";
 
 export function renderManageTasksView(viewElement) {
   viewElement.innerHTML = `
@@ -29,35 +29,34 @@ export function renderManageTasksView(viewElement) {
     `;
 
   const taskForm = viewElement.querySelector("#task-form");
-  taskForm.addEventListener("submit", (e) => {
+  taskForm.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    const date = new Date(viewElement.querySelector("#task-date").value);
-    const time = viewElement.querySelector("#task-time").value;
-    const title = viewElement.querySelector("#task-title").value;
-    const description = viewElement.querySelector("#task-description").value;
+    const taskData = {
+        date: viewElement.querySelector("#task-date").value,
+        time: viewElement.querySelector("#task-time").value,
+        title: viewElement.querySelector("#task-title").value,
+        description: viewElement.querySelector("#task-description").value,
+    };
 
-    const year = date.getUTCFullYear();
-    const month = date.getUTCMonth();
-    const day = date.getUTCDate();
+    try {
+        const response = await fetch('http://localhost:3000/api/admin/tarefas', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(taskData)
+        });
 
-    const newActivity = { time, title, description };
+        const result = await response.json();
 
-    if (!appState.agenda.activities[year]) {
-      appState.agenda.activities[year] = {};
+        if (response.ok) {
+            alert(result.message);
+            taskForm.reset();
+        } else {
+            throw new Error(result.message || 'Erro desconhecido do servidor');
+        }
+    } catch (error) {
+        console.error("Erro ao adicionar tarefa:", error);
+        alert(`Não foi possível adicionar a tarefa: ${error.message}`);
     }
-    if (!appState.agenda.activities[year][month]) {
-      appState.agenda.activities[year][month] = {};
-    }
-    if (!appState.agenda.activities[year][month][day]) {
-      appState.agenda.activities[year][month][day] = [];
-    }
-
-    appState.agenda.activities[year][month][day].push(newActivity);
-
-    alert(
-      `Tarefa "${title}" adicionada para o dia ${day + 1}/${month + 1}/${year}!`
-    );
-    taskForm.reset();
   });
 }

@@ -1,0 +1,126 @@
+{
+  "currentUserId": "user-1",
+  "users": {
+    "user-1": {
+      "id": "user-1",
+      "name": "João",
+      "surname": "Silva",
+      "avatar": "img/escoteiro1.png",
+      "birthDate": "2009-08-15",
+      "level": 8,
+      "rank": "Lobinho",
+      "xp": 1840,
+      "nextLevelXp": 2000,
+      "groupId": "group-1",
+      "selectedBackground": "forest",
+      "displayedBadges": [
+        "badge-1",
+        "badge-3",
+        "badge-5"
+      ]
+    },
+    "user-admin": {
+      "id": "user-admin",
+      "name": "Sérgio",
+      "surname": "Ricardo",
+      "avatar": "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=120&h=120&fit=crop&crop=face",
+      "birthDate": "1985-01-01",
+      "rank": "Chefe de Seção",
+      "groupId": null,
+      "level": 99,
+      "xp": 9900,
+      "nextLevelXp": 10000,
+      "selectedBackground": "mountain",
+      "displayedBadges": [
+        "seal-1",
+        "badge-1"
+      ]
+    }
+  },
+  "groups": {
+    "group-1": {
+      "id": "group-1",
+      "name": "Patrulha Lince",
+      "leaderId": "user-admin",
+      "gradient": "linear-gradient(120deg, #2193b0 0%, #6dd5ed 100%)"
+    },
+    "group-2": {
+      "id": "group-2",
+      "name": "Patrulha Águia",
+      "leaderId": "user-admin",
+      "gradient": "linear-gradient(120deg, #11998e 0%, #38ef7d 100%)"
+    }
+  },
+  "badges": [],
+  "seals": [],
+  "backgrounds": [],
+  "agenda": {
+    "currentMonth": 8,
+    "currentYear": 2025,
+    "selectedDay": 24,
+    "months": [
+      "Janeiro",
+      "Fevereiro",
+      "Março",
+      "Abril",
+      "Maio",
+      "Junho",
+      "Julho",
+      "Agosto",
+      "Setembro",
+      "Outubro",
+      "Novembro",
+      "Dezembro"
+    ],
+    "dayNames": [
+      "Domingo",
+      "Segunda",
+      "Terça",
+      "Quarta",
+      "Quinta",
+      "Sexta",
+      "Sábado"
+    ],
+    "activities": {
+      "2025": {
+        "6": {
+          "18": [
+            {
+              "time": "09:00",
+              "title": "Cerimônia de Abertura",
+              "description": "Início oficial das atividades da semana."
+            }
+          ]
+        },
+        "8": {
+          "23": [
+            {
+              "time": "12:00",
+              "title": "ops",
+              "description": "ops"
+            }
+          ],
+          "26": [
+            {
+              "time": "15:00",
+              "title": "Teste da Claudia",
+              "description": "TEste"
+            }
+          ],
+          "29": [
+            {
+              "time": "17:00",
+              "title": "Jogo",
+              "description": "jogo"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "scoutOfTheMonth": {
+    "userId": "user-1",
+    "reason": "Pelo seu excelente espírito de equipe no acampamento de inverno."
+  },
+  "attendance": {}
+}
