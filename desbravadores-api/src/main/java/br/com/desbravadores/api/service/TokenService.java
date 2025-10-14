@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import org.springframework.beans.factory.annotation.Value; // IMPORT ADICIONADO
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -18,12 +19,20 @@ import io.jsonwebtoken.security.Keys;
 @Service
 public class TokenService {
 
+    // Lê o valor da propriedade 'jwt.expiration.ms' do application.properties
+    @Value("${jwt.expiration.ms}")
+    private long expirationTimeMillis;
+
+    // A chave secreta continua a mesma
     private final Key secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 
-    // MÉTODOS EXISTENTES (COM UMA PEQUENA MELHORIA)
+    /**
+     * MÉTODO ATUALIZADO
+     * Agora usa o tempo de expiração configurado no application.properties.
+     */
     public String generateToken(User user) {
-        long expirationTimeMillis = System.currentTimeMillis() + 24 * 60 * 60 * 1000;
-        Date expirationDate = new Date(expirationTimeMillis);
+        // Usa a variável injetada para calcular a data de expiração
+        Date expirationDate = new Date(System.currentTimeMillis() + expirationTimeMillis);
 
         Map<String, Object> claims = new HashMap<>();
         claims.put("userId", user.getId());
@@ -32,15 +41,14 @@ public class TokenService {
 
         return Jwts.builder()
                 .setClaims(claims)
-                .setSubject(user.getEmail()) // O subject agora é o email
+                .setSubject(user.getEmail())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(expirationDate)
+                .setExpiration(expirationDate) // Define a nova data de expiração
                 .signWith(secretKey)
                 .compact();
     }
 
-    // NOVOS MÉTODOS PARA VALIDAR O TOKEN
-
+    // O resto dos métodos para validar o token permanecem os mesmos
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
@@ -53,6 +61,8 @@ public class TokenService {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
+
+
 
     private Claims extractAllClaims(String token) {
         return Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody();

@@ -16,7 +16,6 @@ import br.com.desbravadores.api.repository.UserRepository;
 @RequestMapping("/api/users")
 public class UserController {
 
-    // A injeção do UserService foi removida pois não é mais usada.
     @Autowired
     private UserRepository userRepository;
 
@@ -28,7 +27,7 @@ public class UserController {
     }
 
     /*
-     * O MÉTODO DE REGISTRO PÚBLICO FOI REMOVIDO DESTE CONTROLLER.
-     * Toda a criação de usuários agora é feita pelo AdminController.
+     * O MÉTODO DE REGISTO PÚBLICO FOI REMOVIDO DESTE CONTROLLER.
+     * Toda a criação de usuários agora é feita exclusivamente pelo AdminController.
      */
 }

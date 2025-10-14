@@ -1,8 +1,11 @@
 package br.com.desbravadores.api.service;
 
-import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -22,7 +25,13 @@ public class CustomUserDetailsService implements UserDetailsService {
         User user = repository.findByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + username));
         
-        // No futuro, as permissões (authorities) virão do user.getRole()
-        return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), new ArrayList<>());
+        // ---- CORREÇÃO CRÍTICA AQUI ----
+        // Removemos o prefixo "ROLE_". Agora a permissão será exatamente
+        // o nome do Enum (ex: "DIRETOR", "MONITOR").
+        GrantedAuthority authority = new SimpleGrantedAuthority(user.getRole().name());
+        Collection<GrantedAuthority> authorities = Collections.singletonList(authority);
+
+        // Retornamos o objeto User do Spring Security com a permissão explícita.
+        return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), authorities);
     }
 }
