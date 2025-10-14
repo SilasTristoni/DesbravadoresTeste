@@ -1,16 +1,10 @@
-<<<<<<< HEAD
 // js/login.js
 
-=======
->>>>>>> 1c8858d8c53d4cd014687aa8214353541ed10887
 // --- LÓGICA DO TEMA ---
 const themeToggle = document.getElementById('theme-toggle');
 
 function applyTheme() {
-<<<<<<< HEAD
-=======
     // Aplica o tema na inicialização
->>>>>>> 1c8858d8c53d4cd014687aa8214353541ed10887
     if (localStorage.getItem('theme') === 'dark') {
         document.body.classList.add('dark-mode');
         themeToggle.textContent = '☀️';
@@ -21,10 +15,7 @@ function applyTheme() {
 }
 
 themeToggle.addEventListener('click', () => {
-<<<<<<< HEAD
-=======
     // Alterna o tema no clique
->>>>>>> 1c8858d8c53d4cd014687aa8214353541ed10887
     const isDarkMode = document.body.classList.toggle('dark-mode');
     localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
     themeToggle.textContent = isDarkMode ? '☀️' : '🌙';
@@ -45,16 +36,12 @@ const loginForm = document.getElementById('login-form');
 const emailInput = document.getElementById('email');
 const rememberMeCheckbox = document.getElementById('rememberMe');
 
-<<<<<<< HEAD
-=======
 // Preenche o e-mail se estiver salvo no localStorage
->>>>>>> 1c8858d8c53d4cd014687aa8214353541ed10887
 if (localStorage.getItem('rememberedEmail')) {
     emailInput.value = localStorage.getItem('rememberedEmail');
     rememberMeCheckbox.checked = true;
 }
 
-<<<<<<< HEAD
 loginForm.addEventListener('submit', function(event) {
     event.preventDefault();
 
@@ -65,6 +52,7 @@ loginForm.addEventListener('submit', function(event) {
     loginButton.disabled = true;
     loginButton.textContent = 'Entrando...';
 
+    // Lógica de Login Real com API e Redirecionamento por Cargo
     fetch('http://localhost:8080/auth/login', {
         method: 'POST',
         headers: {
@@ -74,7 +62,9 @@ loginForm.addEventListener('submit', function(event) {
     })
     .then(response => {
         if (!response.ok) {
-            return response.text().then(text => { throw new Error('Email ou senha inválidos') });
+            return response.text().then(text => { 
+                throw new Error(text || 'Email ou senha inválidos') 
+            });
         }
         return response.json();
     })
@@ -82,9 +72,11 @@ loginForm.addEventListener('submit', function(event) {
         const token = data.token;
         localStorage.setItem('jwtToken', token);
         
+        // Decodifica o payload do JWT para obter o cargo (role)
         const payload = JSON.parse(atob(token.split('.')[1]));
         const userRole = payload.role;
 
+        // Redirecionamento baseado no cargo
         if (userRole === 'DESBRAVADOR') {
             window.location.href = 'app.html';
         } else if (userRole === 'MONITOR' || userRole === 'DIRETOR') {
@@ -94,6 +86,7 @@ loginForm.addEventListener('submit', function(event) {
             window.location.href = 'login.html';
         }
 
+        // Lógica de "Lembrar-me"
         if (rememberMeCheckbox.checked) {
             localStorage.setItem('rememberedEmail', email);
         } else {
@@ -111,23 +104,4 @@ loginForm.addEventListener('submit', function(event) {
     });
 });
 
-=======
-// Listener de envio do formulário
-loginForm.addEventListener('submit', function(event) {
-    event.preventDefault(); 
-    
-    // Salva ou remove o e-mail do "Lembrar-me"
-    if (rememberMeCheckbox.checked) {
-        localStorage.setItem('rememberedEmail', emailInput.value);
-    } else {
-        localStorage.removeItem('rememberedEmail');
-    }
-
-    console.log('Simulando login bem-sucedido...');
-    // Redireciona para a página principal da aplicação
-    window.location.href = 'app.html'; 
-});
-
-// Garante que o tema seja aplicado assim que o HTML for carregado
->>>>>>> 1c8858d8c53d4cd014687aa8214353541ed10887
 document.addEventListener('DOMContentLoaded', applyTheme);

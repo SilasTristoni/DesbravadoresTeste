@@ -3,57 +3,63 @@
 const API_BASE_URL = 'http://localhost:8080';
 
 /**
- * Função genérica para fazer requisições autenticadas à API.
- * Ela agora lida tanto com JSON quanto com FormData (uploads).
- * @param {string} endpoint - O endpoint da API a ser chamado.
- * @param {object} options - As opções da requisição fetch (method, headers, body).
- * @returns {Promise<any>} - A promessa com os dados da resposta.
+ * Função global para fazer requisições autenticadas à API.
+ * @param {string} endpoint O endpoint da API (ex: '/api/user/profile')
+ * @param {object} options Opções de fetch (method, headers, body, etc.)
+ * @returns {Promise<any>} A resposta da API em JSON.
  */
 async function fetchApi(endpoint, options = {}) {
     const token = localStorage.getItem('jwtToken');
-
+    
+    // Configuração dos cabeçalhos padrão
     const headers = {
-        ...options.headers,
+        'Content-Type': 'application/json',
+        ...options.headers, 
     };
+    
+    // TRATAMENTO PARA FormData (FileUpload)
+    if (options.body instanceof FormData) {
+        // Remove 'Content-Type': 'application/json' se o corpo for FormData
+        delete headers['Content-Type'];
+    }
 
+    // Adiciona o token de autorização se existir
     if (token) {
         headers['Authorization'] = `Bearer ${token}`;
     }
 
-    // ---- LÓGICA ATUALIZADA AQUI ----
-    // Se o corpo da requisição NÃO for FormData, definimos o Content-Type como JSON.
-    // Se for FormData, deixamos o Content-Type de fora para o navegador o definir
-    // automaticamente como 'multipart/form-data' com o boundary correto.
-    if (!(options.body instanceof FormData)) {
-        headers['Content-Type'] = 'application/json';
-    }
-
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    const config = {
         ...options,
-        headers,
-    });
+        headers: headers,
+        mode: options.mode || 'cors', 
+    };
 
-    if (response.status === 401 || response.status === 403) {
-        localStorage.removeItem('jwtToken');
-        window.location.href = 'login.html';
-        throw new Error('Não autorizado');
-    }
+    const url = `${API_BASE_URL}${endpoint}`;
 
-    if (!response.ok) {
-        // Tenta ler a resposta como JSON, se falhar, lê como texto.
-        try {
-            const errorData = await response.json();
-            throw new Error(errorData.message || 'Ocorreu um erro na requisição.');
-        } catch (e) {
-            const textError = await response.text();
-            throw new Error(textError || 'Ocorreu um erro na requisição.');
+    try {
+        const response = await fetch(url, config);
+
+        if (response.status === 401 || response.status === 403) {
+            localStorage.removeItem('jwtToken');
+            window.location.href = 'login.html';
+            throw new Error('Sessão expirada ou acesso negado. Redirecionando para o login.');
         }
-    }
 
-    // Se a resposta tiver conteúdo, converte para JSON, senão, retorna nulo.
-    const contentType = response.headers.get("content-type");
-    if (contentType && contentType.indexOf("application/json") !== -1) {
-        return response.json();
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(errorText || `Erro na requisição: Status ${response.status}`);
+        }
+
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+            return response.json();
+        }
+        return null; 
+
+    } catch (error) {
+        console.error("Erro na chamada da API:", error);
+        throw error;
     }
-    return null; 
 }
+// Torna fetchApi global para ser acessível em todos os módulos e scripts
+window.fetchApi = fetchApi;

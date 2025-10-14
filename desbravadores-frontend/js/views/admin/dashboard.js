@@ -1,5 +1,6 @@
 // js/views/admin/dashboard.js
-<<<<<<< HEAD
+
+// A função fetchApi está disponível globalmente
 
 async function renderUserList(viewElement) {
     try {
@@ -23,7 +24,7 @@ async function renderUserList(viewElement) {
                             <tr>
                                 <td>
                                     <div class="user-info-cell">
-                                        <img src="${user.avatar}" alt="Avatar" class="avatar-img-small" />
+                                        <img src="${user.avatar || 'img/escoteiro1.png'}" alt="Avatar" class="avatar-img-small" />
                                         <span>${user.name} ${user.surname}</span>
                                     </div>
                                 </td>
@@ -75,7 +76,6 @@ export async function renderDashboardView(viewElement) {
         </div>
     `;
 
-    // Renderiza a lista de utilizadores assim que a view é carregada
     renderUserList(viewElement);
 
     const generateReportBtn = viewElement.querySelector('#generate-report-btn');
@@ -95,7 +95,7 @@ export async function renderDashboardView(viewElement) {
             const reportData = await fetchApi(`/api/chamada/report?date=${selectedDate}`);
 
             if (reportData.length === 0) {
-                reportContainer.innerHTML = '<p>Nenhuma chamada encontrada para este dia ou o grupo não tem membros.</p>';
+                reportContainer.innerHTML = '<p>Nenhuma chamada encontrada para este dia ou o seu grupo não tem membros.</p>';
                 return;
             }
 
@@ -121,61 +121,19 @@ export async function renderDashboardView(viewElement) {
             `;
             
             viewElement.querySelector('#print-report-btn').addEventListener('click', () => {
-                window.print();
+                const printContents = reportContainer.innerHTML;
+                const printWindow = window.open('', '', 'height=600,width=800');
+                printWindow.document.write('<html><head><title>Relatório de Presença</title>');
+                printWindow.document.write('<link rel="stylesheet" href="css/main.css">');
+                printWindow.document.write('<link rel="stylesheet" href="css/admin.css">');
+                printWindow.document.write('</head><body onload="window.print(); window.close();">');
+                printWindow.document.write(printContents);
+                printWindow.document.write('</body></html>');
+                printWindow.document.close();
             });
 
         } catch (error) {
             reportContainer.innerHTML = `<p style="color: red;">Erro ao gerar relatório: ${error.message}</p>`;
         }
     });
-=======
-import { appState } from "../../state.js";
-
-export function renderDashboardView(viewElement) {
-  const { users, groups } = appState;
-  const scouts = Object.values(users).filter(
-    (user) => user.rank !== "Chefe de Seção"
-  );
-
-  viewElement.innerHTML = `
-    <div class="admin-widget">
-      <h2>Visão Geral dos Usuários</h2>
-      <table class="user-table">
-        <thead>
-          <tr>
-            <th>Nome</th>
-            <th>Patrulha</th>
-            <th>Patente</th>
-            <th>Ações</th>
-          </tr>
-        </thead>
-        <tbody id="user-list-body"></tbody>
-      </table>
-    </div>
-  `;
-
-  const tableBody = viewElement.querySelector("#user-list-body");
-  if (!tableBody) return;
-  
-  scouts.forEach((user) => {
-    const userGroup = user.groupId ? groups[user.groupId] : null;
-    const groupName = userGroup ? userGroup.name : "Sem Patrulha";
-
-    const row = document.createElement("tr");
-    row.innerHTML = `
-        <td>
-            <div class="user-info-cell">
-                <img src="${user.avatar}" alt="Avatar" class="avatar-img-small" />
-                <span>${user.name} ${user.surname}</span>
-            </div>
-        </td>
-        <td>${groupName}</td>
-        <td>${user.rank}</td>
-        <td>
-            <button class="action-btn manage-user-btn" data-user-id="${user.id}">Gerenciar</button>
-        </td>
-    `;
-    tableBody.appendChild(row);
-  });
->>>>>>> 1c8858d8c53d4cd014687aa8214353541ed10887
 }
