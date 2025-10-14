@@ -1,23 +1,26 @@
 package br.com.desbravadores.api.model;
 
-// ---- NOVOS IMPORTS ADICIONADOS ----
+import java.util.HashSet;
+import java.util.Set;
+
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "users")
-// ---- NOVA ANOTAÇÃO ADICIONADA AQUI ----
-// Esta anotação quebra a referência circular na serialização JSON.
 @JsonIdentityInfo(
     generator = ObjectIdGenerators.PropertyGenerator.class,
     property = "id")
@@ -42,8 +45,37 @@ public class User {
     @JoinColumn(name = "group_id")
     private Group group;
 
-    // Construtor e todos os Getters/Setters continuam os mesmos...
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "user_badges",
+        joinColumns = @JoinColumn(name = "user_id"),
+        inverseJoinColumns = @JoinColumn(name = "badge_id")
+    )
+    private Set<Badge> badges = new HashSet<>();
+
+    // ---- NOVAS RELAÇÕES ADICIONADAS AQUI ----
+
+    // Relação 1: Fundos que o utilizador DESBLOQUEOU (Muitos-para-Muitos)
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "user_unlocked_backgrounds",
+        joinColumns = @JoinColumn(name = "user_id"),
+        inverseJoinColumns = @JoinColumn(name = "background_id")
+    )
+    private Set<Background> unlockedBackgrounds = new HashSet<>();
+
+    // Relação 2: O fundo que o utilizador SELECIONOU (Muitos-para-Um)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "selected_background_id")
+    private Background selectedBackground;
+
+
+    // Construtor vazio
     public User() {}
+
+    // Getters e Setters (adicionados para os novos campos)
+    // ... (todos os getters e setters antigos permanecem)
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public String getName() { return name; }
@@ -64,4 +96,12 @@ public class User {
     public void setRole(Role role) { this.role = role; }
     public Group getGroup() { return group; }
     public void setGroup(Group group) { this.group = group; }
+    public Set<Badge> getBadges() { return badges; }
+    public void setBadges(Set<Badge> badges) { this.badges = badges; }
+
+    // GETTERS E SETTERS PARA OS NOVOS CAMPOS
+    public Set<Background> getUnlockedBackgrounds() { return unlockedBackgrounds; }
+    public void setUnlockedBackgrounds(Set<Background> unlockedBackgrounds) { this.unlockedBackgrounds = unlockedBackgrounds; }
+    public Background getSelectedBackground() { return selectedBackground; }
+    public void setSelectedBackground(Background selectedBackground) { this.selectedBackground = selectedBackground; }
 }

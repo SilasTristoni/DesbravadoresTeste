@@ -7,7 +7,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity; // IMPORT ADICIONADO
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,7 +18,7 @@ import br.com.desbravadores.api.filter.JwtAuthFilter;
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity // ---- ANOTAÇÃO CRÍTICA ADICIONADA AQUI ----
+@EnableMethodSecurity
 public class SecurityConfig {
 
     @Autowired
@@ -30,9 +30,14 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> {})
                 .authorizeHttpRequests(auth -> auth
-                        // Vamos simplificar aqui. Qualquer endpoint que não seja público,
-                        // requer autenticação. A autorização será feita no próprio método.
+                        // Endpoints públicos
                         .requestMatchers("/auth/login").permitAll()
+                        
+                        // ---- NOVA REGRA DE EXCEÇÃO ADICIONADA AQUI ----
+                        // Permite acesso público a todos os ficheiros dentro da pasta /uploads
+                        .requestMatchers("/uploads/**").permitAll()
+                        
+                        // O resto das regras permanece o mesmo
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

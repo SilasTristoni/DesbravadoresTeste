@@ -41,6 +41,9 @@
     gap: 15px;
 }
 
+/* --- ESTILOS ATUALIZADOS AQUI --- */
+
+/* Estilo padrão do cartão (agora representa AUSENTE) */
 .student-card {
     display: flex;
     align-items: center;
@@ -50,18 +53,22 @@
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
     cursor: pointer;
     transition: all 0.3s ease;
-    border-left: 5px solid transparent;
+    border-left: 5px solid #c62828; /* Vermelho para indicar Ausente */
+    opacity: 0.7; /* Ligeiramente esbatido para indicar estado padrão/ausente */
 }
 
 .student-card:hover {
     transform: translateY(-3px);
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+    opacity: 1;
 }
 
+/* Estilo do cartão quando PRESENTE */
 .student-card.present {
-    background: var(--scout-light-green);
-    color: white;
-    border-left-color: var(--scout-gold);
+    background: #e8f5e9; /* Fundo verde claro */
+    color: var(--text-primary);
+    border-left-color: #2e7d32; /* Borda verde escura */
+    opacity: 1; /* Opacidade total */
 }
 
 .student-card .student-photo {
@@ -74,7 +81,7 @@
 }
 
 .student-card.present .student-photo {
-    border-color: var(--scout-gold);
+    border-color: #2e7d32; /* Borda da foto verde quando presente */
 }
 
 .student-card .student-info {
@@ -96,12 +103,12 @@
 
 .student-card.present .student-name,
 .student-card.present .student-role {
-    color: white;
+    color: var(--text-primary);
 }
 
 .student-card .check-icon {
     font-size: 2rem;
-    color: white;
+    color: #2e7d32; /* Cor do ícone de check */
     opacity: 0;
     transform: scale(0.5);
     transition: all 0.3s ease;

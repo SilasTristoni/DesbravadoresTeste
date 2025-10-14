@@ -203,3 +203,34 @@
 #activityModal .action-btn:hover {
     background-color: var(--scout-light-green);
 }
+/* --- ESTILOS PARA RELATÓRIO DE PRESENÇA --- */
+.status-presente {
+    color: #2e7d32;
+    font-weight: bold;
+}
+.status-ausente {
+    color: #c62828;
+    font-weight: bold;
+}
+
+/* --- ESTILOS PARA IMPRESSÃO --- */
+@media print {
+    /* Esconde tudo, exceto a área de impressão */
+    body * {
+        visibility: hidden;
+    }
+    .printable-area, .printable-area * {
+        visibility: visible;
+    }
+    /* Define a posição da área de impressão na página */
+    .printable-area {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+    }
+    /* Remove botões e outros elementos não necessários da impressão */
+    .action-btn, .main-header {
+        display: none !important;
+    }
+}

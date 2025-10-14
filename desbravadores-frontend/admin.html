@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin - Adventure Camp</title>
+
+    <script src="js/authGuard.js"></script>
+    <script>
+        protectPage(['MONITOR', 'DIRETOR']);
+    </script>
+    
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/admin.css">
     <link rel="stylesheet" href="css/chamada.css">
@@ -18,9 +24,9 @@
             <nav class="main-nav">
                 <button class="nav-btn active" data-view="dashboard"><i class="fa-solid fa-chart-line"></i> Dashboard</button>
                 <button class="nav-btn" data-view="chamada"><i class="fa-solid fa-check"></i> Chamada</button>
+                <button class="nav-btn" data-view="manage-groups"><i class="fa-solid fa-shield-halved"></i> Grupos</button>
                 <button class="nav-btn" data-view="manage-tasks"><i class="fa-solid fa-calendar-days"></i> Tarefas</button>
-                <button class="nav-btn" data-view="manage-users"><i class="fa-solid fa-users"></i> Usuários</button>
-                <button class="nav-btn" data-view="perfil"><i class="fa-solid fa-user"></i> Meu Perfil</button>
+                <button class="nav-btn" data-view="manage-users"><i class="fa-solid fa-users"></i> Utilizadores</button>
                 <button class="nav-btn" data-view="create-item"><i class="fa-solid fa-plus"></i> Criar Item</button>
                 <button class="nav-btn" data-view="settings"><i class="fa-solid fa-gears"></i> Configurações</button>
             </nav>
@@ -29,6 +35,7 @@
         <main class="content-container">
             <section id="view-dashboard" class="view active"></section>
             <section id="view-chamada" class="view"></section>
+             <section id="view-manage-groups" class="view"></section>
             <section id="view-manage-tasks" class="view"></section>
             <section id="view-manage-users" class="view"></section>
             <section id="view-perfil" class="view"></section>
@@ -48,6 +55,7 @@
       </div>
     </div>
 
+    <script src="js/apiClient.js"></script>
     <script type="module" src="js/admin-main.js"></script>
 </body>
 </html>
