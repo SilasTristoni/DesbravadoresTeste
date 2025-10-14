@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // js/views/agenda.js
 import { showModal } from '../../components/modal.js';
 
@@ -42,14 +43,30 @@ async function fetchActivitiesForMonth(year, month) {
 
 function renderTimeline() {
     const { currentYear, currentMonth, selectedDay, activities } = agendaState;
+=======
+import { appState } from '../state.js';
+// CAMINHO CORRIGIDO:
+import { showModal } from '../../components/modal.js';
+
+function renderTimeline(year, month, day) {
+>>>>>>> 1c8858d8c53d4cd014687aa8214353541ed10887
     const timelineContainer = document.getElementById('timeline');
     const scheduleTitle = document.getElementById('scheduleTitle');
     if (!timelineContainer || !scheduleTitle) return;
 
+<<<<<<< HEAD
     const date = new Date(currentYear, currentMonth, selectedDay);
     scheduleTitle.textContent = `${dayNames[date.getDay()]}, ${selectedDay} de ${monthNames[currentMonth]}`;
 
     const dayActivities = activities[selectedDay] || [];
+=======
+    const { dayNames, months, activities } = appState.agenda;
+    const date = new Date(year, month, day);
+    
+    scheduleTitle.textContent = `${dayNames[date.getDay()]}, ${day} de ${months[month]}`;
+
+    const dayActivities = activities[year]?.[month]?.[day] || [];
+>>>>>>> 1c8858d8c53d4cd014687aa8214353541ed10887
     
     if (dayActivities.length === 0) {
         timelineContainer.innerHTML = `<p>Nenhuma atividade programada para este dia.</p>`;
@@ -58,8 +75,13 @@ function renderTimeline() {
 
     timelineContainer.innerHTML = dayActivities.map(act => `
         <div class="timeline-item">
+<<<<<<< HEAD
             <div class="timeline-time">${act.time.substring(0, 5)}</div>
             <div class="timeline-content" data-title="${act.title}" data-description="${act.description || 'Sem descrição.'}">
+=======
+            <div class="timeline-time">${act.time}</div>
+            <div class="timeline-content" data-title="${act.title}" data-description="${act.description}">
+>>>>>>> 1c8858d8c53d4cd014687aa8214353541ed10887
                 <div class="timeline-title">${act.title}</div>
             </div>
         </div>
@@ -67,18 +89,32 @@ function renderTimeline() {
     
     timelineContainer.querySelectorAll('.timeline-content').forEach(item => {
         item.addEventListener('click', () => {
+<<<<<<< HEAD
             showModal(item.dataset.title, item.dataset.description);
+=======
+            const title = item.dataset.title;
+            const description = item.dataset.description;
+            showModal(title, description);
+>>>>>>> 1c8858d8c53d4cd014687aa8214353541ed10887
         });
     });
 }
 
 function renderCalendar() {
+<<<<<<< HEAD
     const { currentYear, currentMonth, selectedDay, activities } = agendaState;
+=======
+    const { currentYear, currentMonth, selectedDay, activities } = appState.agenda;
+>>>>>>> 1c8858d8c53d4cd014687aa8214353541ed10887
     const calendarGrid = document.getElementById('calendarGrid');
     const monthYearDisplay = document.getElementById('monthYear');
     if (!calendarGrid || !monthYearDisplay) return;
 
+<<<<<<< HEAD
     monthYearDisplay.textContent = `${monthNames[currentMonth]} ${currentYear}`;
+=======
+    monthYearDisplay.textContent = `${appState.agenda.months[currentMonth]} ${currentYear}`;
+>>>>>>> 1c8858d8c53d4cd014687aa8214353541ed10887
     calendarGrid.innerHTML = '';
 
     ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'].forEach(day => {
@@ -96,6 +132,7 @@ function renderCalendar() {
         const dayEl = document.createElement('div');
         dayEl.className = 'calendar-day';
         
+<<<<<<< HEAD
         const numActivities = activities[day]?.length || 0;
         if (numActivities > 0) {
             dayEl.innerHTML = `<span class="day-number">${day}</span><div class="activity-count-badge">${numActivities}</div>`;
@@ -104,13 +141,31 @@ function renderCalendar() {
         }
 
         if (day === selectedDay) {
+=======
+        const numActivities = activities[currentYear]?.[currentMonth]?.[day]?.length || 0;
+        let activityBadge = '';
+        if (numActivities > 0) {
+            dayEl.classList.add('has-events');
+            activityBadge = `<div class="activity-count-badge">${numActivities}</div>`;
+        }
+
+        dayEl.innerHTML = `<span class="day-number">${day}</span>${activityBadge}`;
+
+        if (day === selectedDay && currentMonth === appState.agenda.currentMonth && currentYear === appState.agenda.currentYear) {
+>>>>>>> 1c8858d8c53d4cd014687aa8214353541ed10887
             dayEl.classList.add('selected');
         }
 
         dayEl.addEventListener('click', () => {
+<<<<<<< HEAD
             agendaState.selectedDay = day;
             renderCalendar(); 
             renderTimeline();
+=======
+            appState.agenda.selectedDay = day;
+            renderCalendar(); 
+            renderTimeline(currentYear, currentMonth, day);
+>>>>>>> 1c8858d8c53d4cd014687aa8214353541ed10887
         });
 
         calendarGrid.appendChild(dayEl);
@@ -138,6 +193,7 @@ export function renderAgendaView(viewElement) {
     `;
 
     document.getElementById('prevMonthBtn').addEventListener('click', () => {
+<<<<<<< HEAD
         agendaState.currentMonth--;
         if (agendaState.currentMonth < 0) {
             agendaState.currentMonth = 11;
@@ -157,4 +213,25 @@ export function renderAgendaView(viewElement) {
 
     // Busca as atividades do mês atual ao carregar a view
     fetchActivitiesForMonth(agendaState.currentYear, agendaState.currentMonth);
+=======
+        appState.agenda.currentMonth--;
+        if (appState.agenda.currentMonth < 0) {
+            appState.agenda.currentMonth = 11;
+            appState.agenda.currentYear--;
+        }
+        renderCalendar();
+    });
+
+    document.getElementById('nextMonthBtn').addEventListener('click', () => {
+        appState.agenda.currentMonth++;
+        if (appState.agenda.currentMonth > 11) {
+            appState.agenda.currentMonth = 0;
+            appState.agenda.currentYear++;
+        }
+        renderCalendar();
+    });
+
+    renderCalendar();
+    renderTimeline(appState.agenda.currentYear, appState.agenda.currentMonth, appState.agenda.selectedDay);
+>>>>>>> 1c8858d8c53d4cd014687aa8214353541ed10887
 }
