@@ -42,14 +42,19 @@ function renderGroupsTable(groupDetails, viewElement) {
 
 async function fetchAndRender(viewElement) {
     try {
-        const [groupDetails, monitors] = await Promise.all([
+        // Agora, a API retorna um objeto Page<GroupDetailsDTO>
+        const [groupPage, monitors] = await Promise.all([
             fetchApi('/api/groups'),
             fetchApi('/api/admin/users/monitors')
         ]);
+        
+        // CORREÇÃO CRÍTICA: Extrai o array de grupos da propriedade '.content'
+        const groupDetails = groupPage.content;
+        
         allMonitors = monitors;
         renderGroupsTable(groupDetails, viewElement);
     } catch (error) {
-        viewElement.querySelector('#groups-list-container').innerHTML = `<p style="color: red;">${error.message}</p>`;
+        viewElement.querySelector('#groups-list-container').innerHTML = `<p style="color: red;">Erro ao carregar grupos: ${error.message}</p>`;
     }
 }
 
@@ -103,7 +108,7 @@ export function renderManageGroupsView(viewElement) {
                     <tbody id="groups-table-body"><tr><td colspan="5">A carregar...</td></tr></tbody>
                 </table>
             </div>
-        </div>
+            </div>
         <style>
             .members-cell { background-color: #f8f9fa; padding: 1rem 2rem; } 
             .members-cell ul { list-style: none; padding: 0; }

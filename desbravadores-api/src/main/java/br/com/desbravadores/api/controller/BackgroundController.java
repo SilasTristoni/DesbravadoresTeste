@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -14,13 +15,28 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartFile; // IMPORT NECESSÁRIO
 
 import br.com.desbravadores.api.model.Background;
 import br.com.desbravadores.api.model.User;
 import br.com.desbravadores.api.repository.BackgroundRepository;
 import br.com.desbravadores.api.repository.UserRepository;
 import br.com.desbravadores.api.service.FileStorageService;
+
+// DTO simples para receber dados de gradiente
+class BackgroundGradientRequest {
+    private String name;
+    private String textColor;
+    private String gradient;
+    
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+    public String getTextColor() { return textColor; }
+    public void setTextColor(String textColor) { this.textColor = textColor; }
+    public String getGradient() { return gradient; }
+    public void setGradient(String gradient) { this.gradient = gradient; }
+}
+
 
 @RestController
 @RequestMapping("/api")
@@ -36,12 +52,11 @@ public class BackgroundController {
     private FileStorageService fileStorageService;
 
     /**
-     * Endpoint para um DIRETOR criar um novo fundo de perfil.
-     * Recebe o nome, a cor do texto e a imagem.
+     * Endpoint para um DIRETOR criar um novo fundo de perfil a partir de uma IMAGEM.
      */
     @PostMapping("/admin/backgrounds")
     @PreAuthorize("hasAuthority('DIRETOR')")
-    public ResponseEntity<Background> createBackground(@RequestParam("name") String name,
+    public ResponseEntity<Background> createBackgroundWithImage(@RequestParam("name") String name,
                                                        @RequestParam("textColor") String textColor,
                                                        @RequestParam("imageFile") MultipartFile imageFile) {
         
@@ -51,17 +66,38 @@ public class BackgroundController {
         Background newBackground = new Background();
         newBackground.setName(name);
         newBackground.setImageUrl(imageUrl);
-        newBackground.setTextColor(textColor);
+        // FORÇA A COR DO TEXTO PARA BRANCO, conforme solicitação do utilizador
+        newBackground.setTextColor("#FFFFFF");
 
         Background savedBackground = backgroundRepository.save(newBackground);
         return ResponseEntity.status(201).body(savedBackground);
     }
+    
+    /**
+     * Endpoint para um DIRETOR criar um novo fundo de perfil a partir de um GRADIENTE CSS.
+     */
+    @PostMapping("/admin/backgrounds/gradient")
+    @PreAuthorize("hasAuthority('DIRETOR')")
+    public ResponseEntity<Background> createBackgroundWithGradient(@RequestBody BackgroundGradientRequest request) {
+        
+        Background newBackground = new Background();
+        newBackground.setName(request.getName());
+        newBackground.setGradient(request.getGradient()); // Define o gradiente
+        // FORÇA A COR DO TEXTO PARA BRANCO, conforme solicitação do utilizador
+        newBackground.setTextColor("#FFFFFF");
+        newBackground.setImageUrl(null); // Garante que a URL da imagem é nula
+        
+        Background savedBackground = backgroundRepository.save(newBackground);
+        return ResponseEntity.status(201).body(savedBackground);
+    }
+
 
     /**
      * Endpoint para listar todos os fundos disponíveis.
-     * Acessível por qualquer utilizador autenticado.
+     * CRÍTICO: Aplica @Transactional à lista
      */
     @GetMapping("/backgrounds")
+    @Transactional
     public ResponseEntity<List<Background>> getAllBackgrounds() {
         return ResponseEntity.ok(backgroundRepository.findAll());
     }
@@ -71,6 +107,7 @@ public class BackgroundController {
      * Acessível por qualquer utilizador autenticado.
      */
     @PutMapping("/profile/me/background")
+    @Transactional
     public ResponseEntity<?> selectMyBackground(@RequestBody Map<String, Long> payload, Authentication authentication) {
         Long backgroundId = payload.get("backgroundId");
 
@@ -86,5 +123,3 @@ public class BackgroundController {
         return ResponseEntity.ok(Map.of("message", "Fundo do perfil atualizado com sucesso."));
     }
 }
-
-    

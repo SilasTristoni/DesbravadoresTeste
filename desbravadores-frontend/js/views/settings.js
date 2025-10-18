@@ -1,15 +1,20 @@
-import { appState } from "../state.js";
+// js/views/settings.js
 
-export function renderSettingsView(viewElement) {
-  const user = appState.users[appState.currentUserId];
+export async function renderSettingsView(viewElement) {
+  
+  viewElement.innerHTML = `<p>A carregar configurações do perfil...</p>`;
 
-  viewElement.innerHTML = `
+  try {
+      // Busca os dados reais do utilizador logado
+      const user = await fetchApi('/api/profile/me'); // Usa o endpoint do perfil
+      
+      viewElement.innerHTML = `
         <div class="settings-container">
             <div class="settings-user-card">
-                <img src="${user.avatar}" alt="Avatar" class="avatar-img">
+                <img src="${user.avatar || 'img/escoteiro1.png'}" alt="Avatar" class="avatar-img">
                 <div class="settings-user-info">
                     <div class="user-name">${user.name} ${user.surname}</div>
-                    <div class="user-rank">${user.rank}</div>
+                    <div class="user-rank">${user.role}</div>
                 </div>
             </div>
 
@@ -41,13 +46,20 @@ export function renderSettingsView(viewElement) {
                 <p>A troca de tema é salva automaticamente. Outras configurações podem precisar de confirmação.</p>
             </div>
         </div>
-    `;
+      `;
+    
+      const themeToggle = viewElement.querySelector("#theme-toggle");
 
-  const themeToggle = viewElement.querySelector("#theme-toggle");
+      // Inicializa o toggle com base no estado do tema local
+      themeToggle.checked = document.body.classList.contains("dark-mode");
 
-  themeToggle.checked = document.body.classList.contains("dark-mode");
+      themeToggle.addEventListener("change", () => {
+        const isDarkMode = document.body.classList.toggle("dark-mode");
+        localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+      });
 
-  themeToggle.addEventListener("change", () => {
-    document.body.classList.toggle("dark-mode");
-  });
+  } catch (error) {
+    console.error("Erro ao carregar configurações:", error);
+    viewElement.innerHTML = `<p style="color: red;">Não foi possível carregar as configurações do perfil.</p>`;
+  }
 }

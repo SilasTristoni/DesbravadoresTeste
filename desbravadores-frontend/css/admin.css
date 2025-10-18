@@ -183,6 +183,21 @@
     text-shadow: 1px 1px 3px rgba(0,0,0,0.4);
 }
 
+/* Estilo que formata a prévia de cada fundo na lista "Itens Existentes" */
+.list-item-preview[style*="background"] { 
+    padding: 15px; 
+    border-radius: 8px; 
+    border: 1px solid var(--border-color); 
+    margin-bottom: 10px;
+    
+    /* CORREÇÃO PARA PROPORÇÃO NA LISTA */
+    height: 70px; 
+    
+    /* Garante que o 'cover' e 'center' funcionem corretamente */
+    background-size: cover !important; 
+    background-position: center !important;
+}
+
 
 /* --- ESTILOS PARA MODAL --- */
 
@@ -196,13 +211,38 @@
     border: none;
     border-radius: 8px;
     cursor: pointer;
-    transition: background-color 0.2s;
     margin-bottom: 0.5rem;
 }
 
 #activityModal .action-btn:hover {
     background-color: var(--scout-light-green);
 }
+
+/* --- ESTILOS PARA PALETA DE CORES --- */
+.color-palette {
+    display: flex;
+    gap: 10px;
+    padding: 10px 0;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+}
+
+.palette-color-item {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    border: 3px solid transparent;
+    transition: transform 0.2s, border-color 0.2s;
+}
+
+.palette-color-item:hover {
+    transform: scale(1.1);
+    border-color: var(--scout-gold);
+}
+
+
 /* --- ESTILOS PARA RELATÓRIO DE PRESENÇA --- */
 .status-presente {
     color: #2e7d32;
@@ -212,6 +252,19 @@
     color: #c62828;
     font-weight: bold;
 }
+
+/* --- AJUSTE ESTÉTICO PARA O FORMULÁRIO DO RELATÓRIO DE PRESENÇA --- */
+.admin-widget .form-row {
+    align-items: flex-end; /* Garante que os itens se alinhem pela base */
+    gap: 1rem;
+}
+
+/* Apenas a última coluna do form-row do relatório (o botão) não deve se expandir */
+.admin-widget .form-row > .form-group:last-child:has(button) {
+    flex-grow: 0; 
+    flex-shrink: 0;
+}
+
 
 /* --- ESTILOS PARA IMPRESSÃO --- */
 @media print {

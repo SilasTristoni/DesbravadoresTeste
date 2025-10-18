@@ -8,8 +8,17 @@ export async function renderManageUsersView(viewElement) {
   viewElement.innerHTML = `<div class="admin-widget"><p>A carregar formulário...</p></div>`;
 
   try {
-    // Busca a lista de grupos disponíveis na API
-    const groups = await fetchApi('/api/groups');
+    // Busca a lista de grupos disponíveis na API (agora com parâmetros de paginação para obter todos)
+    const groupPage = await fetchApi('/api/groups?page=0&size=999'); 
+
+    // CORREÇÃO CRÍTICA: Extrai o array de grupos da propriedade '.content'
+    const groupDetails = groupPage.content;
+
+    // Mapeia para extrair o objeto Group de dentro do GroupDetailsDTO (lógica original preservada)
+    const groups = groupDetails
+        .map(detail => detail.group)
+        .filter(group => group && group.id && group.name);
+
 
     // Constrói as opções do seletor de grupos dinamicamente
     const groupOptions = groups.map(group => 
@@ -66,7 +75,13 @@ export async function renderManageUsersView(viewElement) {
     userForm.addEventListener("submit", async (e) => {
       e.preventDefault();
 
-      const groupId = viewElement.querySelector("#user-group").value;
+      const groupIdValue = viewElement.querySelector("#user-group").value;
+
+      // Trata a string vazia ("") como null e garante que o ID é um número
+      const groupId = groupIdValue && !isNaN(parseInt(groupIdValue, 10)) ? parseInt(groupIdValue, 10) : null;
+      
+      // O objeto group deve ser { id: <id> } se o ID for válido, ou null
+      const groupPayload = groupId !== null ? { id: groupId } : null; 
 
       const newUser = {
         name: viewElement.querySelector("#user-name").value,
@@ -74,9 +89,7 @@ export async function renderManageUsersView(viewElement) {
         email: viewElement.querySelector("#user-email").value,
         password: viewElement.querySelector("#user-password").value,
         role: viewElement.querySelector("#user-role").value,
-        group: {
-          id: groupId
-        },
+        group: groupPayload, 
         avatar: 'img/escoteiro1.png',
         level: 1,
         xp: 0

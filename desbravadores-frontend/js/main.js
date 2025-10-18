@@ -1,5 +1,4 @@
-import { appState } from './state.js';
-// CAMINHO CORRIGIDO:
+// js/main.js
 import { setupModal } from '../components/modal.js';
 import { renderHomeView } from './views/home.js';
 import { renderAgendaView } from './views/agenda.js';
@@ -23,6 +22,22 @@ const viewRenderers = {
     settings: renderSettingsView,
 };
 
+// Helper function to decode JWT payload (mantida por segurança, mas não mais usada para user ID)
+function decodeToken() {
+    const token = localStorage.getItem('jwtToken');
+    if (!token) return null;
+    try {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        return JSON.parse(decodeURIComponent(atob(base64).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join('')));
+    } catch (e) {
+        return null;
+    }
+}
+
+
 function switchView(viewId, data = null) {
     const targetView = views[viewId];
     if (!targetView) return;
@@ -33,13 +48,11 @@ function switchView(viewId, data = null) {
         }
     }
 
-    const isFirstRender = targetView.innerHTML.trim() === '';
-    const hasNewData = data !== null;
-
-    if (isFirstRender || hasNewData) {
-        if (viewRenderers[viewId]) {
-            viewRenderers[viewId](targetView, data);
-        }
+    // Sempre renderiza a view, já que não usamos estado mockado.
+    if (viewRenderers[viewId]) {
+        // Para 'perfil' sem data, passamos 'null' para carregar o perfil próprio (/me)
+        const finalData = viewId === 'perfil' && data === undefined ? null : data;
+        viewRenderers[viewId](targetView, finalData);
     }
 
     targetView.classList.add('active');
@@ -53,7 +66,8 @@ function initializeApp() {
         button.addEventListener('click', () => {
             const targetView = button.dataset.view;
             if (targetView === 'perfil') {
-                 switchView(targetView, appState.currentUserId);
+                 // Passando undefined fará o switchView usar 'null' para buscar o perfil próprio
+                 switchView(targetView); 
             } else {
                  switchView(targetView);
             }

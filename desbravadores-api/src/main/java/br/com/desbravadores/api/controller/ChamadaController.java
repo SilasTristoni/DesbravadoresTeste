@@ -99,21 +99,46 @@ public class ChamadaController {
         return ResponseEntity.ok(Map.of("message", message));
     }
 
+    /**
+     * MÉTODO ATUALIZADO
+     * Diretor pode selecionar um grupo específico. Monitor só pode ver o seu grupo.
+     */
     @GetMapping("/report")
     @PreAuthorize("hasAnyAuthority('MONITOR', 'DIRETOR')")
-    public ResponseEntity<?> getAttendanceReport(@RequestParam("date") String dateString, Authentication authentication) {
+    public ResponseEntity<?> getAttendanceReport(
+        @RequestParam("date") String dateString,
+        @RequestParam(value = "groupId", required = false) Long groupId, // NOVO PARÂMETRO
+        Authentication authentication) {
+        
         LocalDate date = LocalDate.parse(dateString);
         User currentUser = userRepository.findByEmail(authentication.getName()).orElseThrow();
         
-        Group group = currentUser.getGroup();
-        if (group == null) {
-             // Retorna um relatório vazio se o utilizador não tiver grupo.
-             return ResponseEntity.ok(List.of());
+        Long targetGroupId = null;
+        boolean isDirector = currentUser.getRole() == Role.DIRETOR;
+
+        if (isDirector) {
+            // Se for DIRETOR, usa o groupId passado no parâmetro
+            if (groupId == null) {
+                // Se o Diretor não especificou um grupo, retorna vazio (exigirá seleção no frontend).
+                return ResponseEntity.ok(List.of());
+            }
+            targetGroupId = groupId;
+        } else {
+            // Se for MONITOR, usa OBRIGATORIAMENTE o seu próprio grupo
+            if (currentUser.getGroup() == null) {
+                 return ResponseEntity.ok(List.of());
+            }
+            targetGroupId = currentUser.getGroup().getId();
         }
 
-        List<User> allMembers = userRepository.findByGroupIdAndRole(group.getId(), Role.DESBRAVADOR);
+        // Se targetGroupId for nulo (apenas caso de erro lógico), retorna vazio
+        if (targetGroupId == null) {
+            return ResponseEntity.ok(List.of());
+        }
 
-        List<AttendanceRecord> presentRecords = attendanceRepository.findByGroupIdAndDate(group.getId(), date);
+        List<User> allMembers = userRepository.findByGroupIdAndRole(targetGroupId, Role.DESBRAVADOR);
+
+        List<AttendanceRecord> presentRecords = attendanceRepository.findByGroupIdAndDate(targetGroupId, date);
         Set<Long> presentUserIds = presentRecords.stream()
                                     .map(record -> record.getUser().getId())
                                     .collect(Collectors.toSet());

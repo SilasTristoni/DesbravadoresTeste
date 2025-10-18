@@ -1,61 +1,62 @@
-import { appState } from '../state.js';
+// js/views/home.js
 
 function renderReminders(viewElement) {
+    // Busca e renderiza os lembretes do mês atual
+    // Reutiliza a lógica de busca da agenda para a Home
     const remindersContainer = viewElement.querySelector('#reminders-container');
     if (!remindersContainer) return;
-
-    const { currentMonth, currentYear, months, activities } = appState.agenda;
-    const activitiesForMonth = (activities[currentYear] && activities[currentYear][currentMonth]) ? activities[currentYear][currentMonth] : {};
-    let remindersHTML = '';
     
-    const monthEvents = [];
-    for (const day in activitiesForMonth) {
-        activitiesForMonth[day].forEach(activity => {
-            monthEvents.push({ day: parseInt(day), ...activity });
-        });
-    }
+    // Pega o mês e ano atuais (API espera 1-12 para o mês)
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth() + 1; // Mês 1-12
 
-    if (monthEvents.length > 0) {
-        monthEvents.sort((a, b) => a.day - b.day);
-        
-        monthEvents.forEach(event => {
-            remindersHTML += `
-                <div class="reminder-card">
-                    <div class="reminder-date">${event.day} de ${months[currentMonth]}</div>
-                    <div class="reminder-title">${event.title}</div>
-                </div>
-            `;
-        });
-    } else {
-        remindersHTML = '<p>Nenhum evento principal agendado para este mês.</p>';
-    }
+    // Função interna para obter o nome do mês para exibição
+    const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+    const monthDisplay = monthNames[currentMonth - 1]; 
+    
+    remindersContainer.innerHTML = '<p>A carregar lembretes...</p>';
 
-    remindersContainer.innerHTML = remindersHTML;
+    fetchApi(`/api/tasks?year=${currentYear}&month=${currentMonth}`)
+        .then(tasks => {
+            if (!tasks || tasks.length === 0) {
+                remindersContainer.innerHTML = `<p>Nenhum evento principal agendado para ${monthDisplay}.</p>`;
+                return;
+            }
+            
+            // Ordena os eventos por dia
+            tasks.sort((a, b) => new Date(a.date) - new Date(b.date));
+            
+            let remindersHTML = tasks.map(task => {
+                // task.date é 'YYYY-MM-DD'
+                const day = new Date(task.date).getDate();
+                
+                return `
+                    <div class="reminder-card">
+                        <div class="reminder-date">${day} de ${monthDisplay}</div>
+                        <div class="reminder-title">${task.title}</div>
+                    </div>
+                `;
+            }).join('');
+            
+            remindersContainer.innerHTML = remindersHTML;
+        })
+        .catch(error => {
+            console.error("Erro ao carregar lembretes:", error);
+            remindersContainer.innerHTML = '<p style="color: red;">Falha ao carregar lembretes.</p>';
+        });
 }
 
 function renderScoutOfTheMonth(viewElement) {
+    // Remove a renderização de dados mocados, pois não há endpoint de API
     const container = viewElement.querySelector('#scout-of-the-month-container');
-    if (!container || !appState.scoutOfTheMonth) return;
-
-    const { userId, reason } = appState.scoutOfTheMonth;
-    const user = appState.users[userId];
-
-    if (user) {
-        container.innerHTML = `
-            <div class="scout-of-the-month-widget">
+    if (container) {
+         container.innerHTML = `
+            <div class="scout-of-the-month-widget" style="cursor: default;">
                 <h3 class="stats-title"><span class="sotm-star">⭐</span> Desbravador do Mês</h3>
-                <img src="${user.avatar}" alt="Avatar de ${user.name}" class="sotm-avatar">
-                <div class="sotm-name">${user.name} ${user.surname}</div>
-                <div class="sotm-level">Nível ${user.level}</div>
-                <p class="sotm-reason">"${reason}"</p>
+                <p>Em Breve: Ranking de Aventureiros</p>
             </div>
         `;
-
-        container.querySelector('.scout-of-the-month-widget').addEventListener('click', () => {
-            window.dispatchEvent(new CustomEvent('navigate', {
-                detail: { view: 'perfil', data: userId }
-            }));
-        });
     }
 }
 

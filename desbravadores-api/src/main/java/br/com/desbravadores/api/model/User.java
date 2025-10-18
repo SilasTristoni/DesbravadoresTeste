@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import jakarta.persistence.Entity;
@@ -24,6 +25,8 @@ import jakarta.persistence.Table;
 @JsonIdentityInfo(
     generator = ObjectIdGenerators.PropertyGenerator.class,
     property = "id")
+// Mantemos esta anotação por segurança, caso falhe em algum ponto não coberto
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"}) 
 public class User {
 
     @Id
@@ -41,11 +44,13 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @ManyToOne
+    // CORREÇÃO CRÍTICA: Força carregamento EAGER
+    @ManyToOne(fetch = FetchType.EAGER) 
     @JoinColumn(name = "group_id")
     private Group group;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    // CORREÇÃO CRÍTICA: Força carregamento EAGER
+    @ManyToMany(fetch = FetchType.EAGER) 
     @JoinTable(
         name = "user_badges",
         joinColumns = @JoinColumn(name = "user_id"),
@@ -55,8 +60,8 @@ public class User {
 
     // ---- NOVAS RELAÇÕES ADICIONADAS AQUI ----
 
-    // Relação 1: Fundos que o utilizador DESBLOQUEOU (Muitos-para-Muitos)
-    @ManyToMany(fetch = FetchType.LAZY)
+    // CORREÇÃO CRÍTICA: Força carregamento EAGER
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "user_unlocked_backgrounds",
         joinColumns = @JoinColumn(name = "user_id"),
@@ -64,8 +69,8 @@ public class User {
     )
     private Set<Background> unlockedBackgrounds = new HashSet<>();
 
-    // Relação 2: O fundo que o utilizador SELECIONOU (Muitos-para-Um)
-    @ManyToOne(fetch = FetchType.LAZY)
+    // CORREÇÃO CRÍTICA: Força carregamento EAGER
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "selected_background_id")
     private Background selectedBackground;
 
@@ -73,9 +78,7 @@ public class User {
     // Construtor vazio
     public User() {}
 
-    // Getters e Setters (adicionados para os novos campos)
-    // ... (todos os getters e setters antigos permanecem)
-
+    // Getters e Setters (omitido por brevidade, mas o resto da classe é o mesmo)
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public String getName() { return name; }

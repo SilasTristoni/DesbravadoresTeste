@@ -8,7 +8,7 @@ import { setupModal } from '../components/modal.js';
 import { renderManageAchievementsView } from './views/admin/manage-achievements.js';
 import { renderCreateItemView } from './views/admin/create-item.js';
 import { renderManageGroupsView } from "./views/admin/manage-groups.js";
-import { renderProfileView } from './views/perfil.js';
+import { renderProfileView } from './views/perfil.js'; // Função reutilizada
 
 
 function getUserPayload() {
@@ -33,6 +33,7 @@ const views = {
   settings: document.getElementById("view-admin-settings"),
   "manage-achievements": document.getElementById("view-manage-achievements"),
   "create-item": document.getElementById("view-create-item"),
+  "my-profile": document.getElementById("view-perfil"), // Adiciona o alias para o perfil próprio
 };
 
 const viewRenderers = {
@@ -41,7 +42,8 @@ const viewRenderers = {
   "manage-groups": renderManageGroupsView,
   "manage-tasks": renderManageTasksView,
   "manage-users": renderManageUsersView,
-  perfil: renderProfileView,
+  perfil: renderProfileView, // Usado para perfis de outros utilizadores (com ID)
+  "my-profile": renderProfileView, // Usado para o perfil próprio (sem ID)
   settings: renderAdminSettingsView,
   "manage-achievements": renderManageAchievementsView,
   "create-item": renderCreateItemView,
@@ -54,11 +56,14 @@ function switchView(viewId, data = null) {
     }
   }
 
+  // Se a view for "my-profile", forçamos o data a ser null
+  const finalData = viewId === 'my-profile' ? null : data;
+    
   const targetView = views[viewId];
   if (targetView) {
     targetView.classList.add("active");
     if (viewRenderers[viewId]) {
-        viewRenderers[viewId](targetView, data);
+        viewRenderers[viewId](targetView, finalData); // Usa finalData
     }
   }
 
@@ -74,14 +79,21 @@ function adjustUiForRole() {
     if (!payload) return;
     const userRole = payload.role;
 
-    if (userRole === 'MONITOR') {
-        const createItemBtn = document.querySelector('.nav-btn[data-view="create-item"]');
-        if (createItemBtn) createItemBtn.style.display = 'none';
-        
-        const manageUsersBtn = document.querySelector('.nav-btn[data-view="manage-users"]');
-        if (manageUsersBtn) manageUsersBtn.style.display = 'none';
+    // Elementos a serem controlados
+    const chamadaBtn = document.querySelector('.nav-btn[data-view="chamada"]');
+    const manageGroupsBtn = document.querySelector('.nav-btn[data-view="manage-groups"]');
+    const manageUsersBtn = document.querySelector('.nav-btn[data-view="manage-users"]');
+    const createItemBtn = document.querySelector('.nav-btn[data-view="create-item"]');
 
-        const manageGroupsBtn = document.querySelector('.nav-btn[data-view="manage-groups"]');
+
+    if (userRole === 'DIRETOR') {
+        // CORREÇÃO: Diretor não pode fazer a chamada. Ele só pode gerar o Relatório (que está no Dashboard).
+        if (chamadaBtn) chamadaBtn.style.display = 'none';
+
+    } else if (userRole === 'MONITOR') {
+        // Monitor faz a chamada, mas não pode gerir Grupos, Utilizadores ou Criar Items.
+        if (createItemBtn) createItemBtn.style.display = 'none';
+        if (manageUsersBtn) manageUsersBtn.style.display = 'none';
         if (manageGroupsBtn) manageGroupsBtn.style.display = 'none';
     }
 }

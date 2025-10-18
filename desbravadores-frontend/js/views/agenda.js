@@ -26,6 +26,7 @@ async function fetchActivitiesForMonth(year, month) {
             if (!activitiesByDay[day]) {
                 activitiesByDay[day] = [];
             }
+            // Garante que o tempo é formatado antes de ser armazenado
             activitiesByDay[day].push(task);
         });
         agendaState.activities = activitiesByDay;
@@ -34,7 +35,7 @@ async function fetchActivitiesForMonth(year, month) {
         console.error("Erro ao buscar atividades:", error);
         agendaState.activities = {}; // Limpa as atividades em caso de erro
     } finally {
-        // Após buscar os dados, renderiza o calendário e a timeline
+        // CORREÇÃO: Garante que o calendário e a timeline são renderizados SEMPRE após a busca da API
         renderCalendar();
         renderTimeline();
     }
@@ -56,6 +57,7 @@ function renderTimeline() {
         return;
     }
 
+    // Garante que o tempo é cortado para HH:MM antes de ser exibido
     timelineContainer.innerHTML = dayActivities.map(act => `
         <div class="timeline-item">
             <div class="timeline-time">${act.time.substring(0, 5)}</div>
@@ -143,6 +145,8 @@ export function renderAgendaView(viewElement) {
             agendaState.currentMonth = 11;
             agendaState.currentYear--;
         }
+        // Reseta o dia selecionado para o primeiro dia do novo mês (ou mantém, se preferir)
+        agendaState.selectedDay = 1; 
         fetchActivitiesForMonth(agendaState.currentYear, agendaState.currentMonth);
     });
 
@@ -152,6 +156,8 @@ export function renderAgendaView(viewElement) {
             agendaState.currentMonth = 0;
             agendaState.currentYear++;
         }
+        // Reseta o dia selecionado
+        agendaState.selectedDay = 1;
         fetchActivitiesForMonth(agendaState.currentYear, agendaState.currentMonth);
     });
 
