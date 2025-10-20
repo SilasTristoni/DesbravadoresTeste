@@ -5,10 +5,12 @@ import { renderAgendaView } from './views/agenda.js';
 import { renderProfileView } from './views/perfil.js';
 import { renderGruposView } from './views/grupos.js';
 import { renderSettingsView } from './views/settings.js';
+import { renderConquistasView } from './views/conquistas.js'; // NOVO IMPORT
 
 const views = {
     home: document.getElementById('view-home'),
     agenda: document.getElementById('view-agenda'),
+    conquistas: document.getElementById('view-conquistas'), // NOVA VIEW
     perfil: document.getElementById('view-perfil'),
     grupos: document.getElementById('view-grupos'),
     settings: document.getElementById('view-settings'),
@@ -17,6 +19,7 @@ const views = {
 const viewRenderers = {
     home: renderHomeView,
     agenda: renderAgendaView,
+    conquistas: renderConquistasView, // NOVO RENDERER
     perfil: renderProfileView,
     grupos: renderGruposView,
     settings: renderSettingsView,

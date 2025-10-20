@@ -287,3 +287,51 @@ export async function renderProfileView(viewElement, userId = null) {
         viewElement.innerHTML = `<p style="color: red;">Não foi possível carregar os dados do perfil. ${error.message}</p>`;
     }
 }
+function calculateXpForNextLevel(currentLevel) {
+    return 100 + (currentLevel * 50);
+}
+
+export async function renderProfileView(viewElement, userId = null) {
+    
+    viewElement.innerHTML = `<p>A carregar perfil...</p>`;
+
+    try {
+        const endpoint = userId ? `/api/users/${userId}` : '/api/profile/me';
+        const user = await fetchApi(endpoint);
+        user.isOtherUser = !!userId; 
+        
+        // (O resto da lógica de busca e setup permanece a mesma)
+
+        // --- LÓGICA DA BARRA DE PROGRESSO ---
+        const xpNeeded = calculateXpForNextLevel(user.level);
+        const xpProgressPercentage = (user.xp / xpNeeded) * 100;
+
+        viewElement.innerHTML = `
+            <div class="profile-container">
+                <div class="profile-identity-block" id="identityBlock" style="...">
+                    </div>
+
+                <div class="profile-progress-block">
+                    <div class="level-display">
+                        <div class="level-badge">Nível ${user.level}</div>
+                        <div class="xp-text">${user.xp} / ${xpNeeded} XP</div>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" style="width: ${xpProgressPercentage}%">
+                            ${xpProgressPercentage > 15 ? `${Math.round(xpProgressPercentage)}%` : ''}
+                        </div>
+                    </div>
+                </div>
+                <div class="profile-achievements-block">
+                     </div>
+            </div>
+        `;
+        
+        // (Toda a lógica de renderização dos outros blocos e adição de listeners permanece a mesma)
+        // ...
+        renderIdentityBlock(viewElement, user); // Esta chamada já existe e deve ser mantida
+
+    } catch (error) {
+        viewElement.innerHTML = `<p style="color: red;">Não foi possível carregar os dados do perfil. ${error.message}</p>`;
+    }
+}

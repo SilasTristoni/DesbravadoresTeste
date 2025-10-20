@@ -26,7 +26,6 @@ import br.com.desbravadores.api.model.User;
 import br.com.desbravadores.api.repository.AttendanceRecordRepository;
 import br.com.desbravadores.api.repository.UserRepository;
 
-// DTO para o corpo da requisição de submissão de chamada
 class AttendancePayload {
     private LocalDate date;
     private List<Long> presentUserIds;
@@ -47,23 +46,13 @@ public class ChamadaController {
     @Autowired
     private AttendanceRecordRepository attendanceRepository;
 
-    /**
-     * MÉTODO ATUALIZADO
-     * Agora acessível por MONITORES e DIRETORES, e lida com o caso do Diretor não ter um grupo.
-     */
     @GetMapping("/my-group-members")
     @PreAuthorize("hasAnyAuthority('MONITOR', 'DIRETOR')")
     public ResponseEntity<List<User>> getMyGroupMembers(Authentication authentication) {
-        // Busca o utilizador que está logado
         User currentUser = userRepository.findByEmail(authentication.getName()).orElseThrow();
-        
-        // Se o utilizador não tiver um grupo (como o nosso Diretor padrão),
-        // retorna uma lista vazia em vez de dar erro.
         if (currentUser.getGroup() == null) {
             return ResponseEntity.ok(List.of());
         }
-
-        // Se tiver um grupo (caso do Monitor), busca os membros.
         List<User> members = userRepository.findByGroupIdAndRole(currentUser.getGroup().getId(), Role.DESBRAVADOR);
         return ResponseEntity.ok(members);
     }
@@ -99,15 +88,11 @@ public class ChamadaController {
         return ResponseEntity.ok(Map.of("message", message));
     }
 
-    /**
-     * MÉTODO ATUALIZADO
-     * Diretor pode selecionar um grupo específico. Monitor só pode ver o seu grupo.
-     */
     @GetMapping("/report")
     @PreAuthorize("hasAnyAuthority('MONITOR', 'DIRETOR')")
     public ResponseEntity<?> getAttendanceReport(
         @RequestParam("date") String dateString,
-        @RequestParam(value = "groupId", required = false) Long groupId, // NOVO PARÂMETRO
+        @RequestParam(value = "groupId", required = false) Long groupId,
         Authentication authentication) {
         
         LocalDate date = LocalDate.parse(dateString);
@@ -117,27 +102,22 @@ public class ChamadaController {
         boolean isDirector = currentUser.getRole() == Role.DIRETOR;
 
         if (isDirector) {
-            // Se for DIRETOR, usa o groupId passado no parâmetro
             if (groupId == null) {
-                // Se o Diretor não especificou um grupo, retorna vazio (exigirá seleção no frontend).
                 return ResponseEntity.ok(List.of());
             }
             targetGroupId = groupId;
         } else {
-            // Se for MONITOR, usa OBRIGATORIAMENTE o seu próprio grupo
             if (currentUser.getGroup() == null) {
                  return ResponseEntity.ok(List.of());
             }
             targetGroupId = currentUser.getGroup().getId();
         }
 
-        // Se targetGroupId for nulo (apenas caso de erro lógico), retorna vazio
         if (targetGroupId == null) {
             return ResponseEntity.ok(List.of());
         }
 
         List<User> allMembers = userRepository.findByGroupIdAndRole(targetGroupId, Role.DESBRAVADOR);
-
         List<AttendanceRecord> presentRecords = attendanceRepository.findByGroupIdAndDate(targetGroupId, date);
         Set<Long> presentUserIds = presentRecords.stream()
                                     .map(record -> record.getUser().getId())
@@ -145,12 +125,10 @@ public class ChamadaController {
 
         List<Map<String, Object>> report = allMembers.stream().map(member -> {
             String status = presentUserIds.contains(member.getId()) ? "PRESENTE" : "AUSENTE";
-            
             Map<String, Object> reportItem = new HashMap<>();
             reportItem.put("id", member.getId());
             reportItem.put("name", member.getName() + " " + member.getSurname());
             reportItem.put("status", status);
-            
             return reportItem;
         }).collect(Collectors.toList());
 

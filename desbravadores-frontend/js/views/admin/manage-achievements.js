@@ -9,69 +9,78 @@ export async function renderManageAchievementsView(viewElement, userId) {
     viewElement.innerHTML = `<p>A carregar dados de conquistas...</p>`;
 
     try {
-        const [user, allBadges] = await Promise.all([
+        const [user, allAchievements] = await Promise.all([
             fetchApi(`/api/users/${userId}`),
-            fetchApi('/api/badges')
+            fetchApi('/api/gamification/achievements')
         ]);
 
-        const userBadgeIds = new Set(user.badges.map(b => b.id));
+        const userUnlockedAchievementNames = new Set(user.badges.map(b => b.name));
 
         viewElement.innerHTML = `
             <div class="admin-widget">
-                <h2>Gerir Emblemas para: ${user.name} ${user.surname}</h2>
-                <p>Clique num emblema para o atribuir ou remover.</p>
-                <div id="badges-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1rem;">
-                    ${allBadges.map(badge => `
-                        <div class="achievement-card ${userBadgeIds.has(badge.id) ? 'is-featured' : ''}" data-badge-id="${badge.id}" style="cursor: pointer;">
-                            <img src="http://localhost:8080${badge.icon}" alt="${badge.name}" style="width: 40px; height: 40px; border-radius: 50%;">
+                <h2>Gerir Conquistas para: ${user.name} ${user.surname}</h2>
+                <p>Clique em "Conceder" para desbloquear uma conquista para este usuário ou "Revogar" para removê-la.</p>
+                
+                <div class="achievements-management-list">
+                    ${allAchievements.length > 0 ? allAchievements.map(achievement => {
+                        const isUnlocked = userUnlockedAchievementNames.has(achievement.name);
+                        return `
+                        <div class="achievement-manage-item">
+                            <img src="http://localhost:8080${achievement.icon}" alt="${achievement.name}" class="preview-icon">
                             <div class="achievement-info">
-                                <h4>${badge.name}</h4>
-                                <p>${badge.description}</p>
+                                <h4>${achievement.name} (+${achievement.xpReward} XP)</h4>
+                                <p>${achievement.description}</p>
                             </div>
+                            <button class="action-btn-small ${isUnlocked ? 'revoke-btn' : 'grant-btn'}" 
+                                    data-user-id="${userId}" 
+                                    data-achievement-id="${achievement.id}">
+                                ${isUnlocked ? 'Revogar' : 'Conceder'}
+                            </button>
                         </div>
-                    `).join('')}
+                    `}).join('') : '<p>Nenhuma conquista foi criada ainda. Crie uma na tela "Criar Item".</p>'}
                 </div>
             </div>
+            <style>
+                .achievements-management-list { display: flex; flex-direction: column; gap: 1rem; }
+                .achievement-manage-item { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 1rem; background: var(--bg-primary); padding: 1rem; border-radius: 8px; }
+                .preview-icon { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; }
+                .grant-btn { background-color: var(--scout-green); color: white; }
+                .revoke-btn { background-color: #c62828; color: white; }
+            </style>
         `;
 
-        viewElement.querySelectorAll('.achievement-card').forEach(card => {
-            card.addEventListener('click', async (e) => {
-                const clickedCard = e.currentTarget;
-                const badgeId = clickedCard.dataset.badgeId;
-                const hasBadge = clickedCard.classList.contains('is-featured');
+        viewElement.querySelectorAll('.grant-btn, .revoke-btn').forEach(button => {
+            button.addEventListener('click', async (e) => {
+                const btn = e.currentTarget;
+                const uId = btn.dataset.userId;
+                const achId = btn.dataset.achievementId;
+                const isGranting = btn.classList.contains('grant-btn');
                 
-                // ---- LÓGICA ATUALIZADA AQUI ----
+                btn.disabled = true;
+                btn.textContent = 'Aguarde...';
 
-                if (hasBadge) {
-                    // Se o utilizador já tem o emblema, a ação é REMOVER
-                    if (confirm(`Tem a certeza de que quer REMOVER o emblema "${clickedCard.querySelector('h4').textContent}" deste utilizador?`)) {
-                        try {
-                            await fetchApi(`/api/admin/users/${userId}/badges/${badgeId}`, {
-                                method: 'DELETE'
-                            });
-                            alert('Emblema removido com sucesso!');
-                            clickedCard.classList.remove('is-featured');
-                        } catch (error) {
-                            alert(`Erro ao remover emblema: ${error.message}`);
-                        }
-                    }
-                } else {
-                    // Se o utilizador não tem o emblema, a ação é ATRIBUIR
-                    try {
-                        await fetchApi(`/api/admin/users/${userId}/badges`, {
-                            method: 'POST',
-                            body: JSON.stringify({ badgeId: badgeId })
-                        });
-                        alert('Emblema atribuído com sucesso!');
-                        clickedCard.classList.add('is-featured');
-                    } catch (error) {
-                        alert(`Erro ao atribuir emblema: ${error.message}`);
-                    }
+                try {
+                    const endpoint = `/api/admin/users/${uId}/achievements/${achId}`;
+                    const method = isGranting ? 'POST' : 'DELETE';
+
+                    const response = await fetchApi(endpoint, { method: method });
+                    showToast(response.message, 'success');
+
+                    // A magia acontece aqui: a função abaixo redesenha a tela,
+                    // criando um novo botão já no estado correto.
+                    renderManageAchievementsView(viewElement, userId);
+
+                } catch (error) {
+                    showToast(`Erro: ${error.message}`, 'error');
+                    // Se der erro, reativamos o botão para que o utilizador possa tentar novamente
+                    btn.disabled = false;
+                    btn.textContent = isGranting ? 'Conceder' : 'Revogar';
                 }
+                // O bloco "finally" foi removido pois era a causa do problema.
             });
         });
 
     } catch (error) {
-        viewElement.innerHTML = `<p style="color: red;">Erro ao carregar a página de gestão de conquistas: ${error.message}</p>`;
+        viewElement.innerHTML = `<p style="color: red;">Erro ao carregar a página de gestão: ${error.message}</p>`;
     }
 }

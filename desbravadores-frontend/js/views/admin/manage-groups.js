@@ -42,13 +42,11 @@ function renderGroupsTable(groupDetails, viewElement) {
 
 async function fetchAndRender(viewElement) {
     try {
-        // Agora, a API retorna um objeto Page<GroupDetailsDTO>
         const [groupPage, monitors] = await Promise.all([
             fetchApi('/api/groups'),
             fetchApi('/api/admin/users/monitors')
         ]);
         
-        // CORREÇÃO CRÍTICA: Extrai o array de grupos da propriedade '.content'
         const groupDetails = groupPage.content;
         
         allMonitors = monitors;
@@ -59,7 +57,6 @@ async function fetchAndRender(viewElement) {
 }
 
 function openEditModal(groupId) {
-    // ... (Esta função permanece a mesma da versão anterior)
     const modal = document.getElementById('activityModal');
     const modalTitle = document.getElementById('modalTitle');
     const modalBody = document.getElementById('modalBody');
@@ -75,16 +72,23 @@ function openEditModal(groupId) {
     modal.classList.add('active');
     document.getElementById('edit-group-form').addEventListener('submit', async (e) => {
         e.preventDefault();
+        const submitButton = e.target.querySelector('button[type="submit"]');
+        submitButton.disabled = true;
+        submitButton.textContent = 'Salvando...';
+
         const updatedName = document.getElementById('edit-group-name').value;
         const leaderId = document.getElementById('edit-group-leader').value;
         const payload = { name: updatedName, leader: leaderId ? { id: leaderId } : null };
         try {
             await fetchApi(`/api/groups/${groupId}`, { method: 'PUT', body: JSON.stringify(payload) });
-            alert('Grupo atualizado com sucesso!');
+            showToast('Grupo atualizado com sucesso!', 'success');
             modal.classList.remove('active');
             renderManageGroupsView(document.getElementById('view-manage-groups'));
         } catch (error) {
-            alert(`Erro ao atualizar grupo: ${error.message}`);
+            showToast(`Erro ao atualizar grupo: ${error.message}`, 'error');
+        } finally {
+            submitButton.disabled = false;
+            submitButton.textContent = 'Salvar Alterações';
         }
     });
 }
@@ -118,17 +122,25 @@ export function renderManageGroupsView(viewElement) {
         </style>
     `;
 
-    // Listener para criar grupo (sem alterações)
+    // Listener para criar grupo
     viewElement.querySelector("#create-group-form").addEventListener('submit', async (e) => {
         e.preventDefault();
         const groupName = viewElement.querySelector('#group-name').value;
+        const submitButton = e.target.querySelector('button[type="submit"]');
+
+        submitButton.disabled = true;
+        submitButton.textContent = 'Criando...';
+        
         try {
             await fetchApi('/api/groups', { method: 'POST', body: JSON.stringify({ name: groupName }) });
-            alert(`Grupo "${groupName}" criado com sucesso!`);
+            showToast(`Grupo "${groupName}" criado com sucesso!`, 'success');
             e.target.reset();
             fetchAndRender(viewElement);
         } catch (error) {
-            alert(`Erro ao criar grupo: ${error.message}`);
+            showToast(`Erro ao criar grupo: ${error.message}`, 'error');
+        } finally {
+            submitButton.disabled = false;
+            submitButton.textContent = 'Criar Grupo';
         }
     });
 
@@ -156,33 +168,39 @@ export function renderManageGroupsView(viewElement) {
         if (target.matches('.delete-group-btn')) {
             e.stopPropagation();
             const groupId = target.dataset.groupId;
-            if (confirm(`Tem a certeza?`)) {
+            if (confirm(`Tem a certeza que deseja apagar o grupo? Esta ação removerá o grupo permanentemente.`)) {
+                target.disabled = true;
+                target.textContent = 'Apagando...';
                 try {
                     await fetchApi(`/api/groups/${groupId}`, { method: 'DELETE' });
-                    alert('Grupo apagado!');
+                    showToast('Grupo apagado com sucesso!', 'success');
                     fetchAndRender(viewElement);
                 } catch (error) {
-                    alert(`Erro: ${error.message}`);
+                    showToast(`Erro: ${error.message}`, 'error');
+                    target.disabled = false;
+                    target.textContent = 'Apagar';
                 }
             }
         }
 
-        // ---- NOVA LÓGICA PARA O BOTÃO REMOVER MEMBRO ----
+        // Lógica para o botão de remover membro
         if (target.matches('.remove-member-btn')) {
             e.stopPropagation();
             const userId = target.dataset.userId;
             const userName = target.parentElement.querySelector('span').textContent;
 
             if (confirm(`Tem a certeza de que quer remover ${userName} do grupo?`)) {
+                target.disabled = true;
+                
                 try {
                     await fetchApi(`/api/admin/users/${userId}/remove-group`, {
                         method: 'PUT'
                     });
-                    alert(`${userName} foi removido(a) do grupo.`);
-                    // Atualiza a lista para refletir a remoção
+                    showToast(`${userName} foi removido(a) do grupo.`, 'success');
                     fetchAndRender(viewElement);
                 } catch (error) {
-                     alert(`Erro ao remover membro: ${error.message}`);
+                     showToast(`Erro ao remover membro: ${error.message}`, 'error');
+                     target.disabled = false;
                 }
             }
         }

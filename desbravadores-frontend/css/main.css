@@ -10,7 +10,11 @@
   --text-primary: #2c3e50;
   --text-secondary: #7f8c8d;
   --border-color: #e0e0e0;
+  --toast-success-bg: #2e7d32;
+  --toast-error-bg: #c62828;
 }
+
+/* (O restante do CSS permanece o mesmo) */
 
 * {
   margin: 0;
@@ -200,4 +204,129 @@ body.dark-mode {
 body.dark-mode .achievement-card,
 body.dark-mode .badges-display {
   background-color: #2a2a2a;
+}
+/* --- NOVOS ESTILOS PARA TOAST --- */
+#toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.toast {
+    padding: 15px 20px;
+    border-radius: 8px;
+    color: white;
+    font-weight: 600;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    opacity: 0;
+    transform: translateX(100%);
+    transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.toast.success {
+    background-color: var(--toast-success-bg);
+}
+
+.toast.error {
+    background-color: var(--toast-error-bg);
+}
+.achievements-container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.achievements-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.achievement-card-full {
+    background: var(--bg-secondary);
+    border-radius: 15px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+    transition: all 0.3s ease;
+}
+
+.achievement-card-full.unlocked {
+    border-left: 5px solid var(--scout-gold);
+}
+
+.achievement-card-full.locked {
+    border-left: 5px solid var(--border-color);
+    opacity: 0.8;
+}
+
+.achievement-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.achievement-icon-full {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.achievement-details h3 {
+    font-size: 1.2rem;
+    color: var(--text-primary);
+}
+
+.achievement-details p {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.progress-section {
+    margin-top: auto; /* Empurra a barra de progresso para o fundo */
+}
+
+.progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--text-secondary);
+}
+
+.progress-bar-container {
+    background-color: var(--border-color);
+    border-radius: 8px;
+    height: 16px;
+    overflow: hidden;
+}
+
+.progress-bar-fill {
+    background-color: var(--scout-light-green);
+    height: 100%;
+    border-radius: 8px;
+    transition: width 0.5s ease-in-out;
+    text-align: center;
+    color: white;
+    font-size: 0.8rem;
+    line-height: 16px;
+}
+
+.unlocked-status {
+    text-align: center;
+    font-weight: 700;
+    color: var(--scout-gold);
+    margin-top: 1rem;
 }

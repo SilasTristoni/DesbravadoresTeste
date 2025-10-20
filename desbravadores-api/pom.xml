@@ -6,7 +6,8 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>3.5.6</version>
-        <relativePath/> </parent>
+        <relativePath/> 
+    </parent>
     <groupId>br.com.desbravadores</groupId>
     <artifactId>desbravadores-api</artifactId>
     <version>0.0.1-SNAPSHOT</version>
@@ -46,6 +47,11 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
         
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-cache</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-hibernate5-jakarta</artifactId>

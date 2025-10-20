@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
+import jakarta.persistence.FetchType; // Import necessário
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -25,7 +25,6 @@ import jakarta.persistence.Table;
 @JsonIdentityInfo(
     generator = ObjectIdGenerators.PropertyGenerator.class,
     property = "id")
-// Mantemos esta anotação por segurança, caso falhe em algum ponto não coberto
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"}) 
 public class User {
 
@@ -44,13 +43,13 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    // CORREÇÃO CRÍTICA: Força carregamento EAGER
-    @ManyToOne(fetch = FetchType.EAGER) 
+    // CORREÇÃO: Voltando para LAZY loading para melhor performance
+    @ManyToOne(fetch = FetchType.LAZY) 
     @JoinColumn(name = "group_id")
     private Group group;
 
-    // CORREÇÃO CRÍTICA: Força carregamento EAGER
-    @ManyToMany(fetch = FetchType.EAGER) 
+    // CORREÇÃO: Voltando para LAZY loading (padrão para @ManyToMany)
+    @ManyToMany(fetch = FetchType.LAZY) 
     @JoinTable(
         name = "user_badges",
         joinColumns = @JoinColumn(name = "user_id"),
@@ -58,10 +57,8 @@ public class User {
     )
     private Set<Badge> badges = new HashSet<>();
 
-    // ---- NOVAS RELAÇÕES ADICIONADAS AQUI ----
-
-    // CORREÇÃO CRÍTICA: Força carregamento EAGER
-    @ManyToMany(fetch = FetchType.EAGER)
+    // CORREÇÃO: Voltando para LAZY loading
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
         name = "user_unlocked_backgrounds",
         joinColumns = @JoinColumn(name = "user_id"),
@@ -69,16 +66,13 @@ public class User {
     )
     private Set<Background> unlockedBackgrounds = new HashSet<>();
 
-    // CORREÇÃO CRÍTICA: Força carregamento EAGER
-    @ManyToOne(fetch = FetchType.EAGER)
+    // CORREÇÃO: Voltando para LAZY loading
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "selected_background_id")
     private Background selectedBackground;
 
-
-    // Construtor vazio
+    // Construtores, Getters e Setters permanecem os mesmos...
     public User() {}
-
-    // Getters e Setters (omitido por brevidade, mas o resto da classe é o mesmo)
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public String getName() { return name; }
@@ -101,8 +95,6 @@ public class User {
     public void setGroup(Group group) { this.group = group; }
     public Set<Badge> getBadges() { return badges; }
     public void setBadges(Set<Badge> badges) { this.badges = badges; }
-
-    // GETTERS E SETTERS PARA OS NOVOS CAMPOS
     public Set<Background> getUnlockedBackgrounds() { return unlockedBackgrounds; }
     public void setUnlockedBackgrounds(Set<Background> unlockedBackgrounds) { this.unlockedBackgrounds = unlockedBackgrounds; }
     public Background getSelectedBackground() { return selectedBackground; }

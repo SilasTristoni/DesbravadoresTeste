@@ -236,3 +236,51 @@ body.profile-edit-mode .background-card.selected {
   border-color: var(--scout-gold);
   box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
 }
+.profile-progress-block {
+    background-color: var(--bg-secondary);
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.07);
+}
+
+.level-display {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.level-badge {
+    background-color: var(--scout-green);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 1.2rem;
+}
+
+.xp-text {
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.progress-bar-container {
+    background-color: var(--border-color);
+    border-radius: 12px;
+    height: 24px;
+    overflow: hidden;
+    padding: 4px; /* Espaçamento interno */
+}
+
+.progress-bar-fill {
+    background: linear-gradient(90deg, var(--scout-light-green), var(--scout-green));
+    height: 100%;
+    border-radius: 8px;
+    transition: width 0.5s ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: 0.9rem;
+}
