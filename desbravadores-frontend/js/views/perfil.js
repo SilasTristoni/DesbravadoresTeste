@@ -1,5 +1,7 @@
 // js/views/perfil.js
 
+// --- FUNÇÕES AUXILIARES ---
+
 function getUserPayload() {
     const token = localStorage.getItem('jwtToken');
     if (!token) return null;
@@ -9,19 +11,20 @@ function getUserPayload() {
         const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
             return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
         }).join(''));
-
         return JSON.parse(jsonPayload);
     } catch (error) {
         return null;
     }
 }
 
-// Global/Module variable to hold user data and editing state
+function calculateXpForNextLevel(currentLevel) {
+    return 100 + (currentLevel * 50);
+}
+
 let currentUserData = null;
 let isEditing = false;
 
-
-// NOVO: Função para renderizar o bloco de identidade no modo de visualização
+// Renderiza o bloco de identidade no modo de visualização
 function renderInfoDisplay(user) {
     return `
         <div class="info-display" id="profileInfoDisplay">
@@ -31,7 +34,7 @@ function renderInfoDisplay(user) {
     `;
 }
 
-// NOVO: Função para renderizar o bloco de identidade no modo de edição
+// Renderiza o bloco de identidade no modo de edição
 function renderEditForm(user) {
     return `
         <form id="edit-profile-form" class="edit-form" style="display: block;">
@@ -57,34 +60,28 @@ function renderEditForm(user) {
     `;
 }
 
-// Função de toggle (chamada pelo botão)
+// Alterna entre o modo de visualização e edição
 function toggleEditMode(viewElement, user) {
     isEditing = !isEditing;
-    const infoContainer = viewElement.querySelector('#info-and-edit-wrapper');
-    if (!infoContainer) return;
-    
-    // Força a re-renderização do bloco de identidade com o novo estado
     renderIdentityBlock(viewElement, user);
 }
 
-// Função de renderização principal do bloco de identidade
+// Renderiza o bloco de identidade (cabeçalho do perfil)
 function renderIdentityBlock(viewElement, user) {
-    const identityBlock = viewElement.querySelector('#identityBlock');
     const infoContainer = viewElement.querySelector('#info-and-edit-wrapper');
     const editBtn = viewElement.querySelector('#editProfileBtn');
     
-    if (!identityBlock || !infoContainer) return; // O editBtn pode ser nulo se não for perfil próprio
+    if (!infoContainer) return;
     
-    // Limpa e renderiza baseado no estado
     infoContainer.innerHTML = isEditing ? renderEditForm(user) : renderInfoDisplay(user);
+    
     if (editBtn) {
         editBtn.style.display = user.isOtherUser ? 'none' : (isEditing ? 'none' : 'flex');
     }
     
-    // Se estiver em modo de edição, anexa os listeners
     if (isEditing) {
         viewElement.querySelector('#cancelEditBtn').addEventListener('click', () => {
-            toggleEditMode(viewElement, user); // Volta para o modo de visualização
+            toggleEditMode(viewElement, user);
         });
         
         const editForm = viewElement.querySelector('#edit-profile-form');
@@ -105,30 +102,30 @@ function renderIdentityBlock(viewElement, user) {
                     method: 'PUT',
                     body: JSON.stringify(payload)
                 });
-                alert('Perfil atualizado com sucesso! Será necessário recarregar a aplicação para que o novo avatar apareça em todo o lado.');
-                currentUserData = updatedUser; // Atualiza os dados locais
-                toggleEditMode(viewElement, currentUserData); // Sai do modo de edição
+                alert('Perfil atualizado com sucesso!');
+                currentUserData = updatedUser;
+                toggleEditMode(viewElement, currentUserData);
+
             } catch (error) {
                 alert(`Erro ao salvar perfil: ${error.message}`);
-                editForm.querySelector('.btn-save-sidebar').textContent = 'Salvar';
-                editForm.querySelector('.btn-save-sidebar').disabled = false;
+                const saveButton = editForm.querySelector('.btn-save-sidebar');
+                if(saveButton) {
+                    saveButton.textContent = 'Salvar';
+                    saveButton.disabled = false;
+                }
             }
         });
     }
 }
 
-
-// NOVO: Função para renderizar a lista de fundos e adicionar interatividade
+// Renderiza a lista de fundos e adiciona interatividade
 async function renderBackgroundsTab(viewElement, user, allBackgrounds) {
-    const isOwnProfile = !user.isOtherUser; // Verifica se é o perfil próprio
-
+    const isOwnProfile = !user.isOtherUser;
     const backgroundsGrid = allBackgrounds.map(bg => {
-        // Decide o estilo com base na imagem ou gradiente
         const style = bg.imageUrl 
             ? `background: url(http://localhost:8080${bg.imageUrl}) center/cover no-repeat; color: ${bg.textColor};`
             : `background: ${bg.gradient}; color: ${bg.textColor};`;
         
-        // Marca o fundo selecionado
         const isSelected = user.selectedBackground && user.selectedBackground.id === bg.id;
         
         return `
@@ -148,22 +145,17 @@ async function renderBackgroundsTab(viewElement, user, allBackgrounds) {
     if (tabContent) {
         tabContent.innerHTML = `<div class="backgrounds-grid">${backgroundsGrid}</div>`;
         
-        // Adiciona listener apenas se for o perfil próprio
         if (isOwnProfile) {
             tabContent.querySelectorAll('.background-card').forEach(card => {
                 card.addEventListener('click', async function() {
                     const bgId = this.dataset.bgId;
                     try {
-                        // Chama o endpoint de seleção
                         await fetchApi('/api/profile/me/background', {
                             method: 'PUT',
                             body: JSON.stringify({ backgroundId: parseInt(bgId, 10) })
                         });
-                        alert('Fundo do perfil atualizado com sucesso! O novo fundo será visível na próxima navegação.');
-                        
-                        // Recarrega a view para atualizar a marcação e o estilo
-                        renderProfileView(viewElement);
-                        
+                        alert('Fundo do perfil atualizado com sucesso!');
+                        renderProfileView(viewElement); // Recarrega a view para atualizar
                     } catch (error) {
                         alert(`Erro ao selecionar fundo: ${error.message}`);
                     }
@@ -173,45 +165,55 @@ async function renderBackgroundsTab(viewElement, user, allBackgrounds) {
     }
 }
 
+// --- FUNÇÃO PRINCIPAL DE RENDERIZAÇÃO DA VIEW ---
 
 export async function renderProfileView(viewElement, userId = null) {
     
     viewElement.innerHTML = `<p>A carregar perfil...</p>`;
 
     try {
-        // Busca os dados do perfil do utilizador
         const endpoint = userId ? `/api/users/${userId}` : '/api/profile/me';
         const user = await fetchApi(endpoint);
-        user.isOtherUser = !!userId; // Flag para saber se é outro utilizador
+        user.isOtherUser = !!userId;
         
-        // Atualiza os dados globais para uso na edição
         currentUserData = user;
-        isEditing = false; // Garante que a vista comece em modo de visualização
+        isEditing = false;
 
-        // Busca todos os fundos disponíveis (necessário para a aba "Fundos")
         const allBackgrounds = await fetchApi('/api/backgrounds');
         
         const currentUserPayload = getUserPayload();
         const isDirector = currentUserPayload?.role === 'DIRETOR';
         const isOwnProfile = !userId;
 
-        // O campo 'selectedBackground' e 'unlockedBackgrounds' vêm do objeto User
         const bg = user.selectedBackground;
-        
         const backgroundStyle = bg?.imageUrl 
             ? `background: url(http://localhost:8080${bg.imageUrl}) center/cover no-repeat; color: ${bg.textColor};` 
             : (bg?.gradient 
                 ? `background: ${bg.gradient}; color: ${bg.textColor};` 
                 : `background: linear-gradient(135deg, #2d5016 0%, #6b8e23 100%); color: white;`);
+
+        const xpNeeded = calculateXpForNextLevel(user.level);
+        const xpProgressPercentage = xpNeeded > 0 ? (user.xp / xpNeeded) * 100 : 0;
         
         viewElement.innerHTML = `
             <div class="profile-container">
                 <div class="profile-identity-block" id="identityBlock" style="${backgroundStyle}">
                     <div class="profile-identity-header">
                         <img src="${user.avatar || 'img/escoteiro1.png'}" alt="Avatar" class="avatar-img">
-                        <div class="info-and-edit-wrapper" id="info-and-edit-wrapper">
-                            </div>
+                        <div class="info-and-edit-wrapper" id="info-and-edit-wrapper"></div>
                         ${isOwnProfile ? '<button class="edit-btn" id="editProfileBtn">✏️</button>' : ''}
+                    </div>
+                </div>
+
+                <div class="profile-progress-block">
+                    <div class="level-display">
+                        <div class="level-badge">Nível ${user.level}</div>
+                        <div class="xp-text">${user.xp} / ${xpNeeded} XP</div>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" style="width: ${xpProgressPercentage}%">
+                            ${xpProgressPercentage > 15 ? `${Math.round(xpProgressPercentage)}%` : ''}
+                        </div>
                     </div>
                 </div>
 
@@ -243,10 +245,10 @@ export async function renderProfileView(viewElement, userId = null) {
             </div>
         `;
         
-        // 1. Inicializa o bloco de identidade (que chama renderInfoDisplay)
+        // --- ADICIONA OS LISTENERS E RENDERIZA OS COMPONENTES ---
+
         renderIdentityBlock(viewElement, user);
         
-        // 2. Listener para o botão de Edição
         const editProfileBtn = viewElement.querySelector('#editProfileBtn');
         if (editProfileBtn) {
             editProfileBtn.addEventListener('click', () => {
@@ -254,7 +256,6 @@ export async function renderProfileView(viewElement, userId = null) {
             });
         }
         
-        // 3. Gerir Conquistas (Apenas Diretor visualizando outro utilizador)
         const manageBtn = viewElement.querySelector('#manage-achievements-btn');
         if (manageBtn) {
             manageBtn.addEventListener('click', (e) => {
@@ -265,7 +266,6 @@ export async function renderProfileView(viewElement, userId = null) {
             });
         }
         
-        // 4. Navegação entre Abas
         viewElement.querySelectorAll('.tab-nav button').forEach(button => {
             button.addEventListener('click', function() {
                 const targetTab = this.dataset.tab;
@@ -278,58 +278,9 @@ export async function renderProfileView(viewElement, userId = null) {
             });
         });
 
-        // 5. Renderização da Aba de Fundos (se for perfil próprio)
         if (isOwnProfile) {
             renderBackgroundsTab(viewElement, user, allBackgrounds);
         }
-
-    } catch (error) {
-        viewElement.innerHTML = `<p style="color: red;">Não foi possível carregar os dados do perfil. ${error.message}</p>`;
-    }
-}
-function calculateXpForNextLevel(currentLevel) {
-    return 100 + (currentLevel * 50);
-}
-
-export async function renderProfileView(viewElement, userId = null) {
-    
-    viewElement.innerHTML = `<p>A carregar perfil...</p>`;
-
-    try {
-        const endpoint = userId ? `/api/users/${userId}` : '/api/profile/me';
-        const user = await fetchApi(endpoint);
-        user.isOtherUser = !!userId; 
-        
-        // (O resto da lógica de busca e setup permanece a mesma)
-
-        // --- LÓGICA DA BARRA DE PROGRESSO ---
-        const xpNeeded = calculateXpForNextLevel(user.level);
-        const xpProgressPercentage = (user.xp / xpNeeded) * 100;
-
-        viewElement.innerHTML = `
-            <div class="profile-container">
-                <div class="profile-identity-block" id="identityBlock" style="...">
-                    </div>
-
-                <div class="profile-progress-block">
-                    <div class="level-display">
-                        <div class="level-badge">Nível ${user.level}</div>
-                        <div class="xp-text">${user.xp} / ${xpNeeded} XP</div>
-                    </div>
-                    <div class="progress-bar-container">
-                        <div class="progress-bar-fill" style="width: ${xpProgressPercentage}%">
-                            ${xpProgressPercentage > 15 ? `${Math.round(xpProgressPercentage)}%` : ''}
-                        </div>
-                    </div>
-                </div>
-                <div class="profile-achievements-block">
-                     </div>
-            </div>
-        `;
-        
-        // (Toda a lógica de renderização dos outros blocos e adição de listeners permanece a mesma)
-        // ...
-        renderIdentityBlock(viewElement, user); // Esta chamada já existe e deve ser mantida
 
     } catch (error) {
         viewElement.innerHTML = `<p style="color: red;">Não foi possível carregar os dados do perfil. ${error.message}</p>`;

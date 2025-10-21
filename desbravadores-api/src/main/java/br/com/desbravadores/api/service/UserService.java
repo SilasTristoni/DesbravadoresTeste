@@ -1,15 +1,16 @@
 package br.com.desbravadores.api.service;
 
-import org.springframework.beans.factory.annotation.Autowired; // IMPORT ADICIONADO
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional; // IMPORT ADICIONADO
+import org.springframework.transaction.annotation.Transactional;
 
+import br.com.desbravadores.api.dto.PasswordChangeDTO; // NOVO IMPORT
 import br.com.desbravadores.api.model.Group;
 import br.com.desbravadores.api.model.Role;
 import br.com.desbravadores.api.model.User;
 import br.com.desbravadores.api.repository.GroupRepository;
-import br.com.desbravadores.api.repository.UserRepository; // IMPORT ADICIONADO
+import br.com.desbravadores.api.repository.UserRepository;
 
 @Service
 public class UserService {
@@ -18,7 +19,7 @@ public class UserService {
     private UserRepository userRepository;
 
     @Autowired
-    private GroupRepository groupRepository; // INJEÇÃO DO REPOSITÓRIO DE GRUPOS
+    private GroupRepository groupRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -28,39 +29,42 @@ public class UserService {
         return createUser(newUser);
     }
 
-    /**
-     * MÉTODO ATUALIZADO
-     * Agora, ele contém a lógica para definir o líder do grupo automaticamente.
-     * @Transactional garante que todas as operações no banco de dados (salvar utilizador e
-     * atualizar grupo) sejam executadas como uma única transação.
-     */
     @Transactional
     public User createUser(User user) {
-        // Codifica a senha antes de salvar
         String hashedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(hashedPassword);
 
-        // Salva o utilizador para que ele tenha um ID
         User savedUser = userRepository.save(user);
 
-        // ---- NOVA LÓGICA DE NEGÓCIO ADICIONADA AQUI ----
-        // Verifica se o novo utilizador é um MONITOR e se foi associado a um grupo
         if (savedUser.getRole() == Role.MONITOR && savedUser.getGroup() != null) {
-            
-            System.out.println("--- DETETADO NOVO MONITOR PARA O GRUPO ID: " + savedUser.getGroup().getId() + " ---");
-
-            // Busca o grupo no banco de dados para garantir que temos a entidade completa
             Group groupToUpdate = groupRepository.findById(savedUser.getGroup().getId()).orElse(null);
-
             if (groupToUpdate != null) {
-                // Define o novo MONITOR como o líder do grupo
                 groupToUpdate.setLeader(savedUser);
-                // Salva a alteração no grupo
                 groupRepository.save(groupToUpdate);
-                System.out.println("--- GRUPO ATUALIZADO COM O NOVO LÍDER ---");
             }
         }
 
         return savedUser;
+    }
+
+    // NOVO MÉTODO PARA ALTERAR SENHA
+    @Transactional
+    public void changeUserPassword(String userEmail, PasswordChangeDTO passwordChangeDTO) {
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
+
+        // 1. Verifica se a senha atual está correta
+        if (!passwordEncoder.matches(passwordChangeDTO.getCurrentPassword(), user.getPassword())) {
+            throw new RuntimeException("A senha atual está incorreta.");
+        }
+
+        // 2. Verifica se a nova senha não está em branco
+        if (passwordChangeDTO.getNewPassword() == null || passwordChangeDTO.getNewPassword().isBlank()) {
+            throw new RuntimeException("A nova senha não pode estar em branco.");
+        }
+
+        // 3. Codifica e salva a nova senha
+        user.setPassword(passwordEncoder.encode(passwordChangeDTO.getNewPassword()));
+        userRepository.save(user);
     }
 }

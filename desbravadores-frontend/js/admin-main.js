@@ -8,8 +8,8 @@ import { setupModal } from '../components/modal.js';
 import { renderManageAchievementsView } from './views/admin/manage-achievements.js';
 import { renderCreateItemView } from './views/admin/create-item.js';
 import { renderManageGroupsView } from "./views/admin/manage-groups.js";
-import { renderProfileView } from './views/perfil.js'; // Função reutilizada
-
+import { renderProfileView } from './views/perfil.js';
+import { renderNotificationsView } from './views/notifications.js'; // NOVO IMPORT
 
 function getUserPayload() {
     const token = localStorage.getItem('jwtToken');
@@ -22,7 +22,6 @@ function getUserPayload() {
     }
 }
 
-
 const views = {
   dashboard: document.getElementById("view-dashboard"),
   chamada: document.getElementById("view-chamada"),
@@ -31,9 +30,10 @@ const views = {
   "manage-users": document.getElementById("view-manage-users"),
   perfil: document.getElementById("view-perfil"),
   settings: document.getElementById("view-admin-settings"),
+  notifications: document.getElementById("view-notifications"), // NOVA VIEW
   "manage-achievements": document.getElementById("view-manage-achievements"),
   "create-item": document.getElementById("view-create-item"),
-  "my-profile": document.getElementById("view-perfil"), // Adiciona o alias para o perfil próprio
+  "my-profile": document.getElementById("view-perfil"),
 };
 
 const viewRenderers = {
@@ -42,9 +42,10 @@ const viewRenderers = {
   "manage-groups": renderManageGroupsView,
   "manage-tasks": renderManageTasksView,
   "manage-users": renderManageUsersView,
-  perfil: renderProfileView, // Usado para perfis de outros utilizadores (com ID)
-  "my-profile": renderProfileView, // Usado para o perfil próprio (sem ID)
+  perfil: renderProfileView,
+  "my-profile": renderProfileView,
   settings: renderAdminSettingsView,
+  notifications: renderNotificationsView, // NOVO RENDERER
   "manage-achievements": renderManageAchievementsView,
   "create-item": renderCreateItemView,
 };
@@ -56,14 +57,13 @@ function switchView(viewId, data = null) {
     }
   }
 
-  // Se a view for "my-profile", forçamos o data a ser null
   const finalData = viewId === 'my-profile' ? null : data;
     
   const targetView = views[viewId];
   if (targetView) {
     targetView.classList.add("active");
     if (viewRenderers[viewId]) {
-        viewRenderers[viewId](targetView, finalData); // Usa finalData
+        viewRenderers[viewId](targetView, finalData);
     }
   }
 
@@ -79,25 +79,19 @@ function adjustUiForRole() {
     if (!payload) return;
     const userRole = payload.role;
 
-    // Elementos a serem controlados
     const chamadaBtn = document.querySelector('.nav-btn[data-view="chamada"]');
     const manageGroupsBtn = document.querySelector('.nav-btn[data-view="manage-groups"]');
     const manageUsersBtn = document.querySelector('.nav-btn[data-view="manage-users"]');
     const createItemBtn = document.querySelector('.nav-btn[data-view="create-item"]');
 
-
     if (userRole === 'DIRETOR') {
-        // CORREÇÃO: Diretor não pode fazer a chamada. Ele só pode gerar o Relatório (que está no Dashboard).
         if (chamadaBtn) chamadaBtn.style.display = 'none';
-
     } else if (userRole === 'MONITOR') {
-        // Monitor faz a chamada, mas não pode gerir Grupos, Utilizadores ou Criar Items.
         if (createItemBtn) createItemBtn.style.display = 'none';
         if (manageUsersBtn) manageUsersBtn.style.display = 'none';
         if (manageGroupsBtn) manageGroupsBtn.style.display = 'none';
     }
 }
-
 
 function initializeAdminApp() {
   document.body.classList.toggle('dark-mode', localStorage.getItem('theme') === 'dark');
@@ -118,13 +112,10 @@ function initializeAdminApp() {
       }
   });
 
-  // ---- "OUVINTE" DE NAVEGAÇÃO ADICIONADO AQUI ----
-  // Este código fica à escuta de qualquer sinal 'navigate' e chama a função switchView.
   window.addEventListener('navigate', (e) => {
     const { view, data } = e.detail;
     switchView(view, data);
   });
-  // ---- FIM DO NOVO CÓDIGO ----
 
   setupModal();
   switchView("dashboard");

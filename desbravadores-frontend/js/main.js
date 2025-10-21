@@ -5,41 +5,28 @@ import { renderAgendaView } from './views/agenda.js';
 import { renderProfileView } from './views/perfil.js';
 import { renderGruposView } from './views/grupos.js';
 import { renderSettingsView } from './views/settings.js';
-import { renderConquistasView } from './views/conquistas.js'; // NOVO IMPORT
+import { renderConquistasView } from './views/conquistas.js';
+import { renderNotificationsView } from './views/notifications.js'; // NOVO IMPORT
 
 const views = {
     home: document.getElementById('view-home'),
     agenda: document.getElementById('view-agenda'),
-    conquistas: document.getElementById('view-conquistas'), // NOVA VIEW
+    conquistas: document.getElementById('view-conquistas'),
     perfil: document.getElementById('view-perfil'),
     grupos: document.getElementById('view-grupos'),
+    notifications: document.getElementById('view-notifications'), // NOVA VIEW
     settings: document.getElementById('view-settings'),
 };
 
 const viewRenderers = {
     home: renderHomeView,
     agenda: renderAgendaView,
-    conquistas: renderConquistasView, // NOVO RENDERER
+    conquistas: renderConquistasView,
     perfil: renderProfileView,
     grupos: renderGruposView,
+    notifications: renderNotificationsView, // NOVO RENDERER
     settings: renderSettingsView,
 };
-
-// Helper function to decode JWT payload (mantida por segurança, mas não mais usada para user ID)
-function decodeToken() {
-    const token = localStorage.getItem('jwtToken');
-    if (!token) return null;
-    try {
-        const base64Url = token.split('.')[1];
-        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        return JSON.parse(decodeURIComponent(atob(base64).split('').map(function(c) {
-            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-        }).join('')));
-    } catch (e) {
-        return null;
-    }
-}
-
 
 function switchView(viewId, data = null) {
     const targetView = views[viewId];
@@ -51,9 +38,7 @@ function switchView(viewId, data = null) {
         }
     }
 
-    // Sempre renderiza a view, já que não usamos estado mockado.
     if (viewRenderers[viewId]) {
-        // Para 'perfil' sem data, passamos 'null' para carregar o perfil próprio (/me)
         const finalData = viewId === 'perfil' && data === undefined ? null : data;
         viewRenderers[viewId](targetView, finalData);
     }
@@ -69,7 +54,6 @@ function initializeApp() {
         button.addEventListener('click', () => {
             const targetView = button.dataset.view;
             if (targetView === 'perfil') {
-                 // Passando undefined fará o switchView usar 'null' para buscar o perfil próprio
                  switchView(targetView); 
             } else {
                  switchView(targetView);

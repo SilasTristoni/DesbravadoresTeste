@@ -3,38 +3,29 @@
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 2rem; /* Aumenta o espaçamento entre as seções */
 }
 
-.settings-user-card {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  background: var(--bg-secondary);
-  padding: 1rem;
-  border-radius: 15px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+/* NOVO: Estilo para cada seção de configuração */
+.settings-section {
+    background: var(--bg-secondary);
+    border-radius: 15px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
 }
-.settings-user-card .avatar-img {
-  width: 65px;
-  height: 65px;
-  border-radius: 50%;
-  border: 3px solid var(--scout-green);
-}
-.settings-user-info .user-name {
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: var(--text-primary);
-}
-.settings-user-info .user-rank {
-  color: var(--text-secondary);
+
+/* NOVO: Estilo para o cabeçalho de cada seção */
+.settings-section-header {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--scout-green);
+    margin: -1.5rem -1.5rem 1rem -1.5rem; /* Puxa para as bordas do card */
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .settings-list {
-  background: var(--bg-secondary);
-  border-radius: 15px;
-  padding: 1rem;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  /* Remove estilos de card, pois agora o pai (.settings-section) já é um card */
 }
 
 .settings-item {
@@ -45,12 +36,15 @@
   border-radius: 10px;
   transition: background-color 0.2s;
 }
+
 .settings-item:not(:last-child) {
   border-bottom: 1px solid var(--border-color);
 }
+
 .settings-item:hover {
   background-color: var(--bg-primary);
 }
+
 .settings-item-icon {
   font-size: 1.5rem;
   margin-right: 1rem;
@@ -58,6 +52,7 @@
   width: 30px;
   text-align: center;
 }
+
 .settings-item-label {
   font-weight: 600;
   flex-grow: 1;
@@ -69,11 +64,13 @@
   width: 50px;
   height: 26px;
 }
+
 .theme-switch input {
   opacity: 0;
   width: 0;
   height: 0;
 }
+
 .slider {
   position: absolute;
   cursor: pointer;
@@ -85,6 +82,7 @@
   transition: 0.4s;
   border-radius: 26px;
 }
+
 .slider:before {
   position: absolute;
   content: "";
@@ -96,24 +94,11 @@
   transition: 0.4s;
   border-radius: 50%;
 }
+
 input:checked + .slider {
   background-color: var(--scout-green);
 }
+
 input:checked + .slider:before {
   transform: translateX(24px);
-}
-
-.settings-banner {
-  background-color: var(--scout-light-green);
-  color: white;
-  border-radius: 15px;
-  padding: 1.5rem;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-}
-.settings-banner h3 {
-  margin: 0 0 0.5rem 0;
-}
-.settings-banner p {
-  margin: 0;
-  opacity: 0.9;
 }
