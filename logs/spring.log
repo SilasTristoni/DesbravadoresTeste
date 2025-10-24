@@ -768,3 +768,107 @@ Caused by: java.net.ConnectException: Connection refused: getsockopt
 2025-10-20T21:45:45.076-03:00 DEBUG 30520 --- [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Secured GET /api/groups?page=0&size=999
 2025-10-20T21:45:45.078-03:00 DEBUG 30520 --- [http-nio-8080-exec-10] horizationManagerBeforeMethodInterceptor : Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllUsers(java.lang.Long,org.springframework.data.domain.Pageable,org.springframework.security.core.Authentication); target is of class [br.com.desbravadores.api.controller.AdminController]
 2025-10-20T21:45:45.078-03:00 DEBUG 30520 --- [http-nio-8080-exec-10] horizationManagerBeforeMethodInterceptor : Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllUsers(java.lang.Long,org.springframework.data.domain.Pageable,org.springframework.security.core.Authentication); target is of class [br.com.desbravadores.api.controller.AdminController]
+2025-10-20T21:46:17.495-03:00  INFO 56876 --- [main] b.c.d.api.DesbravadoresApiApplication    : Starting DesbravadoresApiApplication using Java 21.0.8 with PID 56876 (C:\Users\silas.tristoni\Documents\DesbravadoresTeste\desbravadores-api\target\classes started by silas.tristoni in C:\Users\silas.tristoni\Documents\DesbravadoresTeste)
+2025-10-20T21:46:17.498-03:00  INFO 56876 --- [main] b.c.d.api.DesbravadoresApiApplication    : No active profile set, falling back to 1 default profile: "default"
+2025-10-20T21:46:18.381-03:00  INFO 56876 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-10-20T21:46:18.530-03:00  INFO 56876 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 84 ms. Found 9 JPA repository interfaces.
+2025-10-20T21:46:19.855-03:00  INFO 56876 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2025-10-20T21:46:19.881-03:00  INFO 56876 --- [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-10-20T21:46:19.882-03:00  INFO 56876 --- [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.46]
+2025-10-20T21:46:19.950-03:00  INFO 56876 --- [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-10-20T21:46:19.951-03:00  INFO 56876 --- [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 2367 ms
+2025-10-20T21:46:20.190-03:00  INFO 56876 --- [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-10-20T21:46:20.288-03:00  INFO 56876 --- [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.29.Final
+2025-10-20T21:46:20.376-03:00  INFO 56876 --- [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-10-20T21:46:20.826-03:00  INFO 56876 --- [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-10-20T21:46:20.872-03:00  INFO 56876 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-10-20T21:46:21.058-03:00  INFO 56876 --- [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@5fc7255c
+2025-10-20T21:46:21.060-03:00  INFO 56876 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-10-20T21:46:21.103-03:00  WARN 56876 --- [main] org.hibernate.dialect.Dialect            : HHH000511: The 5.5.5 version for [org.hibernate.dialect.MySQLDialect] is no longer supported, hence certain features may not work properly. The minimum supported version is 8.0.0. Check the community dialects project for available legacy versions.
+2025-10-20T21:46:21.111-03:00  WARN 56876 --- [main] org.hibernate.orm.deprecation            : HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-10-20T21:46:21.150-03:00  INFO 56876 --- [main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 5.5.5
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-10-20T21:46:22.246-03:00  INFO 56876 --- [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-10-20T21:46:22.374-03:00  INFO 56876 --- [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-10-20T21:46:23.115-03:00  INFO 56876 --- [main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name customUserDetailsService
+2025-10-20T21:46:23.275-03:00  WARN 56876 --- [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-10-20T21:46:23.697-03:00 DEBUG 56876 --- [main] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with filters: DisableEncodeUrlFilter, WebAsyncManagerIntegrationFilter, SecurityContextHolderFilter, HeaderWriterFilter, CorsFilter, LogoutFilter, JwtAuthFilter, RequestCacheAwareFilter, SecurityContextHolderAwareRequestFilter, AnonymousAuthenticationFilter, SessionManagementFilter, ExceptionTranslationFilter, AuthorizationFilter
+2025-10-20T21:46:24.037-03:00  INFO 56876 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2025-10-20T21:46:24.045-03:00  INFO 56876 --- [main] b.c.d.api.DesbravadoresApiApplication    : Started DesbravadoresApiApplication in 7.143 seconds (process running for 7.504)
+2025-10-20T21:46:24.943-03:00  INFO 56876 --- [http-nio-8080-exec-2] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-10-20T21:46:24.943-03:00  INFO 56876 --- [http-nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2025-10-20T21:46:24.944-03:00  INFO 56876 --- [http-nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2025-10-20T21:46:24.969-03:00 DEBUG 56876 --- [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/admin/users?page=0&size=5
+2025-10-20T21:46:24.969-03:00 DEBUG 56876 --- [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/groups?page=0&size=999
+2025-10-20T21:46:25.000-03:00 DEBUG 56876 --- [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Securing GET /api/groups?page=0&size=999
+2025-10-20T21:46:25.000-03:00 DEBUG 56876 --- [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Securing GET /api/admin/users?page=0&size=5
+2025-10-20T21:46:25.095-03:00 DEBUG 56876 --- [http-nio-8080-exec-4] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2025-10-20T21:46:25.095-03:00 DEBUG 56876 --- [http-nio-8080-exec-3] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2025-10-20T21:46:25.101-03:00 DEBUG 56876 --- [http-nio-8080-exec-3] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2025-10-20T21:46:25.101-03:00 DEBUG 56876 --- [http-nio-8080-exec-4] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2025-10-20T21:46:25.109-03:00 DEBUG 56876 --- [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Securing GET /error?page=0&size=999
+2025-10-20T21:46:25.109-03:00 DEBUG 56876 --- [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Securing GET /error?page=0&size=5
+2025-10-20T21:46:25.109-03:00 DEBUG 56876 --- [http-nio-8080-exec-3] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2025-10-20T21:46:25.109-03:00 DEBUG 56876 --- [http-nio-8080-exec-4] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2025-10-20T21:46:25.110-03:00 DEBUG 56876 --- [http-nio-8080-exec-4] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2025-10-20T21:46:25.110-03:00 DEBUG 56876 --- [http-nio-8080-exec-3] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2025-10-20T21:46:30.140-03:00 DEBUG 56876 --- [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Securing POST /auth/login
+2025-10-20T21:46:30.142-03:00 DEBUG 56876 --- [http-nio-8080-exec-5] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2025-10-20T21:46:30.143-03:00 DEBUG 56876 --- [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Secured POST /auth/login
+2025-10-20T21:46:30.370-03:00 DEBUG 56876 --- [http-nio-8080-exec-5] o.s.s.a.dao.DaoAuthenticationProvider    : Authenticated user
+2025-10-20T21:46:30.476-03:00 DEBUG 56876 --- [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Securing GET /api/groups?page=0&size=999
+2025-10-20T21:46:30.476-03:00 DEBUG 56876 --- [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Securing GET /api/admin/users?page=0&size=5
+2025-10-20T21:46:30.492-03:00 DEBUG 56876 --- [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Secured GET /api/groups?page=0&size=999
+2025-10-20T21:46:30.492-03:00 DEBUG 56876 --- [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Secured GET /api/admin/users?page=0&size=5
+2025-10-20T21:46:30.508-03:00 DEBUG 56876 --- [http-nio-8080-exec-7] horizationManagerBeforeMethodInterceptor : Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllUsers(java.lang.Long,org.springframework.data.domain.Pageable,org.springframework.security.core.Authentication); target is of class [br.com.desbravadores.api.controller.AdminController]
+2025-10-20T21:46:30.587-03:00 DEBUG 56876 --- [http-nio-8080-exec-7] horizationManagerBeforeMethodInterceptor : Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllUsers(java.lang.Long,org.springframework.data.domain.Pageable,org.springframework.security.core.Authentication); target is of class [br.com.desbravadores.api.controller.AdminController]
+2025-10-20T21:46:30.659-03:00  WARN 56876 --- [http-nio-8080-exec-7] ration$PageModule$WarningLoggingModifier : Serializing PageImpl instances as-is is not supported, meaning that there is no guarantee about the stability of the resulting JSON structure!
+	For a stable JSON structure, please use Spring Data's PagedModel (globally via @EnableSpringDataWebSupport(pageSerializationMode = VIA_DTO))
+	or Spring HATEOAS and Spring Data's PagedResourcesAssembler as documented in https://docs.spring.io/spring-data/commons/reference/repositories/core-extensions.html#core.web.pageables.
+
+2025-10-20T21:46:33.177-03:00 DEBUG 56876 --- [http-nio-8080-exec-9] o.s.security.web.FilterChainProxy        : Securing GET /api/admin/users/monitors
+2025-10-20T21:46:33.177-03:00 DEBUG 56876 --- [http-nio-8080-exec-8] o.s.security.web.FilterChainProxy        : Securing GET /api/groups
+2025-10-20T21:46:33.188-03:00 DEBUG 56876 --- [http-nio-8080-exec-8] o.s.security.web.FilterChainProxy        : Secured GET /api/groups
+2025-10-20T21:46:33.189-03:00 DEBUG 56876 --- [http-nio-8080-exec-9] o.s.security.web.FilterChainProxy        : Secured GET /api/admin/users/monitors
+2025-10-20T21:46:33.190-03:00 DEBUG 56876 --- [http-nio-8080-exec-9] horizationManagerBeforeMethodInterceptor : Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllMonitors(); target is of class [br.com.desbravadores.api.controller.AdminController]
+2025-10-20T21:46:33.190-03:00 DEBUG 56876 --- [http-nio-8080-exec-9] horizationManagerBeforeMethodInterceptor : Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllMonitors(); target is of class [br.com.desbravadores.api.controller.AdminController]
+2025-10-20T21:46:34.434-03:00 DEBUG 56876 --- [http-nio-8080-exec-10] o.s.security.web.FilterChainProxy        : Securing GET /api/tasks?year=2025&month=10
+2025-10-20T21:46:34.443-03:00 DEBUG 56876 --- [http-nio-8080-exec-10] o.s.security.web.FilterChainProxy        : Secured GET /api/tasks?year=2025&month=10
+2025-10-20T21:46:34.864-03:00 DEBUG 56876 --- [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Securing GET /api/groups?page=0&size=999
+2025-10-20T21:46:34.873-03:00 DEBUG 56876 --- [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Secured GET /api/groups?page=0&size=999
+2025-10-20T21:46:35.337-03:00 DEBUG 56876 --- [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Securing GET /api/profile/me
+2025-10-20T21:46:35.347-03:00 DEBUG 56876 --- [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Secured GET /api/profile/me
+2025-10-20T21:46:35.361-03:00 DEBUG 56876 --- [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Securing GET /api/backgrounds
+2025-10-20T21:46:35.371-03:00 DEBUG 56876 --- [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Secured GET /api/backgrounds
+2025-10-20T21:46:35.889-03:00 DEBUG 56876 --- [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Securing GET /api/gamification/achievements
+2025-10-20T21:46:35.889-03:00 DEBUG 56876 --- [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Securing GET /api/backgrounds
+2025-10-20T21:46:35.900-03:00 DEBUG 56876 --- [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Secured GET /api/backgrounds
+2025-10-20T21:46:35.900-03:00 DEBUG 56876 --- [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Secured GET /api/gamification/achievements
+2025-10-20T21:46:35.920-03:00 DEBUG 56876 --- [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Securing GET /uploads/54aa71b4-f8d3-4357-8633-f580364b0d73_taskflow.png
+2025-10-20T21:46:35.921-03:00 DEBUG 56876 --- [http-nio-8080-exec-7] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2025-10-20T21:46:35.921-03:00 DEBUG 56876 --- [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Secured GET /uploads/54aa71b4-f8d3-4357-8633-f580364b0d73_taskflow.png
+2025-10-20T21:46:35.926-03:00 DEBUG 56876 --- [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Securing GET /error
+2025-10-20T21:46:35.926-03:00 DEBUG 56876 --- [http-nio-8080-exec-7] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2025-10-20T21:46:35.927-03:00 DEBUG 56876 --- [http-nio-8080-exec-7] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2025-10-20T21:46:36.608-03:00 DEBUG 56876 --- [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Securing GET /api/notifications
+2025-10-20T21:46:36.619-03:00 DEBUG 56876 --- [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Secured GET /api/notifications
+2025-10-20T21:46:44.801-03:00 DEBUG 56876 --- [http-nio-8080-exec-9] o.s.security.web.FilterChainProxy        : Securing GET /api/groups?page=0&size=999
+2025-10-20T21:46:44.810-03:00 DEBUG 56876 --- [http-nio-8080-exec-9] o.s.security.web.FilterChainProxy        : Secured GET /api/groups?page=0&size=999
+2025-10-20T21:49:27.010-03:00 DEBUG 56876 --- [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Securing GET /api/admin/users?page=0&size=5
+2025-10-20T21:49:27.010-03:00 DEBUG 56876 --- [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Securing GET /api/groups?page=0&size=999
+2025-10-20T21:49:27.024-03:00 DEBUG 56876 --- [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Secured GET /api/groups?page=0&size=999
+2025-10-20T21:49:27.024-03:00 DEBUG 56876 --- [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Secured GET /api/admin/users?page=0&size=5
+2025-10-20T21:49:27.025-03:00 DEBUG 56876 --- [http-nio-8080-exec-3] horizationManagerBeforeMethodInterceptor : Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllUsers(java.lang.Long,org.springframework.data.domain.Pageable,org.springframework.security.core.Authentication); target is of class [br.com.desbravadores.api.controller.AdminController]
+2025-10-20T21:49:27.026-03:00 DEBUG 56876 --- [http-nio-8080-exec-3] horizationManagerBeforeMethodInterceptor : Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllUsers(java.lang.Long,org.springframework.data.domain.Pageable,org.springframework.security.core.Authentication); target is of class [br.com.desbravadores.api.controller.AdminController]
+2025-10-20T21:49:32.557-03:00 DEBUG 56876 --- [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Securing GET /api/groups?page=0&size=999
+2025-10-20T21:49:32.558-03:00 DEBUG 56876 --- [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Securing GET /api/admin/users?page=0&size=5
+2025-10-20T21:49:32.568-03:00 DEBUG 56876 --- [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Secured GET /api/groups?page=0&size=999
+2025-10-20T21:49:32.568-03:00 DEBUG 56876 --- [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Secured GET /api/admin/users?page=0&size=5
+2025-10-20T21:49:32.569-03:00 DEBUG 56876 --- [http-nio-8080-exec-4] horizationManagerBeforeMethodInterceptor : Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllUsers(java.lang.Long,org.springframework.data.domain.Pageable,org.springframework.security.core.Authentication); target is of class [br.com.desbravadores.api.controller.AdminController]
+2025-10-20T21:49:32.570-03:00 DEBUG 56876 --- [http-nio-8080-exec-4] horizationManagerBeforeMethodInterceptor : Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllUsers(java.lang.Long,org.springframework.data.domain.Pageable,org.springframework.security.core.Authentication); target is of class [br.com.desbravadores.api.controller.AdminController]
