@@ -1,17 +1,16 @@
 // js/views/admin/chamada.js
 
-// A função fetchApi estará disponível globalmente pois foi carregada no admin.html
+// A função fetchApi e showToast estarão disponíveis globalmente
 
 export async function renderChamadaView(viewElement) {
-    
-    // Pega a data de hoje no formato YYYY-MM-DD para o input
+
     const today = new Date().toISOString().split('T')[0];
 
     viewElement.innerHTML = `
         <div class="chamada-container">
             <div class="admin-widget">
                 <h2>Chamada do Grupo</h2>
-                
+
                 <div class="form-group" style="margin-bottom: 1.5rem;">
                     <label for="chamada-date">Selecione a data da chamada:</label>
                     <input type="date" id="chamada-date" class="form-control" value="${today}">
@@ -31,7 +30,7 @@ export async function renderChamadaView(viewElement) {
 
     try {
         const members = await fetchApi('/api/chamada/my-group-members');
-        
+
         if (members.length === 0) {
             loadingMessage.textContent = 'O seu grupo ainda não tem desbravadores associados.';
             return;
@@ -42,6 +41,7 @@ export async function renderChamadaView(viewElement) {
 
         studentListContainer.innerHTML = members.map(student => `
             <div class="student-card" data-student-id="${student.id}">
+                {/* Usando avatar real ou padrão */}
                 <img src="${student.avatar || 'img/escoteiro1.png'}" alt="${student.name}" class="student-photo">
                 <div class="student-info">
                     <div class="student-name">${student.name} ${student.surname}</div>
@@ -68,7 +68,7 @@ export async function renderChamadaView(viewElement) {
         submitBtn.addEventListener('click', async () => {
             const selectedDate = dateInput.value;
             if (!selectedDate) {
-                alert('Por favor, selecione uma data para a chamada.');
+                showToast('Por favor, selecione uma data para a chamada.', 'error'); // Usa showToast
                 return;
             }
 
@@ -76,7 +76,6 @@ export async function renderChamadaView(viewElement) {
                 submitBtn.disabled = true;
                 submitBtn.textContent = 'A submeter...';
 
-                // Payload agora inclui a data selecionada
                 const payload = {
                     date: selectedDate,
                     presentUserIds: Array.from(presentUserIds)
@@ -87,14 +86,15 @@ export async function renderChamadaView(viewElement) {
                     body: JSON.stringify(payload)
                 });
 
-                alert(response.message || 'Chamada submetida com sucesso!');
+                showToast(response.message || 'Chamada submetida com sucesso!', 'success'); // Usa showToast
+                // Limpa a seleção visual e o set de IDs
                 studentListContainer.querySelectorAll('.student-card.present').forEach(card => {
                     card.classList.remove('present');
                 });
                 presentUserIds.clear();
 
             } catch (error) {
-                alert(`Erro ao submeter chamada: ${error.message}`);
+                showToast(`Erro ao submeter chamada: ${error.message}`, 'error'); // Usa showToast
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Submeter Chamada';

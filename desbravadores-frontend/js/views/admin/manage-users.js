@@ -1,31 +1,31 @@
 // js/views/admin/manage-users.js
 
-// A função fetchApi estará disponível globalmente pois foi carregada no admin.html
+// A função fetchApi e showToast estão disponíveis globalmente
+import { showToast as toastFunc } from '../../ui/toast.js'; // Ajuste o caminho se necessário
+if (typeof window.showToast === 'undefined') {
+    window.showToast = toastFunc;
+}
 
 export async function renderManageUsersView(viewElement) {
-  
+
   // Exibe uma mensagem de carregamento inicial
   viewElement.innerHTML = `<div class="admin-widget"><p>A carregar formulário...</p></div>`;
 
   try {
     // Busca a lista de grupos disponíveis na API (agora com parâmetros de paginação para obter todos)
-    const groupPage = await fetchApi('/api/groups?page=0&size=999'); 
+    const groupPage = await fetchApi('/api/groups?page=0&size=999');
 
-    // CORREÇÃO CRÍTICA: Extrai o array de grupos da propriedade '.content'
     const groupDetails = groupPage.content;
 
-    // Mapeia para extrair o objeto Group de dentro do GroupDetailsDTO (lógica original preservada)
     const groups = groupDetails
         .map(detail => detail.group)
         .filter(group => group && group.id && group.name);
 
-
-    // Constrói as opções do seletor de grupos dinamicamente
-    const groupOptions = groups.map(group => 
+    const groupOptions = groups.map(group =>
       `<option value="${group.id}">${group.name}</option>`
     ).join('');
 
-    // Renderiza o formulário completo com o seletor de grupos
+    // Removidos os comentários {/* ... */} daqui
     viewElement.innerHTML = `
           <div class="admin-widget">
               <h2>Adicionar Novo Utilizador (Admin)</h2>
@@ -50,9 +50,9 @@ export async function renderManageUsersView(viewElement) {
                   </div>
                   <div class="form-row">
                       <div class="form-group">
-                          <label for="user-group">Grupo (Patente)</label>
-                          <select id="user-group" required>
-                              <option value="">Selecione um grupo...</option>
+                          <label for="user-group">Grupo (Opcional)</label>
+                          <select id="user-group">
+                              <option value="">Sem grupo</option>
                               ${groupOptions}
                           </select>
                       </div>
@@ -62,7 +62,7 @@ export async function renderManageUsersView(viewElement) {
                               <option value="">Selecione um cargo...</option>
                               <option value="DESBRAVADOR">Desbravador (Aluno)</option>
                               <option value="MONITOR">Monitor</option>
-                              </select>
+                          </select>
                       </div>
                   </div>
                   <button type="submit" class="action-btn">Adicionar Utilizador</button>
@@ -70,18 +70,14 @@ export async function renderManageUsersView(viewElement) {
           </div>
       `;
 
-    // Adiciona o listener de submissão ao formulário
     const userForm = viewElement.querySelector("#admin-user-form");
     userForm.addEventListener("submit", async (e) => {
       e.preventDefault();
+      const submitButton = userForm.querySelector('button[type="submit"]');
 
       const groupIdValue = viewElement.querySelector("#user-group").value;
-
-      // Trata a string vazia ("") como null e garante que o ID é um número
       const groupId = groupIdValue && !isNaN(parseInt(groupIdValue, 10)) ? parseInt(groupIdValue, 10) : null;
-      
-      // O objeto group deve ser { id: <id> } se o ID for válido, ou null
-      const groupPayload = groupId !== null ? { id: groupId } : null; 
+      const groupPayload = groupId !== null ? { id: groupId } : null;
 
       const newUser = {
         name: viewElement.querySelector("#user-name").value,
@@ -89,22 +85,28 @@ export async function renderManageUsersView(viewElement) {
         email: viewElement.querySelector("#user-email").value,
         password: viewElement.querySelector("#user-password").value,
         role: viewElement.querySelector("#user-role").value,
-        group: groupPayload, 
-        avatar: 'img/escoteiro1.png',
-        level: 1,
-        xp: 0
+        group: groupPayload,
+        avatar: 'img/escoteiro1.png', // Avatar padrão
+        level: 1, // Nível inicial padrão
+        xp: 0    // XP inicial padrão
       };
+
+      submitButton.disabled = true;
+      submitButton.textContent = 'Adicionando...';
 
       try {
         const createdUser = await fetchApi('/api/admin/users', {
           method: 'POST',
           body: JSON.stringify(newUser),
         });
-        alert(`Utilizador ${createdUser.name} ${createdUser.surname} adicionado com sucesso ao grupo!`);
+        showToast(`Utilizador ${createdUser.name} ${createdUser.surname} adicionado com sucesso!`, 'success'); // Usa showToast
         userForm.reset();
       } catch (error) {
         console.error("Falha ao criar utilizador:", error);
-        alert(`Erro ao criar utilizador: ${error.message}`);
+        showToast(`Erro ao criar utilizador: ${error.message}`, 'error'); // Usa showToast
+      } finally {
+          submitButton.disabled = false;
+          submitButton.textContent = 'Adicionar Utilizador';
       }
     });
 

@@ -1,11 +1,35 @@
 // js/views/settings.js
 import { showModal } from '../../components/modal.js';
 
+// Garante que showToast esteja disponível globalmente
+import { showToast as toastFunc } from '../ui/toast.js'; // Ajuste o caminho se necessário
+if (typeof window.showToast === 'undefined') {
+    window.showToast = toastFunc;
+}
+
+// Função auxiliar para criar corpo do modal de confirmação
+function createConfirmationModalBody(message, confirmCallback) {
+    const container = document.createElement('div');
+    container.innerHTML = `<p>${message}</p>`;
+    const confirmButton = document.createElement('button');
+    confirmButton.textContent = 'Confirmar';
+    confirmButton.className = 'action-btn'; // Use uma classe de botão apropriada
+    confirmButton.style.marginTop = '1rem';
+    confirmButton.onclick = () => {
+        confirmCallback();
+        document.getElementById('closeModalBtn').click(); // Fecha o modal após confirmar
+    };
+    container.appendChild(confirmButton);
+    return container;
+}
+
+
 function handleLogout() {
-    if (confirm('Tem a certeza que deseja desconectar?')) {
+    const modalBody = createConfirmationModalBody('Tem a certeza que deseja desconectar?', () => {
         localStorage.removeItem('jwtToken');
         window.location.href = 'login.html';
-    }
+    });
+    showModal('Confirmar Desconexão', modalBody);
 }
 
 function openChangePasswordModal(viewElement) {
@@ -24,27 +48,37 @@ function openChangePasswordModal(viewElement) {
     `;
     showModal('Alterar Senha', modalBodyContent);
 
-    // Adiciona o listener de submit APÓS o modal ser exibido
     const form = document.getElementById('change-password-form');
-    form.addEventListener('submit', async (e) => {
+    // Remove listener antigo para evitar duplicação se a função for chamada múltiplas vezes
+    form.replaceWith(form.cloneNode(true));
+    const newForm = document.getElementById('change-password-form');
+
+    newForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const currentPassword = document.getElementById('current-password').value;
         const newPassword = document.getElementById('new-password').value;
+        const submitButton = newForm.querySelector('button[type="submit"]');
+
+        submitButton.disabled = true;
+        submitButton.textContent = 'Alterando...';
 
         try {
-            const response = await fetchApi('/api/profile/me/change-password', {
+            await fetchApi('/api/profile/me/change-password', {
                 method: 'POST',
                 body: JSON.stringify({ currentPassword, newPassword })
             });
-            alert('Senha alterada com sucesso!');
-            document.getElementById('closeModalBtn').click(); // Fecha o modal
+            showToast('Senha alterada com sucesso!', 'success');
+            document.getElementById('closeModalBtn').click();
         } catch (error) {
-            alert(`Erro: ${error.message}`);
+            showToast(`Erro: ${error.message}`, 'error');
+            submitButton.disabled = false;
+            submitButton.textContent = 'Alterar Senha';
         }
     });
 }
 
 export async function renderSettingsView(viewElement) {
+    // Removidos os comentários /* ... */ daqui
     viewElement.innerHTML = `
         <div class="settings-container">
             <div class="settings-section">
@@ -78,11 +112,11 @@ export async function renderSettingsView(viewElement) {
             <div class="settings-section">
                 <h3 class="settings-section-header">Sobre</h3>
                 <div class="settings-list">
-                    <div class="settings-item" onclick="alert('Funcionalidade em desenvolvimento!')">
+                    <div class="settings-item" id="settings-language-btn">
                         <div class="settings-item-icon">🌐</div>
                         <div class="settings-item-label">Idioma</div>
                     </div>
-                    <div class="settings-item" onclick="alert('Funcionalidade em desenvolvimento!')">
+                    <div class="settings-item" id="settings-support-btn">
                         <div class="settings-item-icon">✉️</div>
                         <div class="settings-item-label">Contato e Suporte</div>
                     </div>
@@ -101,4 +135,12 @@ export async function renderSettingsView(viewElement) {
 
     viewElement.querySelector('#change-password-btn').addEventListener('click', () => openChangePasswordModal(viewElement));
     viewElement.querySelector('#logout-btn').addEventListener('click', handleLogout);
+
+    // Adiciona listeners para os botões "Sobre" usando showToast
+    viewElement.querySelector('#settings-language-btn').addEventListener('click', () => {
+        showToast('Funcionalidade de Idioma em desenvolvimento!', 'info');
+    });
+    viewElement.querySelector('#settings-support-btn').addEventListener('click', () => {
+         showToast('Funcionalidade de Contato em desenvolvimento!', 'info');
+    });
 }

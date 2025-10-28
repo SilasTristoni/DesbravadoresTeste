@@ -62,8 +62,8 @@ loginForm.addEventListener('submit', function(event) {
     })
     .then(response => {
         if (!response.ok) {
-            return response.text().then(text => { 
-                throw new Error(text || 'Email ou senha inválidos') 
+            return response.text().then(text => {
+                throw new Error(text || 'Email ou senha inválidos')
             });
         }
         return response.json();
@@ -71,7 +71,7 @@ loginForm.addEventListener('submit', function(event) {
     .then(data => {
         const token = data.token;
         localStorage.setItem('jwtToken', token);
-        
+
         // Decodifica o payload do JWT para obter o cargo (role)
         const payload = JSON.parse(atob(token.split('.')[1]));
         const userRole = payload.role;
@@ -83,7 +83,7 @@ loginForm.addEventListener('submit', function(event) {
             window.location.href = 'admin.html';
         } else {
             alert('Cargo de usuário não reconhecido.');
-            window.location.href = 'login.html';
+            window.location.href = 'login.html'; // Permanece na página de login
         }
 
         // Lógica de "Lembrar-me"
@@ -95,7 +95,7 @@ loginForm.addEventListener('submit', function(event) {
     })
     .catch((error) => {
         console.error('Erro no login:', error);
-        alert(error.message);
+        alert(`Falha no login: ${error.message}`); // Mensagem mais clara
         localStorage.removeItem('jwtToken');
     })
     .finally(() => {
@@ -103,5 +103,18 @@ loginForm.addEventListener('submit', function(event) {
         loginButton.textContent = 'Entrar';
     });
 });
+
+// --- LÓGICA PARA O LINK "ESQUECEU SUA SENHA?" --- NOVA SEÇÃO ADICIONADA ---
+const forgotPasswordLink = document.querySelector('.forgot-password');
+
+if (forgotPasswordLink) {
+    forgotPasswordLink.addEventListener('click', (event) => {
+        event.preventDefault(); // Impede que o link navegue para "#"
+        alert('Recuperação de senha ainda não implementada.\n\nPor favor, entre em contato com o diretor ou monitor do seu clube para solicitar a redefinição da sua senha.');
+        // No futuro, aqui você poderia redirecionar para uma página de solicitação
+        // ou abrir um modal para inserir o email.
+    });
+}
+// --- FIM DA NOVA SEÇÃO ---
 
 document.addEventListener('DOMContentLoaded', applyTheme);

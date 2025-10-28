@@ -7,9 +7,21 @@ function hideModal() {
     modal.classList.remove('active');
 }
 
-export function showModal(title, description) {
+export function showModal(title, bodyContent) { // Renomeado parâmetro para clareza
     modalTitle.innerHTML = title;
-    modalBody.innerHTML = `<p>${description}</p>`;
+    modalBody.innerHTML = ''; // Limpa o conteúdo anterior
+
+    if (typeof bodyContent === 'string') {
+        // Se for string, define como HTML interno
+        modalBody.innerHTML = bodyContent;
+    } else if (bodyContent instanceof HTMLElement) {
+        // Se for um elemento HTML, anexa-o
+        modalBody.appendChild(bodyContent);
+    } else {
+        // Fallback caso receba algo inesperado
+        modalBody.innerHTML = '<p>Conteúdo inválido para o modal.</p>';
+    }
+
     modal.classList.add('active');
 }
 

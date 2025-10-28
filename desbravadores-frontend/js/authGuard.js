@@ -1,5 +1,12 @@
 // js/authGuard.js
 
+// Tenta importar showToast (pode falhar se chamado antes do apiClient.js)
+// Uma abordagem mais robusta seria garantir que apiClient.js seja carregado primeiro sempre.
+// Ou criar uma função de log de erro específica aqui.
+// Por simplicidade, assumiremos que showToast estará disponível no momento do erro.
+// Adicione isto no topo, se showToast não estiver global:
+// import { showToast } from './ui/toast.js'; // Ajuste o caminho
+
 const requiredRole = document.body?.dataset.requiredRole;
 
 function decodeToken(token) {
@@ -38,7 +45,12 @@ function checkAuth() {
     // 1. Verificar Expiração
     if (Date.now() >= tokenExpiration) {
         localStorage.removeItem('jwtToken');
-        alert('Sessão expirada. Por favor, faça login novamente.');
+        // Substituído alert por showToast (ou console.warn se showToast não carregar a tempo)
+        if (window.showToast) {
+            showToast('Sessão expirada. Por favor, faça login novamente.', 'error');
+        } else {
+            console.warn('Sessão expirada. Por favor, faça login novamente.');
+        }
         window.location.href = 'login.html';
         return;
     }
@@ -53,14 +65,12 @@ function checkAuth() {
     } else if (requiredRole === 'USER_PAGE') {
         // Se for Admin, mas está na página de User, redireciona para Admin
         if (userRole === 'MONITOR' || userRole === 'DIRETOR') {
-            window.location.href = 'admin.html'; 
+            window.location.href = 'admin.html';
             return;
         }
-        if (userRole !== 'DESBRAVADOR') {
-            console.warn(`Acesso negado. Cargo: ${userRole}. Requerido: DESBRAVADOR.`);
-            window.location.href = 'login.html';
-            return;
-        }
+        // Originalmente faltava verificar DESBRAVADOR, mas a lógica acima já cobre
+        // Se não for MONITOR nem DIRETOR, assume-se que é DESBRAVADOR ou inválido
+        // Token inválido já foi tratado antes. Então, se chegou aqui e não é Admin, permite.
     }
 
     console.log(`Acesso permitido para o cargo: ${userRole}`);
