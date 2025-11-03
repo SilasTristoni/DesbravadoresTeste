@@ -57,3 +57,17 @@ Caused by: java.nio.file.InvalidPathException: Illegal char <"> at index 25: upl
 	at java.base/java.lang.reflect.Constructor.newInstance(Unknown Source)
 	at org.springframework.beans.BeanUtils.instantiateClass(BeanUtils.java:210)
 	... 36 common frames omitted
+2025-11-02 22:26:23.455 [main] ERROR o.s.b.d.LoggingFailureAnalysisReporter - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Web server failed to start. Port 8080 was already in use.
+
+Action:
+
+Identify and stop the process that's listening on port 8080 or configure this application to listen on another port.
+

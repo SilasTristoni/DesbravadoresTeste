@@ -9,6 +9,7 @@ if (typeof window.showToast === 'undefined') {
 import { showModal } from '../../../components/modal.js';
 
 const GROUP_PAGE_SIZE = 5; // Define o tamanho da página
+let editingGroupId = null; // NOVO: Controla qual grupo está sendo editado
 
 /**
  * Função para renderizar os controlos de paginação
@@ -58,12 +59,22 @@ async function loadGroupList(container, page = 0) {
   try {
     container.innerHTML = `<p>A carregar grupos...</p>`;
 
-    const endpoint = `/api/groups?page=${page}&size=${GROUP_PAGE_SIZE}&sort=name,asc`;
+    // ATUALIZADO: Busca os grupos E os monitores (para o <select> de edição)
+    const [groupPage, monitorPage] = await Promise.all([
+        fetchApi(`/api/groups?page=${page}&size=${GROUP_PAGE_SIZE}&sort=name,asc`),
+        fetchApi('/api/admin/users/monitors?page=0&size=999') // Pega todos monitores
+    ]);
     
-    const groupPage = await fetchApi(endpoint);
     // A API retorna Page<GroupDetailsDTO>
     // GroupDetailsDTO tem { group: Group, members: MemberDTO[] }
     const groupDetailsList = groupPage.content;
+    const monitors = monitorPage.content;
+
+    // Prepara as <options> de monitores para o formulário de edição
+    const monitorOptionsHtml = monitors.map(monitor =>
+        `<option value="${monitor.id}">${monitor.name} ${monitor.surname}</option>`
+    ).join('');
+
 
     let tableHtml = `<p>Nenhum grupo encontrado.</p>`;
 
@@ -84,14 +95,52 @@ async function loadGroupList(container, page = 0) {
                 const members = details.members;
                 const leaderName = group.leader ? `${group.leader.name} ${group.leader.surname}` : 'Sem líder';
                 
+                // NOVO: Verifica se este é o grupo em edição
+                if (editingGroupId === group.id) {
+                    return `
+                        <tr data-group-id="${group.id}" class="editing-row">
+                            <td colspan="4">
+                                <form class="edit-group-form" data-group-id="${group.id}">
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label>Nome do Grupo</label>
+                                            <input type="text" name="name" value="${group.name}" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Líder</label>
+                                            <select name="leader">
+                                                <option value="">Sem líder</option>
+                                                ${monitorOptionsHtml}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-actions">
+                                        <button type="submit" class="btn-action save">
+                                            <i class="fa-solid fa-check"></i> Salvar
+                                        </button>
+                                        <button type="button" class="btn-action cancel cancel-edit-btn">
+                                            <i class="fa-solid fa-times"></i> Cancelar
+                                        </button>
+                                    </div>
+                                </form>
+                            </td>
+                        </tr>
+                    `;
+                }
+                
+                // Renderização padrão
                 return `
                   <tr data-group-id="${group.id}">
                     <td>${group.name}</td>
                     <td>${leaderName}</td>
                     <td>${members.length}</td>
-                    <td>
-                        <button class="action-btn-small edit-group-btn" data-group-id="${group.id}">Editar</button>
-                        <button class="action-btn-small delete-group-btn" data-group-id="${group.id}" data-group-name="${group.name}">Apagar</button>
+                    <td class="actions-cell">
+                        <button class="btn-action-icon edit edit-group-btn" title="Editar Grupo" data-group-id="${group.id}">
+                            <i class="fa-solid fa-pencil"></i>
+                        </button>
+                        <button class="btn-action-icon delete delete-group-btn" title="Apagar Grupo" data-group-id="${group.id}" data-group-name="${group.name}">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
                     </td>
                   </tr>
                 `
@@ -109,6 +158,15 @@ async function loadGroupList(container, page = 0) {
         <div id="group-list-pagination" class="pagination-controls">
         </div>
     `;
+    
+    // NOVO: Pré-seleciona o líder correto no formulário de edição
+    const editForm = container.querySelector('.edit-group-form');
+    if (editForm) {
+        const groupInEdit = groupDetailsList.find(d => d.group.id === editingGroupId)?.group;
+        if (groupInEdit && groupInEdit.leader) {
+            editForm.elements.leader.value = groupInEdit.leader.id;
+        }
+    }
 
     // Renderiza os controlos de paginação
     const paginationContainer = container.querySelector("#group-list-pagination");
@@ -133,7 +191,7 @@ async function loadGroupList(container, page = 0) {
 function addEventListeners(container, currentPage) {
      const listContainer = document.getElementById('group-list-container');
      
-     // 1. Apagar Grupo
+     // 1. Apagar Grupo (lógica existente, sem alteração)
      container.querySelectorAll('.delete-group-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
             const groupId = e.currentTarget.dataset.groupId;
@@ -168,16 +226,56 @@ function addEventListeners(container, currentPage) {
         });
      });
      
-     // 2. Editar Grupo (Abre formulário de edição)
-     // TODO: Implementar a lógica de edição (similar a manage-tasks.js)
+     // 2. ATUALIZADO: Iniciar Edição
      container.querySelectorAll('.edit-group-btn').forEach(btn => {
          btn.addEventListener('click', (e) => {
-             const groupId = e.currentTarget.dataset.groupId;
-             showToast(`Funcionalidade "Editar Grupo" (ID: ${groupId}) ainda não implementada.`, 'info');
-             // Aqui você pode implementar a lógica de edição em linha
-             // ou abrir um modal de edição.
+             editingGroupId = parseInt(e.currentTarget.dataset.groupId, 10);
+             loadGroupList(listContainer, currentPage); // Re-renderiza a lista com o formulário
          });
      });
+
+     // 3. NOVO: Cancelar Edição
+     container.querySelectorAll('.cancel-edit-btn').forEach(btn => {
+         btn.addEventListener('click', () => {
+             editingGroupId = null;
+             loadGroupList(listContainer, currentPage); // Re-renderiza a lista
+         });
+     });
+
+     // 4. NOVO: Salvar Edição
+     const editForm = container.querySelector('.edit-group-form');
+     if (editForm) {
+         editForm.addEventListener('submit', async (e) => {
+             e.preventDefault();
+             const groupId = e.currentTarget.dataset.groupId;
+             const saveButton = e.currentTarget.querySelector('button[type="submit"]');
+
+             const leaderIdValue = e.currentTarget.elements.leader.value;
+             const leaderPayload = leaderIdValue ? { id: parseInt(leaderIdValue, 10) } : null;
+
+             const payload = {
+                 name: e.currentTarget.elements.name.value,
+                 leader: leaderPayload
+             };
+
+             saveButton.textContent = 'Salvando...';
+             saveButton.disabled = true;
+
+             try {
+                 await fetchApi(`/api/groups/${groupId}`, {
+                     method: 'PUT',
+                     body: JSON.stringify(payload)
+                 });
+                 showToast('Grupo atualizado com sucesso!', 'success');
+                 editingGroupId = null;
+                 loadGroupList(listContainer, currentPage); // Recarrega
+             } catch (error) {
+                 showToast(`Erro ao salvar grupo: ${error.message}`, 'error');
+                 saveButton.textContent = 'Salvar';
+                 saveButton.disabled = false;
+             }
+         });
+     }
 }
 
 /**

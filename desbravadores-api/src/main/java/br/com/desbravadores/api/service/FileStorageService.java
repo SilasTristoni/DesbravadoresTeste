@@ -1,48 +1,89 @@
 package br.com.desbravadores.api.service;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.IOException; // NOVO IMPORT
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class FileStorageService {
 
-    private final Path rootLocation;
+    private final Path fileStorageLocation;
 
-    public FileStorageService(@Value("${file.upload-dir}") String uploadDir) {
-        this.rootLocation = Paths.get(uploadDir);
+    @Autowired
+    public FileStorageService() {
+        // O caminho "file" na raiz do projeto
+        this.fileStorageLocation = Paths.get("file")
+                .toAbsolutePath().normalize();
+
         try {
-            Files.createDirectories(rootLocation);
-        } catch (IOException e) {
-            throw new RuntimeException("Não foi possível criar o diretório de uploads", e);
+            Files.createDirectories(this.fileStorageLocation);
+        } catch (Exception ex) {
+            throw new RuntimeException("Não foi possível criar o diretório onde os arquivos enviados serão armazenados.", ex);
         }
     }
 
     public String store(MultipartFile file) {
-        try {
-            if (file.isEmpty()) {
-                throw new RuntimeException("Falha ao guardar ficheiro vazio.");
-            }
-            // Gera um nome de ficheiro único para evitar conflitos
-            String filename = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
-            Path destinationFile = this.rootLocation.resolve(Paths.get(filename))
-                                      .normalize().toAbsolutePath();
+        String originalFilename = file.getOriginalFilename();
+        String extension = "";
 
-            try (InputStream inputStream = file.getInputStream()) {
-                Files.copy(inputStream, destinationFile, StandardCopyOption.REPLACE_EXISTING);
+        if (originalFilename != null && originalFilename.contains(".")) {
+            extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+        }
+        
+        String filename = UUID.randomUUID().toString() + extension;
+
+        try {
+            if (filename.contains("..")) {
+                throw new RuntimeException("Nome de arquivo inválido " + filename);
             }
-            // Retorna o nome do ficheiro para ser guardado no banco de dados
+
+            Path targetLocation = this.fileStorageLocation.resolve(filename);
+            Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+
             return filename;
-        } catch (IOException e) {
-            throw new RuntimeException("Falha ao guardar o ficheiro.", e);
+        } catch (IOException ex) {
+            throw new RuntimeException("Não foi possível armazenar o arquivo " + filename, ex);
+        }
+    }
+
+    public Resource load(String filename) {
+        try {
+            Path filePath = this.fileStorageLocation.resolve(filename).normalize();
+            Resource resource = new UrlResource(filePath.toUri());
+            if (resource.exists()) {
+                return resource;
+            } else {
+                throw new RuntimeException("Arquivo não encontrado " + filename);
+            }
+        } catch (MalformedURLException ex) {
+            throw new RuntimeException("Arquivo não encontrado " + filename, ex);
+        }
+    }
+
+    /**
+     * NOVO MÉTODO: Para apagar um arquivo
+     */
+    public void delete(String filename) {
+        if (filename == null || filename.isEmpty()) {
+            return;
+        }
+        
+        try {
+            Path filePath = this.fileStorageLocation.resolve(filename).normalize();
+            Files.deleteIfExists(filePath);
+        } catch (IOException ex) {
+            // Loga o erro, mas não para a execução (ex: se o arquivo já foi apagado)
+            System.err.println("Não foi possível apagar o arquivo " + filename + ". Erro: " + ex.getMessage());
         }
     }
 }

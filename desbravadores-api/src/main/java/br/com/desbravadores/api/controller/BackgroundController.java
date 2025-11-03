@@ -1,125 +1,120 @@
 package br.com.desbravadores.api.controller;
 
-import java.util.List;
-import java.util.Map;
+import java.util.Optional; // NOVO IMPORT
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestParam; // Import estava faltando
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile; // IMPORT NECESSÁRIO
+import org.springframework.web.multipart.MultipartFile;
 
 import br.com.desbravadores.api.model.Background;
-import br.com.desbravadores.api.model.User;
 import br.com.desbravadores.api.repository.BackgroundRepository;
-import br.com.desbravadores.api.repository.UserRepository;
 import br.com.desbravadores.api.service.FileStorageService;
 
-// DTO simples para receber dados de gradiente
-class BackgroundGradientRequest {
-    private String name;
-    private String textColor;
-    private String gradient;
-    
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
-    public String getTextColor() { return textColor; }
-    public void setTextColor(String textColor) { this.textColor = textColor; }
-    public String getGradient() { return gradient; }
-    public void setGradient(String gradient) { this.gradient = gradient; }
-}
-
-
 @RestController
-@RequestMapping("/api")
 public class BackgroundController {
 
     @Autowired
     private BackgroundRepository backgroundRepository;
 
     @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
     private FileStorageService fileStorageService;
 
-    /**
-     * Endpoint para um DIRETOR criar um novo fundo de perfil a partir de uma IMAGEM.
-     */
-    @PostMapping("/admin/backgrounds")
+    // Endpoint PÚBLICO para listar fundos
+    @GetMapping("/api/backgrounds")
+    public ResponseEntity<Page<Background>> getAllBackgrounds(Pageable pageable) {
+        return ResponseEntity.ok(backgroundRepository.findAll(pageable));
+    }
+
+    // Endpoint de ADMIN para criar fundos
+    @PostMapping("/api/admin/backgrounds")
     @PreAuthorize("hasAuthority('DIRETOR')")
-    public ResponseEntity<Background> createBackgroundWithImage(@RequestParam("name") String name,
-                                                       @RequestParam("textColor") String textColor,
-                                                       @RequestParam("imageFile") MultipartFile imageFile) {
-        
-        String imageFilename = fileStorageService.store(imageFile);
-        String imageUrl = "/uploads/" + imageFilename;
+    public ResponseEntity<Background> createBackground(
+            @RequestParam("name") String name,
+            @RequestParam("textColor") String textColor,
+            @RequestParam("imageFile") MultipartFile imageFile) {
+
+        String filename = fileStorageService.store(imageFile);
+        String imageUrl = "/uploads/" + filename;
 
         Background newBackground = new Background();
         newBackground.setName(name);
         newBackground.setImageUrl(imageUrl);
-        // FORÇA A COR DO TEXTO PARA BRANCO, conforme solicitação do utilizador
-        newBackground.setTextColor("#FFFFFF");
+        newBackground.setTextColor(textColor);
 
         Background savedBackground = backgroundRepository.save(newBackground);
         return ResponseEntity.status(201).body(savedBackground);
     }
     
-    /**
-     * Endpoint para um DIRETOR criar um novo fundo de perfil a partir de um GRADIENTE CSS.
-     */
-    @PostMapping("/admin/backgrounds/gradient")
+    @PutMapping("/api/admin/backgrounds/{id}")
     @PreAuthorize("hasAuthority('DIRETOR')")
-    public ResponseEntity<Background> createBackgroundWithGradient(@RequestBody BackgroundGradientRequest request) {
-        
-        Background newBackground = new Background();
-        newBackground.setName(request.getName());
-        newBackground.setGradient(request.getGradient()); // Define o gradiente
-        // FORÇA A COR DO TEXTO PARA BRANCO, conforme solicitação do utilizador
-        newBackground.setTextColor("#FFFFFF");
-        newBackground.setImageUrl(null); // Garante que a URL da imagem é nula
-        
-        Background savedBackground = backgroundRepository.save(newBackground);
-        return ResponseEntity.status(201).body(savedBackground);
+    public ResponseEntity<Background> updateBackground(
+            @PathVariable Long id,
+            @RequestParam("name") String name,
+            @RequestParam("textColor") String textColor,
+            @RequestParam(value = "imageFile", required = false) MultipartFile imageFile) {
+
+        return backgroundRepository.findById(id).map(background -> {
+            background.setName(name);
+            background.setTextColor(textColor);
+
+            if (imageFile != null && !imageFile.isEmpty()) {
+                // Tenta apagar a imagem antiga
+                try {
+                    if (background.getImageUrl() != null && !background.getImageUrl().isEmpty()) {
+                        String oldFilename = background.getImageUrl().replace("/uploads/", "");
+                        fileStorageService.delete(oldFilename); // CORRIGIDO
+                    }
+                } catch (Exception e) {
+                    System.err.println("Não foi possível apagar a imagem antiga: " + e.getMessage());
+                }
+
+                String filename = fileStorageService.store(imageFile);
+                background.setImageUrl("/uploads/" + filename);
+            }
+
+            Background updatedBackground = backgroundRepository.save(background);
+            return ResponseEntity.ok(updatedBackground);
+        }).orElse(ResponseEntity.notFound().build());
     }
 
-
     /**
-     * Endpoint para listar todos os fundos disponíveis.
-     * CRÍTICO: Aplica @Transactional à lista
+     * ENDPOINT ATUALIZADO: Corrigido o 'type mismatch'
      */
-    @GetMapping("/backgrounds")
-    @Transactional
-    public ResponseEntity<List<Background>> getAllBackgrounds() {
-        return ResponseEntity.ok(backgroundRepository.findAll());
-    }
+    @DeleteMapping("/api/admin/backgrounds/{id}")
+    @PreAuthorize("hasAuthority('DIRETOR')")
+    public ResponseEntity<Void> deleteBackground(@PathVariable Long id) {
+        
+        Optional<Background> optionalBackground = backgroundRepository.findById(id);
 
-    /**
-     * Endpoint para o UTILIZADOR LOGADO selecionar um fundo para o seu perfil.
-     * Acessível por qualquer utilizador autenticado.
-     */
-    @PutMapping("/profile/me/background")
-    @Transactional
-    public ResponseEntity<?> selectMyBackground(@RequestBody Map<String, Long> payload, Authentication authentication) {
-        Long backgroundId = payload.get("backgroundId");
+        if (!optionalBackground.isPresent()) {
+            return ResponseEntity.notFound().build();
+        }
 
-        User currentUser = userRepository.findByEmail(authentication.getName()).orElseThrow();
-        Background selectedBackground = backgroundRepository.findById(backgroundId).orElseThrow();
+        Background background = optionalBackground.get();
 
-        // TODO: Adicionar lógica no futuro para verificar se o utilizador desbloqueou este fundo.
-        // Por agora, qualquer utilizador pode selecionar qualquer fundo.
+        // Apaga o arquivo de imagem associado
+        try {
+            if (background.getImageUrl() != null && !background.getImageUrl().isEmpty()) {
+                String filename = background.getImageUrl().replace("/uploads/", "");
+                fileStorageService.delete(filename); // CORRIGIDO
+            }
+        } catch (Exception e) {
+            System.err.println("Não foi possível apagar o arquivo de imagem: " + e.getMessage());
+        }
 
-        currentUser.setSelectedBackground(selectedBackground);
-        userRepository.save(currentUser);
-
-        return ResponseEntity.ok(Map.of("message", "Fundo do perfil atualizado com sucesso."));
+        // TODO: Desassociar o fundo de usuários que o utilizam.
+        
+        backgroundRepository.delete(background);
+        return ResponseEntity.noContent().build();
     }
 }

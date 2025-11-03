@@ -132,8 +132,12 @@ async function loadAndRenderTasks(viewElement, page = 0) {
                                                 <textarea name="description">${task.description || ''}</textarea>
                                             </div>
                                             <div class="form-actions">
-                                                <button type="submit" class="action-btn-small" style="background-color: var(--scout-light-green);">Salvar</button>
-                                                <button type="button" class="action-btn-small cancel-edit-btn" style="background-color: var(--text-secondary);">Cancelar</button>
+                                                <button type="submit" class="btn-action save">
+                                                    <i class="fa-solid fa-check"></i> Salvar
+                                                </button>
+                                                <button type="button" class="btn-action cancel cancel-edit-btn">
+                                                    <i class="fa-solid fa-times"></i> Cancelar
+                                                </button>
                                             </div>
                                         </form>
                                     </td>
@@ -148,9 +152,13 @@ async function loadAndRenderTasks(viewElement, page = 0) {
                                 <td>${timeFormatted}</td>
                                 <td>${task.title}</td>
                                 <td title="${task.description || 'Sem descrição.'}">${(task.description || '').substring(0, 30)}${(task.description || '').length > 30 ? '...' : ''}</td>
-                                <td>
-                                    <button class="action-btn-small edit-task-btn" data-task-id="${task.id}">Editar</button>
-                                    <button class="action-btn-small delete-task-btn" data-task-id="${task.id}">Apagar</button>
+                                <td class="actions-cell">
+                                    <button class="btn-action-icon edit edit-task-btn" title="Editar Tarefa" data-task-id="${task.id}">
+                                        <i class="fa-solid fa-pencil"></i>
+                                    </button>
+                                    <button class="btn-action-icon delete delete-task-btn" title="Apagar Tarefa" data-task-id="${task.id}">
+                                        <i class="fa-solid fa-trash-can"></i>
+                                    </button>
                                 </td>
                             </tr>
                         `;

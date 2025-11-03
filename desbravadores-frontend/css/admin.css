@@ -354,3 +354,75 @@
 .view-toggle-btn:hover:not(.active) {
     color: var(--text-primary);
 }
+/* Célula da tabela que contém os botões de ação */
+.user-table td.actions-cell {
+    text-align: right; /* Alinha os botões à direita */
+    white-space: nowrap; /* Impede que quebrem linha */
+    width: 1%; /* Faz a célula ter o menor tamanho possível */
+    padding-right: 15px;
+}
+
+/* Base para botões de ação com ícones (Editar, Apagar) */
+.btn-action-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;      /* Tamanho quadrado */
+    height: 34px;
+    padding: 0;       /* Remove padding */
+    font-size: 0.9rem;  /* Tamanho do ícone */
+    border: none;
+    border-radius: 50%; /* Botões redondos */
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: white;
+    margin: 0 3px; /* Pequeno espaço entre botões */
+}
+
+.btn-action-icon:hover {
+    opacity: 0.8;
+    transform: scale(1.05); /* Efeito de zoom */
+}
+
+/* --- Cores dos Botões de Ícone --- */
+
+/* Editar (Azul) */
+.btn-action-icon.edit {
+    background-color: var(--scout-blue);
+}
+
+/* Apagar (Vermelho) */
+.btn-action-icon.delete {
+    background-color: #c62828; /* Vermelho mais forte */
+}
+
+/* --- Botões de Formulário (Salvar, Cancelar) --- */
+
+/* Base para botões com texto e ícone (Salvar, Cancelar) */
+.btn-action {
+    padding: 8px 14px;
+    font-size: 0.9rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+    color: white;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px; /* Espaço entre ícone e texto */
+}
+
+.btn-action:hover {
+    opacity: 0.85;
+}
+
+/* Salvar (Verde) */
+.btn-action.save {
+    background-color: var(--scout-light-green);
+}
+
+/* Cancelar (Cinza) */
+.btn-action.cancel {
+    background-color: var(--text-secondary);
+}
