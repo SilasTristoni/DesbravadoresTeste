@@ -5,6 +5,7 @@
   padding: 1.5rem;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
   margin-bottom: 2rem;
+  position: relative; /* <-- ADICIONE ESTA LINHA */
 }
 
 .admin-widget h2 {
@@ -432,4 +433,20 @@
 .list-group-item .controls a[class*="delete"] {
     background-color: #dc3545 !important; /* Vermelho */
     color: white !important;
+}
+.action-btn-small {
+    background-color: var(--scout-green);
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: background-color 0.2s;
+}
+
+.action-btn-small:hover {
+    background-color: var(--scout-light-green);
+    color: white;
 }
