@@ -549,3 +549,89 @@
 2025-10-28 01:05:37.981 [http-nio-8080-exec-10] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor - Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllUsers(java.lang.Long,org.springframework.data.domain.Pageable,org.springframework.security.core.Authentication); target is of class [br.com.desbravadores.api.controller.AdminController]
 2025-11-02 22:02:18.233 [main] INFO  o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with UserDetailsService bean with name customUserDetailsService
 2025-11-02 22:02:18.610 [main] DEBUG o.s.s.web.DefaultSecurityFilterChain - Will secure any request with filters: DisableEncodeUrlFilter, WebAsyncManagerIntegrationFilter, SecurityContextHolderFilter, HeaderWriterFilter, CorsFilter, LogoutFilter, JwtAuthFilter, RequestCacheAwareFilter, SecurityContextHolderAwareRequestFilter, AnonymousAuthenticationFilter, SessionManagementFilter, ExceptionTranslationFilter, AuthorizationFilter
+2025-11-02 22:02:38.007 [http-nio-8080-exec-1] DEBUG o.s.security.web.FilterChainProxy - Securing POST /auth/login
+2025-11-02 22:02:38.031 [http-nio-8080-exec-1] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter - Set SecurityContextHolder to anonymous SecurityContext
+2025-11-02 22:02:38.034 [http-nio-8080-exec-1] DEBUG o.s.security.web.FilterChainProxy - Secured POST /auth/login
+2025-11-02 22:02:38.275 [http-nio-8080-exec-1] DEBUG o.s.s.a.d.DaoAuthenticationProvider - Authenticated user
+2025-11-02 22:02:38.437 [http-nio-8080-exec-2] DEBUG o.s.security.web.FilterChainProxy - Securing GET /api/groups?page=0&size=999
+2025-11-02 22:02:38.437 [http-nio-8080-exec-3] DEBUG o.s.security.web.FilterChainProxy - Securing GET /api/admin/users?page=0&size=5
+2025-11-02 22:02:38.471 [http-nio-8080-exec-3] DEBUG o.s.security.web.FilterChainProxy - Secured GET /api/admin/users?page=0&size=5
+2025-11-02 22:02:38.471 [http-nio-8080-exec-2] DEBUG o.s.security.web.FilterChainProxy - Secured GET /api/groups?page=0&size=999
+2025-11-02 22:02:38.478 [http-nio-8080-exec-3] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor - Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllUsers(java.lang.Long,org.springframework.data.domain.Pageable,org.springframework.security.core.Authentication); target is of class [br.com.desbravadores.api.controller.AdminController]
+2025-11-02 22:02:38.511 [http-nio-8080-exec-3] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor - Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllUsers(java.lang.Long,org.springframework.data.domain.Pageable,org.springframework.security.core.Authentication); target is of class [br.com.desbravadores.api.controller.AdminController]
+2025-11-02 22:02:40.714 [http-nio-8080-exec-5] DEBUG o.s.security.web.FilterChainProxy - Securing GET /api/admin/users/monitors
+2025-11-02 22:02:40.714 [http-nio-8080-exec-4] DEBUG o.s.security.web.FilterChainProxy - Securing GET /api/groups?size=999
+2025-11-02 22:02:40.725 [http-nio-8080-exec-4] DEBUG o.s.security.web.FilterChainProxy - Secured GET /api/groups?size=999
+2025-11-02 22:02:40.725 [http-nio-8080-exec-5] DEBUG o.s.security.web.FilterChainProxy - Secured GET /api/admin/users/monitors
+2025-11-02 22:02:40.727 [http-nio-8080-exec-5] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor - Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllMonitors(org.springframework.data.domain.Pageable); target is of class [br.com.desbravadores.api.controller.AdminController]
+2025-11-02 22:02:40.728 [http-nio-8080-exec-5] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor - Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllMonitors(org.springframework.data.domain.Pageable); target is of class [br.com.desbravadores.api.controller.AdminController]
+2025-11-02 22:02:41.823 [http-nio-8080-exec-6] DEBUG o.s.security.web.FilterChainProxy - Securing GET /api/tasks?year=2025&month=11
+2025-11-02 22:02:41.834 [http-nio-8080-exec-6] DEBUG o.s.security.web.FilterChainProxy - Secured GET /api/tasks?year=2025&month=11
+2025-11-02 22:02:46.576 [http-nio-8080-exec-7] DEBUG o.s.security.web.FilterChainProxy - Securing GET /api/groups?page=0&size=999
+2025-11-02 22:02:46.586 [http-nio-8080-exec-7] DEBUG o.s.security.web.FilterChainProxy - Secured GET /api/groups?page=0&size=999
+2025-11-02 22:02:46.657 [http-nio-8080-exec-8] DEBUG o.s.security.web.FilterChainProxy - Securing GET /api/admin/users?page=0&size=5&sort=name,asc
+2025-11-02 22:02:46.666 [http-nio-8080-exec-8] DEBUG o.s.security.web.FilterChainProxy - Secured GET /api/admin/users?page=0&size=5&sort=name,asc
+2025-11-02 22:02:46.669 [http-nio-8080-exec-8] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor - Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllUsers(java.lang.Long,org.springframework.data.domain.Pageable,org.springframework.security.core.Authentication); target is of class [br.com.desbravadores.api.controller.AdminController]
+2025-11-02 22:02:46.670 [http-nio-8080-exec-8] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor - Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllUsers(java.lang.Long,org.springframework.data.domain.Pageable,org.springframework.security.core.Authentication); target is of class [br.com.desbravadores.api.controller.AdminController]
+2025-11-02 22:02:46.952 [http-nio-8080-exec-9] DEBUG o.s.security.web.FilterChainProxy - Securing GET /api/profile/me
+2025-11-02 22:02:46.962 [http-nio-8080-exec-9] DEBUG o.s.security.web.FilterChainProxy - Secured GET /api/profile/me
+2025-11-02 22:02:46.977 [http-nio-8080-exec-10] DEBUG o.s.security.web.FilterChainProxy - Securing GET /api/backgrounds
+2025-11-02 22:02:46.986 [http-nio-8080-exec-10] DEBUG o.s.security.web.FilterChainProxy - Secured GET /api/backgrounds
+2025-11-02 22:02:47.005 [http-nio-8080-exec-1] DEBUG o.s.security.web.FilterChainProxy - Securing GET /uploads/4a34fc39-6e51-4d98-9828-b6b8128e7a70_Cod.png
+2025-11-02 22:02:47.006 [http-nio-8080-exec-1] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter - Set SecurityContextHolder to anonymous SecurityContext
+2025-11-02 22:02:47.007 [http-nio-8080-exec-1] DEBUG o.s.security.web.FilterChainProxy - Secured GET /uploads/4a34fc39-6e51-4d98-9828-b6b8128e7a70_Cod.png
+2025-11-02 22:02:48.029 [http-nio-8080-exec-2] DEBUG o.s.security.web.FilterChainProxy - Securing GET /api/backgrounds
+2025-11-02 22:02:48.029 [http-nio-8080-exec-3] DEBUG o.s.security.web.FilterChainProxy - Securing GET /api/gamification/achievements
+2025-11-02 22:02:48.038 [http-nio-8080-exec-3] DEBUG o.s.security.web.FilterChainProxy - Secured GET /api/gamification/achievements
+2025-11-02 22:02:48.038 [http-nio-8080-exec-2] DEBUG o.s.security.web.FilterChainProxy - Secured GET /api/backgrounds
+2025-11-02 22:02:48.051 [http-nio-8080-exec-4] DEBUG o.s.security.web.FilterChainProxy - Securing GET /uploads/c6b54e4b-d3f6-46f9-bc5b-1a853449826a_imagemInicial.png
+2025-11-02 22:02:48.051 [http-nio-8080-exec-5] DEBUG o.s.security.web.FilterChainProxy - Securing GET /uploads/11835e00-ad8a-4f2b-a9f1-8ad9c84b50b6_logoCentroVerde.png
+2025-11-02 22:02:48.051 [http-nio-8080-exec-4] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter - Set SecurityContextHolder to anonymous SecurityContext
+2025-11-02 22:02:48.052 [http-nio-8080-exec-5] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter - Set SecurityContextHolder to anonymous SecurityContext
+2025-11-02 22:02:48.052 [http-nio-8080-exec-5] DEBUG o.s.security.web.FilterChainProxy - Secured GET /uploads/11835e00-ad8a-4f2b-a9f1-8ad9c84b50b6_logoCentroVerde.png
+2025-11-02 22:02:48.052 [http-nio-8080-exec-4] DEBUG o.s.security.web.FilterChainProxy - Secured GET /uploads/c6b54e4b-d3f6-46f9-bc5b-1a853449826a_imagemInicial.png
+2025-11-02 22:02:48.057 [http-nio-8080-exec-6] DEBUG o.s.security.web.FilterChainProxy - Securing GET /uploads/9d412d8c-f4dc-4eb4-b132-a771f154c3d5_sneaky.jpg
+2025-11-02 22:02:48.058 [http-nio-8080-exec-6] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter - Set SecurityContextHolder to anonymous SecurityContext
+2025-11-02 22:02:48.058 [http-nio-8080-exec-6] DEBUG o.s.security.web.FilterChainProxy - Secured GET /uploads/9d412d8c-f4dc-4eb4-b132-a771f154c3d5_sneaky.jpg
+2025-11-02 22:02:48.060 [http-nio-8080-exec-9] DEBUG o.s.security.web.FilterChainProxy - Securing GET /uploads/c63bdc60-f51e-41fa-9715-f0a869454d14_kitescolar.jpg
+2025-11-02 22:02:48.060 [http-nio-8080-exec-7] DEBUG o.s.security.web.FilterChainProxy - Securing GET /uploads/14e746a2-7fbf-4001-a023-b53ea2a10cc9_Cod.png
+2025-11-02 22:02:48.060 [http-nio-8080-exec-8] DEBUG o.s.security.web.FilterChainProxy - Securing GET /uploads/4215d419-5a6b-49b6-b3b0-c04a833a6a51_image.png
+2025-11-02 22:02:48.061 [http-nio-8080-exec-8] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter - Set SecurityContextHolder to anonymous SecurityContext
+2025-11-02 22:02:48.061 [http-nio-8080-exec-7] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter - Set SecurityContextHolder to anonymous SecurityContext
+2025-11-02 22:02:48.061 [http-nio-8080-exec-9] DEBUG o.s.s.w.a.AnonymousAuthenticationFilter - Set SecurityContextHolder to anonymous SecurityContext
+2025-11-02 22:02:48.061 [http-nio-8080-exec-8] DEBUG o.s.security.web.FilterChainProxy - Secured GET /uploads/4215d419-5a6b-49b6-b3b0-c04a833a6a51_image.png
+2025-11-02 22:02:48.061 [http-nio-8080-exec-7] DEBUG o.s.security.web.FilterChainProxy - Secured GET /uploads/14e746a2-7fbf-4001-a023-b53ea2a10cc9_Cod.png
+2025-11-02 22:02:48.061 [http-nio-8080-exec-9] DEBUG o.s.security.web.FilterChainProxy - Secured GET /uploads/c63bdc60-f51e-41fa-9715-f0a869454d14_kitescolar.jpg
+2025-11-02 22:02:50.875 [http-nio-8080-exec-10] DEBUG o.s.security.web.FilterChainProxy - Securing GET /api/profile/me
+2025-11-02 22:02:50.884 [http-nio-8080-exec-10] DEBUG o.s.security.web.FilterChainProxy - Secured GET /api/profile/me
+2025-11-02 22:02:50.895 [http-nio-8080-exec-1] DEBUG o.s.security.web.FilterChainProxy - Securing GET /api/backgrounds
+2025-11-02 22:02:50.904 [http-nio-8080-exec-1] DEBUG o.s.security.web.FilterChainProxy - Secured GET /api/backgrounds
+2025-11-02 22:02:51.230 [http-nio-8080-exec-2] DEBUG o.s.security.web.FilterChainProxy - Securing GET /api/groups?page=0&size=999
+2025-11-02 22:02:51.239 [http-nio-8080-exec-2] DEBUG o.s.security.web.FilterChainProxy - Secured GET /api/groups?page=0&size=999
+2025-11-02 22:02:51.291 [http-nio-8080-exec-3] DEBUG o.s.security.web.FilterChainProxy - Securing GET /api/admin/users?page=0&size=5&sort=name,asc
+2025-11-02 22:02:51.299 [http-nio-8080-exec-3] DEBUG o.s.security.web.FilterChainProxy - Secured GET /api/admin/users?page=0&size=5&sort=name,asc
+2025-11-02 22:02:51.299 [http-nio-8080-exec-3] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor - Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllUsers(java.lang.Long,org.springframework.data.domain.Pageable,org.springframework.security.core.Authentication); target is of class [br.com.desbravadores.api.controller.AdminController]
+2025-11-02 22:02:51.301 [http-nio-8080-exec-3] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor - Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllUsers(java.lang.Long,org.springframework.data.domain.Pageable,org.springframework.security.core.Authentication); target is of class [br.com.desbravadores.api.controller.AdminController]
+2025-11-02 22:02:52.643 [http-nio-8080-exec-5] DEBUG o.s.security.web.FilterChainProxy - Securing OPTIONS /api/admin/users/monitors?page=0&size=5&sort=name,asc
+2025-11-02 22:02:52.646 [http-nio-8080-exec-4] DEBUG o.s.security.web.FilterChainProxy - Securing GET /api/admin/users/monitors?page=0&size=5&sort=name,asc
+2025-11-02 22:02:52.655 [http-nio-8080-exec-4] DEBUG o.s.security.web.FilterChainProxy - Secured GET /api/admin/users/monitors?page=0&size=5&sort=name,asc
+2025-11-02 22:02:52.656 [http-nio-8080-exec-4] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor - Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllMonitors(org.springframework.data.domain.Pageable); target is of class [br.com.desbravadores.api.controller.AdminController]
+2025-11-02 22:02:52.656 [http-nio-8080-exec-4] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor - Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllMonitors(org.springframework.data.domain.Pageable); target is of class [br.com.desbravadores.api.controller.AdminController]
+2025-11-02 22:02:53.867 [http-nio-8080-exec-8] DEBUG o.s.security.web.FilterChainProxy - Securing GET /api/admin/users?page=0&size=5&sort=name,asc
+2025-11-02 22:02:53.876 [http-nio-8080-exec-8] DEBUG o.s.security.web.FilterChainProxy - Secured GET /api/admin/users?page=0&size=5&sort=name,asc
+2025-11-02 22:02:53.877 [http-nio-8080-exec-8] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor - Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllUsers(java.lang.Long,org.springframework.data.domain.Pageable,org.springframework.security.core.Authentication); target is of class [br.com.desbravadores.api.controller.AdminController]
+2025-11-02 22:02:53.877 [http-nio-8080-exec-8] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor - Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllUsers(java.lang.Long,org.springframework.data.domain.Pageable,org.springframework.security.core.Authentication); target is of class [br.com.desbravadores.api.controller.AdminController]
+2025-11-02 22:02:56.003 [http-nio-8080-exec-6] DEBUG o.s.security.web.FilterChainProxy - Securing GET /api/tasks?year=2025&month=11
+2025-11-02 22:02:56.013 [http-nio-8080-exec-6] DEBUG o.s.security.web.FilterChainProxy - Secured GET /api/tasks?year=2025&month=11
+2025-11-02 22:02:58.365 [http-nio-8080-exec-9] DEBUG o.s.security.web.FilterChainProxy - Securing GET /api/admin/users/monitors
+2025-11-02 22:02:58.365 [http-nio-8080-exec-7] DEBUG o.s.security.web.FilterChainProxy - Securing GET /api/groups?size=999
+2025-11-02 22:02:58.375 [http-nio-8080-exec-7] DEBUG o.s.security.web.FilterChainProxy - Secured GET /api/groups?size=999
+2025-11-02 22:02:58.375 [http-nio-8080-exec-9] DEBUG o.s.security.web.FilterChainProxy - Secured GET /api/admin/users/monitors
+2025-11-02 22:02:58.376 [http-nio-8080-exec-9] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor - Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllMonitors(org.springframework.data.domain.Pageable); target is of class [br.com.desbravadores.api.controller.AdminController]
+2025-11-02 22:02:58.380 [http-nio-8080-exec-9] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor - Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllMonitors(org.springframework.data.domain.Pageable); target is of class [br.com.desbravadores.api.controller.AdminController]
+2025-11-02 22:03:13.979 [http-nio-8080-exec-10] DEBUG o.s.security.web.FilterChainProxy - Securing GET /api/groups?page=0&size=999
+2025-11-02 22:03:13.979 [http-nio-8080-exec-1] DEBUG o.s.security.web.FilterChainProxy - Securing GET /api/admin/users?page=0&size=5
+2025-11-02 22:03:13.987 [http-nio-8080-exec-1] DEBUG o.s.security.web.FilterChainProxy - Secured GET /api/admin/users?page=0&size=5
+2025-11-02 22:03:13.987 [http-nio-8080-exec-10] DEBUG o.s.security.web.FilterChainProxy - Secured GET /api/groups?page=0&size=999
+2025-11-02 22:03:13.988 [http-nio-8080-exec-1] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor - Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllUsers(java.lang.Long,org.springframework.data.domain.Pageable,org.springframework.security.core.Authentication); target is of class [br.com.desbravadores.api.controller.AdminController]
+2025-11-02 22:03:13.988 [http-nio-8080-exec-1] DEBUG o.s.s.a.m.AuthorizationManagerBeforeMethodInterceptor - Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllUsers(java.lang.Long,org.springframework.data.domain.Pageable,org.springframework.security.core.Authentication); target is of class [br.com.desbravadores.api.controller.AdminController]
