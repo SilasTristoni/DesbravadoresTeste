@@ -44,6 +44,7 @@ function renderInfoDisplay(user) {
 
 // Renderiza o bloco de identidade no modo de edição
 function renderEditForm(user) {
+    // ATUALIZADO: Campo de avatar agora é 'file'
     return `
         <form id="edit-profile-form" class="edit-form" style="display: block;">
             <div class="form-row">
@@ -57,8 +58,11 @@ function renderEditForm(user) {
                 </div>
             </div>
             <div class="form-group">
-                <label for="edit-avatar">Link/URL do Avatar</label>
-                <input type="text" id="edit-avatar" value="${user.avatar || ''}" placeholder="Cole a URL da imagem aqui">
+                <label for="edit-avatar">Alterar Avatar (Upload)</label>
+                <input type="file" id="edit-avatar" accept="image/*">
+                <small style="color: white; opacity: 0.8; margin-top: 5px; display: block;">
+                    Deixe em branco para manter o avatar atual.
+                </small>
             </div>
             <div class="form-actions">
                 <button type="submit" class="btn-save-sidebar">Salvar</button>
@@ -98,11 +102,15 @@ function renderIdentityBlock(viewElement, user) {
             e.preventDefault();
             const saveButton = editForm.querySelector('.btn-save-sidebar');
 
-            const payload = {
-                name: viewElement.querySelector('#edit-name').value,
-                surname: viewElement.querySelector('#edit-surname').value,
-                avatar: viewElement.querySelector('#edit-avatar').value || null, // Envia null se vazio
-            };
+            // ATUALIZADO: Usar FormData para enviar os dados
+            const formData = new FormData();
+            formData.append('name', viewElement.querySelector('#edit-name').value);
+            formData.append('surname', viewElement.querySelector('#edit-surname').value);
+            
+            const avatarFile = viewElement.querySelector('#edit-avatar').files[0];
+            if (avatarFile) {
+                formData.append('avatarFile', avatarFile);
+            }
 
             saveButton.textContent = 'Salvando...';
             saveButton.disabled = true;
@@ -111,15 +119,19 @@ function renderIdentityBlock(viewElement, user) {
                 // A API retorna o usuário atualizado
                 const updatedUser = await fetchApi('/api/profile/me', {
                     method: 'PUT',
-                    body: JSON.stringify(payload)
+                    body: formData // Envia o FormData
                 });
+                
                 // Atualiza os dados locais para refletir a mudança imediatamente
                 currentUserData = {...currentUserData, ...updatedUser};
+                
                 // Volta para o modo de visualização com os dados atualizados
                 toggleEditMode(viewElement, currentUserData);
                 showToast('Perfil atualizado com sucesso!', 'success');
-                 // Força recarregamento da view para atualizar avatar/background se necessário
-                 renderProfileView(viewElement);
+                
+                // Força recarregamento da view para atualizar avatar/background se necessário
+                // (O avatar na <img> principal será atualizado aqui)
+                renderProfileView(viewElement);
 
             } catch (error) {
                 showToast(`Erro ao salvar perfil: ${error.message}`, 'error');
@@ -240,6 +252,18 @@ export async function renderProfileView(viewElement, userId = null) {
         const isOwnProfile = !user.isOtherUser;
 
         const bg = user.selectedBackground;
+        
+        // --- CORREÇÃO APLICADA AQUI ---
+        let avatarUrl;
+        if (user.avatar && user.avatar.startsWith('/file/')) {
+            // Se for um avatar do upload, usa o host da API + o caminho + timestamp
+            avatarUrl = `http://localhost:8080${user.avatar}?${new Date().getTime()}`;
+        } else {
+            // Se for o avatar padrão (ou null), usa o caminho local
+            avatarUrl = (user.avatar || 'img/escoteiro1.png');
+        }
+        // --- FIM DA CORREÇÃO ---
+        
         const bgImageUrl = bg?.imageUrl ? `http://localhost:8080${bg.imageUrl}` : null;
         const backgroundStyle = bgImageUrl
             ? `background: url(${bgImageUrl}) center/cover no-repeat; color: ${bg.textColor || '#FFFFFF'};`
@@ -254,7 +278,7 @@ export async function renderProfileView(viewElement, userId = null) {
             <div class="profile-container">
                 <div class="profile-identity-block" id="identityBlock" style="${backgroundStyle}">
                     <div class="profile-identity-header" style="display: flex; align-items: flex-start; width: 100%;">
-                        <img src="${user.avatar || 'img/escoteiro1.png'}" alt="Avatar" class="avatar-img">
+                        <img src="${avatarUrl}" alt="Avatar" class="avatar-img">
                         <div style="flex-grow: 1; display: flex; justify-content: space-between; align-items: flex-start; margin-left: 1.5rem;">
                             <div class="info-and-edit-wrapper" id="info-and-edit-wrapper">
                                 {/* Conteúdo será renderizado por renderIdentityBlock */}

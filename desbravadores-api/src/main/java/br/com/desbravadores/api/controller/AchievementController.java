@@ -48,7 +48,7 @@ public class AchievementController {
             @RequestParam("iconFile") MultipartFile iconFile) {
 
         String iconFilename = fileStorageService.store(iconFile);
-        String iconUrl = "/uploads/" + iconFilename;
+        String iconUrl = "/file/" + iconFilename; // CORREÇÃO
 
         Achievement newAchievement = new Achievement();
         newAchievement.setName(name);
@@ -81,7 +81,7 @@ public class AchievementController {
                 // Tenta apagar o ícone antigo
                 try {
                     if (achievement.getIcon() != null && !achievement.getIcon().isEmpty()) {
-                        String oldFilename = achievement.getIcon().replace("/uploads/", "");
+                        String oldFilename = achievement.getIcon().replace("/file/", ""); // CORREÇÃO
                         fileStorageService.delete(oldFilename); // CORRIGIDO (agora o método existe)
                     }
                 } catch (Exception e) {
@@ -89,7 +89,7 @@ public class AchievementController {
                 }
 
                 String iconFilename = fileStorageService.store(iconFile);
-                achievement.setIcon("/uploads/" + iconFilename);
+                achievement.setIcon("/file/" + iconFilename); // CORREÇÃO
             }
 
             Achievement updatedAchievement = achievementRepository.save(achievement);
@@ -114,7 +114,7 @@ public class AchievementController {
         // Apaga o ícone associado do armazenamento
         try {
             if (achievement.getIcon() != null && !achievement.getIcon().isEmpty()) {
-                String filename = achievement.getIcon().replace("/uploads/", "");
+                String filename = achievement.getIcon().replace("/file/", ""); // CORREÇÃO
                 fileStorageService.delete(filename); // CORRIGIDO (agora o método existe)
             }
         } catch (Exception e) {

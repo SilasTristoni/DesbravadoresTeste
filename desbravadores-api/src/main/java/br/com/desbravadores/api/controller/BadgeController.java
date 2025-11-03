@@ -54,7 +54,7 @@ public class BadgeController {
                                              @RequestParam("iconFile") MultipartFile iconFile) {
         
         String iconFilename = fileStorageService.store(iconFile);
-        String iconUrl = "/uploads/" + iconFilename;
+        String iconUrl = "/file/" + iconFilename; // CORREÇÃO
 
         Badge newBadge = new Badge();
         newBadge.setName(name);

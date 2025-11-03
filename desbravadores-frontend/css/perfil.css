@@ -76,6 +76,26 @@
   color: white;
   font-size: 1rem;
 }
+
+/* NOVO ESTILO PARA O INPUT DE ARQUIVO */
+.edit-form input[type="file"] {
+    padding: 8px; /* Ajuste de padding para inputs de arquivo */
+    background: rgba(0, 0, 0, 0.25);
+}
+/* Estiliza o botão do input de arquivo no WebKit (Chrome, Safari) */
+.edit-form input[type="file"]::-webkit-file-upload-button {
+    background: var(--scout-gold);
+    color: var(--scout-green);
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-right: 10px;
+}
+/* FIM DO NOVO ESTILO */
+
+
 .edit-form .form-actions {
   display: flex;
   gap: 10px;

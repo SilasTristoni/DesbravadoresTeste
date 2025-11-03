@@ -44,7 +44,7 @@ public class BackgroundController {
             @RequestParam("imageFile") MultipartFile imageFile) {
 
         String filename = fileStorageService.store(imageFile);
-        String imageUrl = "/uploads/" + filename;
+        String imageUrl = "/file/" + filename; // CORREÇÃO
 
         Background newBackground = new Background();
         newBackground.setName(name);
@@ -71,7 +71,7 @@ public class BackgroundController {
                 // Tenta apagar a imagem antiga
                 try {
                     if (background.getImageUrl() != null && !background.getImageUrl().isEmpty()) {
-                        String oldFilename = background.getImageUrl().replace("/uploads/", "");
+                        String oldFilename = background.getImageUrl().replace("/file/", ""); // CORREÇÃO
                         fileStorageService.delete(oldFilename); // CORRIGIDO
                     }
                 } catch (Exception e) {
@@ -79,7 +79,7 @@ public class BackgroundController {
                 }
 
                 String filename = fileStorageService.store(imageFile);
-                background.setImageUrl("/uploads/" + filename);
+                background.setImageUrl("/file/" + filename); // CORREÇÃO
             }
 
             Background updatedBackground = backgroundRepository.save(background);
@@ -105,7 +105,7 @@ public class BackgroundController {
         // Apaga o arquivo de imagem associado
         try {
             if (background.getImageUrl() != null && !background.getImageUrl().isEmpty()) {
-                String filename = background.getImageUrl().replace("/uploads/", "");
+                String filename = background.getImageUrl().replace("/file/", ""); // CORREÇÃO
                 fileStorageService.delete(filename); // CORRIGIDO
             }
         } catch (Exception e) {

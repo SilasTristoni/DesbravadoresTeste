@@ -34,8 +34,8 @@ public class SecurityConfig {
                         .requestMatchers("/auth/login").permitAll()
                         
                         // ---- NOVA REGRA DE EXCEÇÃO ADICIONADA AQUI ----
-                        // Permite acesso público a todos os ficheiros dentro da pasta /uploads
-                        .requestMatchers("/uploads/**").permitAll()
+                        // Permite acesso público a todos os ficheiros dentro da pasta /file
+                        .requestMatchers("/file/**").permitAll()
                         
                         // O resto das regras permanece o mesmo
                         .anyRequest().authenticated()
