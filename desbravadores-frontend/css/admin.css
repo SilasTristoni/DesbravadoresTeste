@@ -388,7 +388,7 @@
 
 /* Editar (Azul) */
 .btn-action-icon.edit {
-    background-color: var(--scout-blue);
+    background-color: #1565c0; /* Azul mais forte */
 }
 
 /* Apagar (Vermelho) */
@@ -422,7 +422,14 @@
     background-color: var(--scout-light-green);
 }
 
-/* Cancelar (Cinza) */
-.btn-action.cancel {
-    background-color: var(--text-secondary);
+.list-group-item .controls .edit-btn,
+.list-group-item .controls a[class*="edit"] {
+    background-color: #007bff !important; /* Azul */
+    color: white !important;
+}
+
+.list-group-item .controls .delete-btn,
+.list-group-item .controls a[class*="delete"] {
+    background-color: #dc3545 !important; /* Vermelho */
+    color: white !important;
 }

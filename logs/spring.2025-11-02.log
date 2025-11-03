@@ -1,0 +1,914 @@
+2025-10-20T21:17:37.364-03:00  INFO 51136 --- [main] b.c.d.api.DesbravadoresApiApplication    : Starting DesbravadoresApiApplication using Java 21.0.8 with PID 51136 (C:\Users\silas.tristoni\Documents\DesbravadoresTeste\desbravadores-api\target\classes started by silas.tristoni in C:\Users\silas.tristoni\Documents\DesbravadoresTeste)
+2025-10-20T21:17:37.367-03:00  INFO 51136 --- [main] b.c.d.api.DesbravadoresApiApplication    : No active profile set, falling back to 1 default profile: "default"
+2025-10-20T21:17:38.535-03:00  INFO 51136 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-10-20T21:17:38.614-03:00  INFO 51136 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 68 ms. Found 9 JPA repository interfaces.
+2025-10-20T21:17:39.890-03:00  INFO 51136 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2025-10-20T21:17:39.912-03:00  INFO 51136 --- [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-10-20T21:17:39.913-03:00  INFO 51136 --- [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.46]
+2025-10-20T21:17:39.998-03:00  INFO 51136 --- [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-10-20T21:17:39.998-03:00  INFO 51136 --- [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 2550 ms
+2025-10-20T21:17:40.308-03:00  INFO 51136 --- [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-10-20T21:17:40.447-03:00  INFO 51136 --- [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.29.Final
+2025-10-20T21:17:40.535-03:00  INFO 51136 --- [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-10-20T21:17:41.003-03:00  INFO 51136 --- [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-10-20T21:17:41.050-03:00  INFO 51136 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-10-20T21:17:42.212-03:00  WARN 51136 --- [main] o.h.engine.jdbc.spi.SqlExceptionHelper   : SQL Error: 0, SQLState: 08S01
+2025-10-20T21:17:42.212-03:00 ERROR 51136 --- [main] o.h.engine.jdbc.spi.SqlExceptionHelper   : Communications link failure
+
+The last packet sent successfully to the server was 0 milliseconds ago. The driver has not received any packets from the server.
+2025-10-20T21:17:42.213-03:00  WARN 51136 --- [main] o.h.e.j.e.i.JdbcEnvironmentInitiator     : HHH000342: Could not obtain connection to query metadata
+
+org.hibernate.exception.JDBCConnectionException: unable to obtain isolated JDBC connection [Communications link failure
+
+The last packet sent successfully to the server was 0 milliseconds ago. The driver has not received any packets from the server.] [n/a]
+	at org.hibernate.exception.internal.SQLStateConversionDelegate.convert(SQLStateConversionDelegate.java:100) ~[hibernate-core-6.6.29.Final.jar:6.6.29.Final]
+	at org.hibernate.exception.internal.StandardSQLExceptionConverter.convert(StandardSQLExceptionConverter.java:58) ~[hibernate-core-6.6.29.Final.jar:6.6.29.Final]
+	at org.hibernate.engine.jdbc.spi.SqlExceptionHelper.convert(SqlExceptionHelper.java:108) ~[hibernate-core-6.6.29.Final.jar:6.6.29.Final]
+	at org.hibernate.engine.jdbc.spi.SqlExceptionHelper.convert(SqlExceptionHelper.java:94) ~[hibernate-core-6.6.29.Final.jar:6.6.29.Final]
+	at org.hibernate.resource.transaction.backend.jdbc.internal.JdbcIsolationDelegate.delegateWork(JdbcIsolationDelegate.java:116) ~[hibernate-core-6.6.29.Final.jar:6.6.29.Final]
+	at org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator.getJdbcEnvironmentUsingJdbcMetadata(JdbcEnvironmentInitiator.java:334) ~[hibernate-core-6.6.29.Final.jar:6.6.29.Final]
+	at org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator.initiateService(JdbcEnvironmentInitiator.java:129) ~[hibernate-core-6.6.29.Final.jar:6.6.29.Final]
+	at org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator.initiateService(JdbcEnvironmentInitiator.java:81) ~[hibernate-core-6.6.29.Final.jar:6.6.29.Final]
+	at org.hibernate.boot.registry.internal.StandardServiceRegistryImpl.initiateService(StandardServiceRegistryImpl.java:130) ~[hibernate-core-6.6.29.Final.jar:6.6.29.Final]
+	at org.hibernate.service.internal.AbstractServiceRegistryImpl.createService(AbstractServiceRegistryImpl.java:263) ~[hibernate-core-6.6.29.Final.jar:6.6.29.Final]
+	at org.hibernate.service.internal.AbstractServiceRegistryImpl.initializeService(AbstractServiceRegistryImpl.java:238) ~[hibernate-core-6.6.29.Final.jar:6.6.29.Final]
+	at org.hibernate.service.internal.AbstractServiceRegistryImpl.getService(AbstractServiceRegistryImpl.java:215) ~[hibernate-core-6.6.29.Final.jar:6.6.29.Final]
+	at org.hibernate.boot.model.relational.Database.<init>(Database.java:45) ~[hibernate-core-6.6.29.Final.jar:6.6.29.Final]
+	at org.hibernate.boot.internal.InFlightMetadataCollectorImpl.getDatabase(InFlightMetadataCollectorImpl.java:226) ~[hibernate-core-6.6.29.Final.jar:6.6.29.Final]
+	at org.hibernate.boot.internal.InFlightMetadataCollectorImpl.<init>(InFlightMetadataCollectorImpl.java:194) ~[hibernate-core-6.6.29.Final.jar:6.6.29.Final]
+	at org.hibernate.boot.model.process.spi.MetadataBuildingProcess.complete(MetadataBuildingProcess.java:171) ~[hibernate-core-6.6.29.Final.jar:6.6.29.Final]
+	at org.hibernate.jpa.boot.internal.EntityManagerFactoryBuilderImpl.metadata(EntityManagerFactoryBuilderImpl.java:1442) ~[hibernate-core-6.6.29.Final.jar:6.6.29.Final]
+	at org.hibernate.jpa.boot.internal.EntityManagerFactoryBuilderImpl.build(EntityManagerFactoryBuilderImpl.java:1513) ~[hibernate-core-6.6.29.Final.jar:6.6.29.Final]
+	at org.springframework.orm.jpa.vendor.SpringHibernateJpaPersistenceProvider.createContainerEntityManagerFactory(SpringHibernateJpaPersistenceProvider.java:66) ~[spring-orm-6.2.11.jar:6.2.11]
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.createNativeEntityManagerFactory(LocalContainerEntityManagerFactoryBean.java:390) ~[spring-orm-6.2.11.jar:6.2.11]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.buildNativeEntityManagerFactory(AbstractEntityManagerFactoryBean.java:419) ~[spring-orm-6.2.11.jar:6.2.11]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.afterPropertiesSet(AbstractEntityManagerFactoryBean.java:400) ~[spring-orm-6.2.11.jar:6.2.11]
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.afterPropertiesSet(LocalContainerEntityManagerFactoryBean.java:366) ~[spring-orm-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeInitMethods(AbstractAutowireCapableBeanFactory.java:1873) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1822) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:607) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:529) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:373) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.BeanDefinitionValueResolver.resolveReference(BeanDefinitionValueResolver.java:365) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.BeanDefinitionValueResolver.resolveValueIfNecessary(BeanDefinitionValueResolver.java:135) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.ConstructorResolver.resolveConstructorArguments(ConstructorResolver.java:691) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.ConstructorResolver.instantiateUsingFactoryMethod(ConstructorResolver.java:513) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.instantiateUsingFactoryMethod(AbstractAutowireCapableBeanFactory.java:1375) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1205) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:569) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:529) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:373) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.BeanDefinitionValueResolver.resolveReference(BeanDefinitionValueResolver.java:365) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.BeanDefinitionValueResolver.resolveValueIfNecessary(BeanDefinitionValueResolver.java:135) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.applyPropertyValues(AbstractAutowireCapableBeanFactory.java:1725) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.populateBean(AbstractAutowireCapableBeanFactory.java:1474) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:606) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:529) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:373) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.config.DependencyDescriptor.resolveCandidate(DependencyDescriptor.java:254) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1760) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1643) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.resolveFieldValue(AutowiredAnnotationBeanPostProcessor.java:785) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.inject(AutowiredAnnotationBeanPostProcessor.java:768) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.annotation.InjectionMetadata.inject(InjectionMetadata.java:146) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor.postProcessProperties(AutowiredAnnotationBeanPostProcessor.java:509) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.populateBean(AbstractAutowireCapableBeanFactory.java:1459) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:606) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:529) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:373) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.config.DependencyDescriptor.resolveCandidate(DependencyDescriptor.java:254) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1760) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1643) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.resolveFieldValue(AutowiredAnnotationBeanPostProcessor.java:785) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.inject(AutowiredAnnotationBeanPostProcessor.java:768) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.annotation.InjectionMetadata.inject(InjectionMetadata.java:146) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor.postProcessProperties(AutowiredAnnotationBeanPostProcessor.java:509) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.populateBean(AbstractAutowireCapableBeanFactory.java:1459) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:606) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:529) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:373) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:207) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.boot.web.servlet.ServletContextInitializerBeans.getOrderedBeansOfType(ServletContextInitializerBeans.java:230) ~[spring-boot-3.5.6.jar:3.5.6]
+	at org.springframework.boot.web.servlet.ServletContextInitializerBeans.addAsRegistrationBean(ServletContextInitializerBeans.java:184) ~[spring-boot-3.5.6.jar:3.5.6]
+	at org.springframework.boot.web.servlet.ServletContextInitializerBeans.addAsRegistrationBean(ServletContextInitializerBeans.java:179) ~[spring-boot-3.5.6.jar:3.5.6]
+	at org.springframework.boot.web.servlet.ServletContextInitializerBeans.addAdaptableBeans(ServletContextInitializerBeans.java:164) ~[spring-boot-3.5.6.jar:3.5.6]
+	at org.springframework.boot.web.servlet.ServletContextInitializerBeans.<init>(ServletContextInitializerBeans.java:96) ~[spring-boot-3.5.6.jar:3.5.6]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.getServletContextInitializerBeans(ServletWebServerApplicationContext.java:271) ~[spring-boot-3.5.6.jar:3.5.6]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.selfInitialize(ServletWebServerApplicationContext.java:245) ~[spring-boot-3.5.6.jar:3.5.6]
+	at org.springframework.boot.web.embedded.tomcat.TomcatStarter.onStartup(TomcatStarter.java:52) ~[spring-boot-3.5.6.jar:3.5.6]
+	at org.apache.catalina.core.StandardContext.startInternal(StandardContext.java:4464) ~[tomcat-embed-core-10.1.46.jar:10.1.46]
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164) ~[tomcat-embed-core-10.1.46.jar:10.1.46]
+	at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1203) ~[tomcat-embed-core-10.1.46.jar:10.1.46]
+	at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1193) ~[tomcat-embed-core-10.1.46.jar:10.1.46]
+	at java.base/java.util.concurrent.FutureTask.run(Unknown Source) ~[na:na]
+	at org.apache.tomcat.util.threads.InlineExecutorService.execute(InlineExecutorService.java:81) ~[tomcat-embed-core-10.1.46.jar:10.1.46]
+	at java.base/java.util.concurrent.AbstractExecutorService.submit(Unknown Source) ~[na:na]
+	at org.apache.catalina.core.ContainerBase.startInternal(ContainerBase.java:749) ~[tomcat-embed-core-10.1.46.jar:10.1.46]
+	at org.apache.catalina.core.StandardHost.startInternal(StandardHost.java:773) ~[tomcat-embed-core-10.1.46.jar:10.1.46]
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164) ~[tomcat-embed-core-10.1.46.jar:10.1.46]
+	at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1203) ~[tomcat-embed-core-10.1.46.jar:10.1.46]
+	at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1193) ~[tomcat-embed-core-10.1.46.jar:10.1.46]
+	at java.base/java.util.concurrent.FutureTask.run(Unknown Source) ~[na:na]
+	at org.apache.tomcat.util.threads.InlineExecutorService.execute(InlineExecutorService.java:81) ~[tomcat-embed-core-10.1.46.jar:10.1.46]
+	at java.base/java.util.concurrent.AbstractExecutorService.submit(Unknown Source) ~[na:na]
+	at org.apache.catalina.core.ContainerBase.startInternal(ContainerBase.java:749) ~[tomcat-embed-core-10.1.46.jar:10.1.46]
+	at org.apache.catalina.core.StandardEngine.startInternal(StandardEngine.java:203) ~[tomcat-embed-core-10.1.46.jar:10.1.46]
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164) ~[tomcat-embed-core-10.1.46.jar:10.1.46]
+	at org.apache.catalina.core.StandardService.startInternal(StandardService.java:412) ~[tomcat-embed-core-10.1.46.jar:10.1.46]
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164) ~[tomcat-embed-core-10.1.46.jar:10.1.46]
+	at org.apache.catalina.core.StandardServer.startInternal(StandardServer.java:870) ~[tomcat-embed-core-10.1.46.jar:10.1.46]
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164) ~[tomcat-embed-core-10.1.46.jar:10.1.46]
+	at org.apache.catalina.startup.Tomcat.start(Tomcat.java:438) ~[tomcat-embed-core-10.1.46.jar:10.1.46]
+	at org.springframework.boot.web.embedded.tomcat.TomcatWebServer.initialize(TomcatWebServer.java:128) ~[spring-boot-3.5.6.jar:3.5.6]
+	at org.springframework.boot.web.embedded.tomcat.TomcatWebServer.<init>(TomcatWebServer.java:107) ~[spring-boot-3.5.6.jar:3.5.6]
+	at org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory.getTomcatWebServer(TomcatServletWebServerFactory.java:517) ~[spring-boot-3.5.6.jar:3.5.6]
+	at org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory.getWebServer(TomcatServletWebServerFactory.java:219) ~[spring-boot-3.5.6.jar:3.5.6]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.createWebServer(ServletWebServerApplicationContext.java:193) ~[spring-boot-3.5.6.jar:3.5.6]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.onRefresh(ServletWebServerApplicationContext.java:167) ~[spring-boot-3.5.6.jar:3.5.6]
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:621) ~[spring-context-6.2.11.jar:6.2.11]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146) ~[spring-boot-3.5.6.jar:3.5.6]
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:752) ~[spring-boot-3.5.6.jar:3.5.6]
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:439) ~[spring-boot-3.5.6.jar:3.5.6]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:318) ~[spring-boot-3.5.6.jar:3.5.6]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1361) ~[spring-boot-3.5.6.jar:3.5.6]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1350) ~[spring-boot-3.5.6.jar:3.5.6]
+	at br.com.desbravadores.api.DesbravadoresApiApplication.main(DesbravadoresApiApplication.java:16) ~[classes/:na]
+Caused by: com.mysql.cj.jdbc.exceptions.CommunicationsException: Communications link failure
+
+The last packet sent successfully to the server was 0 milliseconds ago. The driver has not received any packets from the server.
+	at com.mysql.cj.jdbc.exceptions.SQLError.createCommunicationsException(SQLError.java:165) ~[mysql-connector-j-9.4.0.jar:9.4.0]
+	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:55) ~[mysql-connector-j-9.4.0.jar:9.4.0]
+	at com.mysql.cj.jdbc.ConnectionImpl.createNewIO(ConnectionImpl.java:839) ~[mysql-connector-j-9.4.0.jar:9.4.0]
+	at com.mysql.cj.jdbc.ConnectionImpl.<init>(ConnectionImpl.java:415) ~[mysql-connector-j-9.4.0.jar:9.4.0]
+	at com.mysql.cj.jdbc.ConnectionImpl.getInstance(ConnectionImpl.java:237) ~[mysql-connector-j-9.4.0.jar:9.4.0]
+	at com.mysql.cj.jdbc.NonRegisteringDriver.connect(NonRegisteringDriver.java:180) ~[mysql-connector-j-9.4.0.jar:9.4.0]
+	at com.zaxxer.hikari.util.DriverDataSource.getConnection(DriverDataSource.java:144) ~[HikariCP-6.3.3.jar:na]
+	at com.zaxxer.hikari.pool.PoolBase.newConnection(PoolBase.java:370) ~[HikariCP-6.3.3.jar:na]
+	at com.zaxxer.hikari.pool.PoolBase.newPoolEntry(PoolBase.java:207) ~[HikariCP-6.3.3.jar:na]
+	at com.zaxxer.hikari.pool.HikariPool.createPoolEntry(HikariPool.java:488) ~[HikariCP-6.3.3.jar:na]
+	at com.zaxxer.hikari.pool.HikariPool.checkFailFast(HikariPool.java:576) ~[HikariCP-6.3.3.jar:na]
+	at com.zaxxer.hikari.pool.HikariPool.<init>(HikariPool.java:97) ~[HikariCP-6.3.3.jar:na]
+	at com.zaxxer.hikari.HikariDataSource.getConnection(HikariDataSource.java:111) ~[HikariCP-6.3.3.jar:na]
+	at org.hibernate.engine.jdbc.connections.internal.DatasourceConnectionProviderImpl.getConnection(DatasourceConnectionProviderImpl.java:126) ~[hibernate-core-6.6.29.Final.jar:6.6.29.Final]
+	at org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator$ConnectionProviderJdbcConnectionAccess.obtainConnection(JdbcEnvironmentInitiator.java:485) ~[hibernate-core-6.6.29.Final.jar:6.6.29.Final]
+	at org.hibernate.resource.transaction.backend.jdbc.internal.JdbcIsolationDelegate.delegateWork(JdbcIsolationDelegate.java:61) ~[hibernate-core-6.6.29.Final.jar:6.6.29.Final]
+	... 121 common frames omitted
+Caused by: com.mysql.cj.exceptions.CJCommunicationsException: Communications link failure
+
+The last packet sent successfully to the server was 0 milliseconds ago. The driver has not received any packets from the server.
+	at java.base/jdk.internal.reflect.DirectConstructorHandleAccessor.newInstance(Unknown Source) ~[na:na]
+	at java.base/java.lang.reflect.Constructor.newInstanceWithCaller(Unknown Source) ~[na:na]
+	at java.base/java.lang.reflect.Constructor.newInstance(Unknown Source) ~[na:na]
+	at com.mysql.cj.exceptions.ExceptionFactory.createException(ExceptionFactory.java:52) ~[mysql-connector-j-9.4.0.jar:9.4.0]
+	at com.mysql.cj.exceptions.ExceptionFactory.createException(ExceptionFactory.java:95) ~[mysql-connector-j-9.4.0.jar:9.4.0]
+	at com.mysql.cj.exceptions.ExceptionFactory.createException(ExceptionFactory.java:140) ~[mysql-connector-j-9.4.0.jar:9.4.0]
+	at com.mysql.cj.exceptions.ExceptionFactory.createCommunicationsException(ExceptionFactory.java:156) ~[mysql-connector-j-9.4.0.jar:9.4.0]
+	at com.mysql.cj.protocol.a.NativeSocketConnection.connect(NativeSocketConnection.java:79) ~[mysql-connector-j-9.4.0.jar:9.4.0]
+	at com.mysql.cj.NativeSession.connect(NativeSession.java:142) ~[mysql-connector-j-9.4.0.jar:9.4.0]
+	at com.mysql.cj.jdbc.ConnectionImpl.connectOneTryOnly(ConnectionImpl.java:963) ~[mysql-connector-j-9.4.0.jar:9.4.0]
+	at com.mysql.cj.jdbc.ConnectionImpl.createNewIO(ConnectionImpl.java:827) ~[mysql-connector-j-9.4.0.jar:9.4.0]
+	... 134 common frames omitted
+Caused by: java.net.ConnectException: Connection refused: getsockopt
+	at java.base/sun.nio.ch.Net.pollConnect(Native Method) ~[na:na]
+	at java.base/sun.nio.ch.Net.pollConnectNow(Unknown Source) ~[na:na]
+	at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(Unknown Source) ~[na:na]
+	at java.base/sun.nio.ch.NioSocketImpl.connect(Unknown Source) ~[na:na]
+	at java.base/java.net.SocksSocketImpl.connect(Unknown Source) ~[na:na]
+	at java.base/java.net.Socket.connect(Unknown Source) ~[na:na]
+	at com.mysql.cj.protocol.StandardSocketFactory.connect(StandardSocketFactory.java:144) ~[mysql-connector-j-9.4.0.jar:9.4.0]
+	at com.mysql.cj.protocol.a.NativeSocketConnection.connect(NativeSocketConnection.java:53) ~[mysql-connector-j-9.4.0.jar:9.4.0]
+	... 137 common frames omitted
+
+2025-10-20T21:17:42.246-03:00  WARN 51136 --- [main] org.hibernate.orm.deprecation            : HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-10-20T21:17:42.263-03:00  INFO 51136 --- [main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (null)']
+	Database driver: undefined/unknown
+	Database version: 8.0
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-10-20T21:17:43.362-03:00  INFO 51136 --- [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-10-20T21:17:43.388-03:00  INFO 51136 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-10-20T21:17:44.423-03:00  WARN 51136 --- [main] o.h.engine.jdbc.spi.SqlExceptionHelper   : SQL Error: 0, SQLState: 08S01
+2025-10-20T21:17:44.424-03:00 ERROR 51136 --- [main] o.h.engine.jdbc.spi.SqlExceptionHelper   : Communications link failure
+
+The last packet sent successfully to the server was 0 milliseconds ago. The driver has not received any packets from the server.
+2025-10-20T21:17:44.429-03:00 ERROR 51136 --- [main] j.LocalContainerEntityManagerFactoryBean : Failed to initialize JPA EntityManagerFactory: [PersistenceUnit: default] Unable to build Hibernate SessionFactory; nested exception is org.hibernate.exception.JDBCConnectionException: Unable to open JDBC Connection for DDL execution [Communications link failure
+
+The last packet sent successfully to the server was 0 milliseconds ago. The driver has not received any packets from the server.] [n/a]
+2025-10-20T21:17:44.431-03:00 ERROR 51136 --- [main] o.s.b.web.embedded.tomcat.TomcatStarter  : Error starting Tomcat context. Exception: org.springframework.beans.factory.UnsatisfiedDependencyException. Message: Error creating bean with name 'jwtAuthFilter': Unsatisfied dependency expressed through field 'userDetailsService': Error creating bean with name 'customUserDetailsService': Unsatisfied dependency expressed through field 'repository': Error creating bean with name 'userRepository' defined in br.com.desbravadores.api.repository.UserRepository defined in @EnableJpaRepositories declared on DesbravadoresApiApplication: Cannot resolve reference to bean 'jpaSharedEM_entityManagerFactory' while setting bean property 'entityManager'
+2025-10-20T21:17:44.471-03:00  INFO 51136 --- [main] o.apache.catalina.core.StandardService   : Stopping service [Tomcat]
+2025-10-20T21:17:44.477-03:00  WARN 51136 --- [main] ConfigServletWebServerApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.context.ApplicationContextException: Unable to start web server
+2025-10-20T21:17:44.484-03:00  INFO 51136 --- [main] .s.b.a.l.ConditionEvaluationReportLogger : 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2025-10-20T21:17:44.502-03:00 ERROR 51136 --- [main] o.s.boot.SpringApplication               : Application run failed
+
+org.springframework.context.ApplicationContextException: Unable to start web server
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.onRefresh(ServletWebServerApplicationContext.java:170) ~[spring-boot-3.5.6.jar:3.5.6]
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:621) ~[spring-context-6.2.11.jar:6.2.11]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146) ~[spring-boot-3.5.6.jar:3.5.6]
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:752) ~[spring-boot-3.5.6.jar:3.5.6]
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:439) ~[spring-boot-3.5.6.jar:3.5.6]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:318) ~[spring-boot-3.5.6.jar:3.5.6]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1361) ~[spring-boot-3.5.6.jar:3.5.6]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1350) ~[spring-boot-3.5.6.jar:3.5.6]
+	at br.com.desbravadores.api.DesbravadoresApiApplication.main(DesbravadoresApiApplication.java:16) ~[classes/:na]
+Caused by: org.springframework.boot.web.server.WebServerException: Unable to start embedded Tomcat
+	at org.springframework.boot.web.embedded.tomcat.TomcatWebServer.initialize(TomcatWebServer.java:147) ~[spring-boot-3.5.6.jar:3.5.6]
+	at org.springframework.boot.web.embedded.tomcat.TomcatWebServer.<init>(TomcatWebServer.java:107) ~[spring-boot-3.5.6.jar:3.5.6]
+	at org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory.getTomcatWebServer(TomcatServletWebServerFactory.java:517) ~[spring-boot-3.5.6.jar:3.5.6]
+	at org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory.getWebServer(TomcatServletWebServerFactory.java:219) ~[spring-boot-3.5.6.jar:3.5.6]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.createWebServer(ServletWebServerApplicationContext.java:193) ~[spring-boot-3.5.6.jar:3.5.6]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.onRefresh(ServletWebServerApplicationContext.java:167) ~[spring-boot-3.5.6.jar:3.5.6]
+	... 8 common frames omitted
+Caused by: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'jwtAuthFilter': Unsatisfied dependency expressed through field 'userDetailsService': Error creating bean with name 'customUserDetailsService': Unsatisfied dependency expressed through field 'repository': Error creating bean with name 'userRepository' defined in br.com.desbravadores.api.repository.UserRepository defined in @EnableJpaRepositories declared on DesbravadoresApiApplication: Cannot resolve reference to bean 'jpaSharedEM_entityManagerFactory' while setting bean property 'entityManager'
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.resolveFieldValue(AutowiredAnnotationBeanPostProcessor.java:788) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.inject(AutowiredAnnotationBeanPostProcessor.java:768) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.annotation.InjectionMetadata.inject(InjectionMetadata.java:146) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor.postProcessProperties(AutowiredAnnotationBeanPostProcessor.java:509) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.populateBean(AbstractAutowireCapableBeanFactory.java:1459) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:606) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:529) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:373) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:207) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.boot.web.servlet.ServletContextInitializerBeans.getOrderedBeansOfType(ServletContextInitializerBeans.java:230) ~[spring-boot-3.5.6.jar:3.5.6]
+	at org.springframework.boot.web.servlet.ServletContextInitializerBeans.addAsRegistrationBean(ServletContextInitializerBeans.java:184) ~[spring-boot-3.5.6.jar:3.5.6]
+	at org.springframework.boot.web.servlet.ServletContextInitializerBeans.addAsRegistrationBean(ServletContextInitializerBeans.java:179) ~[spring-boot-3.5.6.jar:3.5.6]
+	at org.springframework.boot.web.servlet.ServletContextInitializerBeans.addAdaptableBeans(ServletContextInitializerBeans.java:164) ~[spring-boot-3.5.6.jar:3.5.6]
+	at org.springframework.boot.web.servlet.ServletContextInitializerBeans.<init>(ServletContextInitializerBeans.java:96) ~[spring-boot-3.5.6.jar:3.5.6]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.getServletContextInitializerBeans(ServletWebServerApplicationContext.java:271) ~[spring-boot-3.5.6.jar:3.5.6]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.selfInitialize(ServletWebServerApplicationContext.java:245) ~[spring-boot-3.5.6.jar:3.5.6]
+	at org.springframework.boot.web.embedded.tomcat.TomcatStarter.onStartup(TomcatStarter.java:52) ~[spring-boot-3.5.6.jar:3.5.6]
+	at org.apache.catalina.core.StandardContext.startInternal(StandardContext.java:4464) ~[tomcat-embed-core-10.1.46.jar:10.1.46]
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164) ~[tomcat-embed-core-10.1.46.jar:10.1.46]
+	at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1203) ~[tomcat-embed-core-10.1.46.jar:10.1.46]
+	at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1193) ~[tomcat-embed-core-10.1.46.jar:10.1.46]
+	at java.base/java.util.concurrent.FutureTask.run(Unknown Source) ~[na:na]
+	at org.apache.tomcat.util.threads.InlineExecutorService.execute(InlineExecutorService.java:81) ~[tomcat-embed-core-10.1.46.jar:10.1.46]
+	at java.base/java.util.concurrent.AbstractExecutorService.submit(Unknown Source) ~[na:na]
+	at org.apache.catalina.core.ContainerBase.startInternal(ContainerBase.java:749) ~[tomcat-embed-core-10.1.46.jar:10.1.46]
+	at org.apache.catalina.core.StandardHost.startInternal(StandardHost.java:773) ~[tomcat-embed-core-10.1.46.jar:10.1.46]
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164) ~[tomcat-embed-core-10.1.46.jar:10.1.46]
+	at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1203) ~[tomcat-embed-core-10.1.46.jar:10.1.46]
+	at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1193) ~[tomcat-embed-core-10.1.46.jar:10.1.46]
+	at java.base/java.util.concurrent.FutureTask.run(Unknown Source) ~[na:na]
+	at org.apache.tomcat.util.threads.InlineExecutorService.execute(InlineExecutorService.java:81) ~[tomcat-embed-core-10.1.46.jar:10.1.46]
+	at java.base/java.util.concurrent.AbstractExecutorService.submit(Unknown Source) ~[na:na]
+	at org.apache.catalina.core.ContainerBase.startInternal(ContainerBase.java:749) ~[tomcat-embed-core-10.1.46.jar:10.1.46]
+	at org.apache.catalina.core.StandardEngine.startInternal(StandardEngine.java:203) ~[tomcat-embed-core-10.1.46.jar:10.1.46]
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164) ~[tomcat-embed-core-10.1.46.jar:10.1.46]
+	at org.apache.catalina.core.StandardService.startInternal(StandardService.java:412) ~[tomcat-embed-core-10.1.46.jar:10.1.46]
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164) ~[tomcat-embed-core-10.1.46.jar:10.1.46]
+	at org.apache.catalina.core.StandardServer.startInternal(StandardServer.java:870) ~[tomcat-embed-core-10.1.46.jar:10.1.46]
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:164) ~[tomcat-embed-core-10.1.46.jar:10.1.46]
+	at org.apache.catalina.startup.Tomcat.start(Tomcat.java:438) ~[tomcat-embed-core-10.1.46.jar:10.1.46]
+	at org.springframework.boot.web.embedded.tomcat.TomcatWebServer.initialize(TomcatWebServer.java:128) ~[spring-boot-3.5.6.jar:3.5.6]
+	... 13 common frames omitted
+Caused by: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'customUserDetailsService': Unsatisfied dependency expressed through field 'repository': Error creating bean with name 'userRepository' defined in br.com.desbravadores.api.repository.UserRepository defined in @EnableJpaRepositories declared on DesbravadoresApiApplication: Cannot resolve reference to bean 'jpaSharedEM_entityManagerFactory' while setting bean property 'entityManager'
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.resolveFieldValue(AutowiredAnnotationBeanPostProcessor.java:788) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.inject(AutowiredAnnotationBeanPostProcessor.java:768) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.annotation.InjectionMetadata.inject(InjectionMetadata.java:146) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor.postProcessProperties(AutowiredAnnotationBeanPostProcessor.java:509) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.populateBean(AbstractAutowireCapableBeanFactory.java:1459) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:606) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:529) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:373) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.config.DependencyDescriptor.resolveCandidate(DependencyDescriptor.java:254) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1760) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1643) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.resolveFieldValue(AutowiredAnnotationBeanPostProcessor.java:785) ~[spring-beans-6.2.11.jar:6.2.11]
+	... 55 common frames omitted
+Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'userRepository' defined in br.com.desbravadores.api.repository.UserRepository defined in @EnableJpaRepositories declared on DesbravadoresApiApplication: Cannot resolve reference to bean 'jpaSharedEM_entityManagerFactory' while setting bean property 'entityManager'
+	at org.springframework.beans.factory.support.BeanDefinitionValueResolver.resolveReference(BeanDefinitionValueResolver.java:377) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.BeanDefinitionValueResolver.resolveValueIfNecessary(BeanDefinitionValueResolver.java:135) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.applyPropertyValues(AbstractAutowireCapableBeanFactory.java:1725) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.populateBean(AbstractAutowireCapableBeanFactory.java:1474) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:606) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:529) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:373) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.config.DependencyDescriptor.resolveCandidate(DependencyDescriptor.java:254) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1760) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1643) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.resolveFieldValue(AutowiredAnnotationBeanPostProcessor.java:785) ~[spring-beans-6.2.11.jar:6.2.11]
+	... 69 common frames omitted
+Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'jpaSharedEM_entityManagerFactory': Cannot resolve reference to bean 'entityManagerFactory' while setting constructor argument
+	at org.springframework.beans.factory.support.BeanDefinitionValueResolver.resolveReference(BeanDefinitionValueResolver.java:377) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.BeanDefinitionValueResolver.resolveValueIfNecessary(BeanDefinitionValueResolver.java:135) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.ConstructorResolver.resolveConstructorArguments(ConstructorResolver.java:691) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.ConstructorResolver.instantiateUsingFactoryMethod(ConstructorResolver.java:513) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.instantiateUsingFactoryMethod(AbstractAutowireCapableBeanFactory.java:1375) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1205) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:569) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:529) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:373) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.BeanDefinitionValueResolver.resolveReference(BeanDefinitionValueResolver.java:365) ~[spring-beans-6.2.11.jar:6.2.11]
+	... 82 common frames omitted
+Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'entityManagerFactory' defined in class path resource [org/springframework/boot/autoconfigure/orm/jpa/HibernateJpaConfiguration.class]: [PersistenceUnit: default] Unable to build Hibernate SessionFactory; nested exception is org.hibernate.exception.JDBCConnectionException: Unable to open JDBC Connection for DDL execution [Communications link failure
+
+The last packet sent successfully to the server was 0 milliseconds ago. The driver has not received any packets from the server.] [n/a]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1826) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:607) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:529) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:373) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.BeanDefinitionValueResolver.resolveReference(BeanDefinitionValueResolver.java:365) ~[spring-beans-6.2.11.jar:6.2.11]
+	... 94 common frames omitted
+Caused by: jakarta.persistence.PersistenceException: [PersistenceUnit: default] Unable to build Hibernate SessionFactory; nested exception is org.hibernate.exception.JDBCConnectionException: Unable to open JDBC Connection for DDL execution [Communications link failure
+
+The last packet sent successfully to the server was 0 milliseconds ago. The driver has not received any packets from the server.] [n/a]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.buildNativeEntityManagerFactory(AbstractEntityManagerFactoryBean.java:431) ~[spring-orm-6.2.11.jar:6.2.11]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.afterPropertiesSet(AbstractEntityManagerFactoryBean.java:400) ~[spring-orm-6.2.11.jar:6.2.11]
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.afterPropertiesSet(LocalContainerEntityManagerFactoryBean.java:366) ~[spring-orm-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeInitMethods(AbstractAutowireCapableBeanFactory.java:1873) ~[spring-beans-6.2.11.jar:6.2.11]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1822) ~[spring-beans-6.2.11.jar:6.2.11]
+	... 101 common frames omitted
+Caused by: org.hibernate.exception.JDBCConnectionException: Unable to open JDBC Connection for DDL execution [Communications link failure
+
+The last packet sent successfully to the server was 0 milliseconds ago. The driver has not received any packets from the server.] [n/a]
+	at org.hibernate.exception.internal.SQLStateConversionDelegate.convert(SQLStateConversionDelegate.java:100) ~[hibernate-core-6.6.29.Final.jar:6.6.29.Final]
+	at org.hibernate.exception.internal.StandardSQLExceptionConverter.convert(StandardSQLExceptionConverter.java:58) ~[hibernate-core-6.6.29.Final.jar:6.6.29.Final]
+	at org.hibernate.engine.jdbc.spi.SqlExceptionHelper.convert(SqlExceptionHelper.java:108) ~[hibernate-core-6.6.29.Final.jar:6.6.29.Final]
+	at org.hibernate.engine.jdbc.spi.SqlExceptionHelper.convert(SqlExceptionHelper.java:94) ~[hibernate-core-6.6.29.Final.jar:6.6.29.Final]
+	at org.hibernate.resource.transaction.backend.jdbc.internal.DdlTransactionIsolatorNonJtaImpl.getIsolatedConnection(DdlTransactionIsolatorNonJtaImpl.java:74) ~[hibernate-core-6.6.29.Final.jar:6.6.29.Final]
+	at org.hibernate.resource.transaction.backend.jdbc.internal.DdlTransactionIsolatorNonJtaImpl.getIsolatedConnection(DdlTransactionIsolatorNonJtaImpl.java:39) ~[hibernate-core-6.6.29.Final.jar:6.6.29.Final]
+	at org.hibernate.tool.schema.internal.exec.ImprovedExtractionContextImpl.getJdbcConnection(ImprovedExtractionContextImpl.java:63) ~[hibernate-core-6.6.29.Final.jar:6.6.29.Final]
+	at org.hibernate.tool.schema.internal.exec.ImprovedExtractionContextImpl.getJdbcDatabaseMetaData(ImprovedExtractionContextImpl.java:70) ~[hibernate-core-6.6.29.Final.jar:6.6.29.Final]
+	at org.hibernate.tool.schema.extract.internal.InformationExtractorJdbcDatabaseMetaDataImpl.processTableResultSet(InformationExtractorJdbcDatabaseMetaDataImpl.java:65) ~[hibernate-core-6.6.29.Final.jar:6.6.29.Final]
+	at org.hibernate.tool.schema.extract.internal.AbstractInformationExtractorImpl.getTables(AbstractInformationExtractorImpl.java:570) ~[hibernate-core-6.6.29.Final.jar:6.6.29.Final]
+	at org.hibernate.tool.schema.extract.internal.DatabaseInformationImpl.getTablesInformation(DatabaseInformationImpl.java:122) ~[hibernate-core-6.6.29.Final.jar:6.6.29.Final]
+	at org.hibernate.tool.schema.internal.GroupedSchemaMigratorImpl.performTablesMigration(GroupedSchemaMigratorImpl.java:72) ~[hibernate-core-6.6.29.Final.jar:6.6.29.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.performMigration(AbstractSchemaMigrator.java:233) ~[hibernate-core-6.6.29.Final.jar:6.6.29.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.doMigration(AbstractSchemaMigrator.java:112) ~[hibernate-core-6.6.29.Final.jar:6.6.29.Final]
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.performDatabaseAction(SchemaManagementToolCoordinator.java:280) ~[hibernate-core-6.6.29.Final.jar:6.6.29.Final]
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.lambda$process$5(SchemaManagementToolCoordinator.java:144) ~[hibernate-core-6.6.29.Final.jar:6.6.29.Final]
+	at java.base/java.util.HashMap.forEach(Unknown Source) ~[na:na]
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.process(SchemaManagementToolCoordinator.java:141) ~[hibernate-core-6.6.29.Final.jar:6.6.29.Final]
+	at org.hibernate.boot.internal.SessionFactoryObserverForSchemaExport.sessionFactoryCreated(SessionFactoryObserverForSchemaExport.java:37) ~[hibernate-core-6.6.29.Final.jar:6.6.29.Final]
+	at org.hibernate.internal.SessionFactoryObserverChain.sessionFactoryCreated(SessionFactoryObserverChain.java:35) ~[hibernate-core-6.6.29.Final.jar:6.6.29.Final]
+	at org.hibernate.internal.SessionFactoryImpl.<init>(SessionFactoryImpl.java:324) ~[hibernate-core-6.6.29.Final.jar:6.6.29.Final]
+	at org.hibernate.boot.internal.SessionFactoryBuilderImpl.build(SessionFactoryBuilderImpl.java:463) ~[hibernate-core-6.6.29.Final.jar:6.6.29.Final]
+	at org.hibernate.jpa.boot.internal.EntityManagerFactoryBuilderImpl.build(EntityManagerFactoryBuilderImpl.java:1517) ~[hibernate-core-6.6.29.Final.jar:6.6.29.Final]
+	at org.springframework.orm.jpa.vendor.SpringHibernateJpaPersistenceProvider.createContainerEntityManagerFactory(SpringHibernateJpaPersistenceProvider.java:66) ~[spring-orm-6.2.11.jar:6.2.11]
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.createNativeEntityManagerFactory(LocalContainerEntityManagerFactoryBean.java:390) ~[spring-orm-6.2.11.jar:6.2.11]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.buildNativeEntityManagerFactory(AbstractEntityManagerFactoryBean.java:419) ~[spring-orm-6.2.11.jar:6.2.11]
+	... 105 common frames omitted
+Caused by: com.mysql.cj.jdbc.exceptions.CommunicationsException: Communications link failure
+
+The last packet sent successfully to the server was 0 milliseconds ago. The driver has not received any packets from the server.
+	at com.mysql.cj.jdbc.exceptions.SQLError.createCommunicationsException(SQLError.java:165) ~[mysql-connector-j-9.4.0.jar:9.4.0]
+	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:55) ~[mysql-connector-j-9.4.0.jar:9.4.0]
+	at com.mysql.cj.jdbc.ConnectionImpl.createNewIO(ConnectionImpl.java:839) ~[mysql-connector-j-9.4.0.jar:9.4.0]
+	at com.mysql.cj.jdbc.ConnectionImpl.<init>(ConnectionImpl.java:415) ~[mysql-connector-j-9.4.0.jar:9.4.0]
+	at com.mysql.cj.jdbc.ConnectionImpl.getInstance(ConnectionImpl.java:237) ~[mysql-connector-j-9.4.0.jar:9.4.0]
+	at com.mysql.cj.jdbc.NonRegisteringDriver.connect(NonRegisteringDriver.java:180) ~[mysql-connector-j-9.4.0.jar:9.4.0]
+	at com.zaxxer.hikari.util.DriverDataSource.getConnection(DriverDataSource.java:144) ~[HikariCP-6.3.3.jar:na]
+	at com.zaxxer.hikari.pool.PoolBase.newConnection(PoolBase.java:370) ~[HikariCP-6.3.3.jar:na]
+	at com.zaxxer.hikari.pool.PoolBase.newPoolEntry(PoolBase.java:207) ~[HikariCP-6.3.3.jar:na]
+	at com.zaxxer.hikari.pool.HikariPool.createPoolEntry(HikariPool.java:488) ~[HikariCP-6.3.3.jar:na]
+	at com.zaxxer.hikari.pool.HikariPool.checkFailFast(HikariPool.java:576) ~[HikariCP-6.3.3.jar:na]
+	at com.zaxxer.hikari.pool.HikariPool.<init>(HikariPool.java:97) ~[HikariCP-6.3.3.jar:na]
+	at com.zaxxer.hikari.HikariDataSource.getConnection(HikariDataSource.java:111) ~[HikariCP-6.3.3.jar:na]
+	at org.hibernate.engine.jdbc.connections.internal.DatasourceConnectionProviderImpl.getConnection(DatasourceConnectionProviderImpl.java:126) ~[hibernate-core-6.6.29.Final.jar:6.6.29.Final]
+	at org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator$ConnectionProviderJdbcConnectionAccess.obtainConnection(JdbcEnvironmentInitiator.java:485) ~[hibernate-core-6.6.29.Final.jar:6.6.29.Final]
+	at org.hibernate.resource.transaction.backend.jdbc.internal.DdlTransactionIsolatorNonJtaImpl.getIsolatedConnection(DdlTransactionIsolatorNonJtaImpl.java:46) ~[hibernate-core-6.6.29.Final.jar:6.6.29.Final]
+	... 126 common frames omitted
+Caused by: com.mysql.cj.exceptions.CJCommunicationsException: Communications link failure
+
+The last packet sent successfully to the server was 0 milliseconds ago. The driver has not received any packets from the server.
+	at java.base/jdk.internal.reflect.DirectConstructorHandleAccessor.newInstance(Unknown Source) ~[na:na]
+	at java.base/java.lang.reflect.Constructor.newInstanceWithCaller(Unknown Source) ~[na:na]
+	at java.base/java.lang.reflect.Constructor.newInstance(Unknown Source) ~[na:na]
+	at com.mysql.cj.exceptions.ExceptionFactory.createException(ExceptionFactory.java:52) ~[mysql-connector-j-9.4.0.jar:9.4.0]
+	at com.mysql.cj.exceptions.ExceptionFactory.createException(ExceptionFactory.java:95) ~[mysql-connector-j-9.4.0.jar:9.4.0]
+	at com.mysql.cj.exceptions.ExceptionFactory.createException(ExceptionFactory.java:140) ~[mysql-connector-j-9.4.0.jar:9.4.0]
+	at com.mysql.cj.exceptions.ExceptionFactory.createCommunicationsException(ExceptionFactory.java:156) ~[mysql-connector-j-9.4.0.jar:9.4.0]
+	at com.mysql.cj.protocol.a.NativeSocketConnection.connect(NativeSocketConnection.java:79) ~[mysql-connector-j-9.4.0.jar:9.4.0]
+	at com.mysql.cj.NativeSession.connect(NativeSession.java:142) ~[mysql-connector-j-9.4.0.jar:9.4.0]
+	at com.mysql.cj.jdbc.ConnectionImpl.connectOneTryOnly(ConnectionImpl.java:963) ~[mysql-connector-j-9.4.0.jar:9.4.0]
+	at com.mysql.cj.jdbc.ConnectionImpl.createNewIO(ConnectionImpl.java:827) ~[mysql-connector-j-9.4.0.jar:9.4.0]
+	... 139 common frames omitted
+Caused by: java.net.ConnectException: Connection refused: getsockopt
+	at java.base/sun.nio.ch.Net.pollConnect(Native Method) ~[na:na]
+	at java.base/sun.nio.ch.Net.pollConnectNow(Unknown Source) ~[na:na]
+	at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(Unknown Source) ~[na:na]
+	at java.base/sun.nio.ch.NioSocketImpl.connect(Unknown Source) ~[na:na]
+	at java.base/java.net.SocksSocketImpl.connect(Unknown Source) ~[na:na]
+	at java.base/java.net.Socket.connect(Unknown Source) ~[na:na]
+	at com.mysql.cj.protocol.StandardSocketFactory.connect(StandardSocketFactory.java:144) ~[mysql-connector-j-9.4.0.jar:9.4.0]
+	at com.mysql.cj.protocol.a.NativeSocketConnection.connect(NativeSocketConnection.java:53) ~[mysql-connector-j-9.4.0.jar:9.4.0]
+	... 142 common frames omitted
+
+2025-10-20T21:20:53.062-03:00  INFO 54460 --- [main] b.c.d.api.DesbravadoresApiApplication    : Starting DesbravadoresApiApplication using Java 21.0.8 with PID 54460 (C:\Users\silas.tristoni\Documents\DesbravadoresTeste\desbravadores-api\target\classes started by silas.tristoni in C:\Users\silas.tristoni\Documents\DesbravadoresTeste)
+2025-10-20T21:20:53.064-03:00  INFO 54460 --- [main] b.c.d.api.DesbravadoresApiApplication    : No active profile set, falling back to 1 default profile: "default"
+2025-10-20T21:20:53.937-03:00  INFO 54460 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-10-20T21:20:54.037-03:00  INFO 54460 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 88 ms. Found 9 JPA repository interfaces.
+2025-10-20T21:20:55.326-03:00  INFO 54460 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2025-10-20T21:20:55.352-03:00  INFO 54460 --- [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-10-20T21:20:55.352-03:00  INFO 54460 --- [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.46]
+2025-10-20T21:20:55.436-03:00  INFO 54460 --- [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-10-20T21:20:55.438-03:00  INFO 54460 --- [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 2294 ms
+2025-10-20T21:20:55.693-03:00  INFO 54460 --- [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-10-20T21:20:55.763-03:00  INFO 54460 --- [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.29.Final
+2025-10-20T21:20:55.835-03:00  INFO 54460 --- [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-10-20T21:20:56.214-03:00  INFO 54460 --- [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-10-20T21:20:56.257-03:00  INFO 54460 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-10-20T21:20:56.539-03:00  INFO 54460 --- [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@5fc7255c
+2025-10-20T21:20:56.541-03:00  INFO 54460 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-10-20T21:20:56.587-03:00  WARN 54460 --- [main] org.hibernate.dialect.Dialect            : HHH000511: The 5.5.5 version for [org.hibernate.dialect.MySQLDialect] is no longer supported, hence certain features may not work properly. The minimum supported version is 8.0.0. Check the community dialects project for available legacy versions.
+2025-10-20T21:20:56.593-03:00  WARN 54460 --- [main] org.hibernate.orm.deprecation            : HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-10-20T21:20:56.617-03:00  INFO 54460 --- [main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 5.5.5
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-10-20T21:20:57.584-03:00  INFO 54460 --- [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-10-20T21:20:57.918-03:00  INFO 54460 --- [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-10-20T21:20:58.626-03:00  INFO 54460 --- [main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name customUserDetailsService
+2025-10-20T21:20:58.799-03:00  WARN 54460 --- [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-10-20T21:20:59.295-03:00 DEBUG 54460 --- [main] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with filters: DisableEncodeUrlFilter, WebAsyncManagerIntegrationFilter, SecurityContextHolderFilter, HeaderWriterFilter, CorsFilter, LogoutFilter, JwtAuthFilter, RequestCacheAwareFilter, SecurityContextHolderAwareRequestFilter, AnonymousAuthenticationFilter, SessionManagementFilter, ExceptionTranslationFilter, AuthorizationFilter
+2025-10-20T21:20:59.639-03:00  INFO 54460 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2025-10-20T21:20:59.648-03:00  INFO 54460 --- [main] b.c.d.api.DesbravadoresApiApplication    : Started DesbravadoresApiApplication in 7.16 seconds (process running for 7.525)
+2025-10-20T21:21:33.493-03:00  INFO 54460 --- [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-10-20T21:21:33.494-03:00  INFO 54460 --- [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2025-10-20T21:21:33.495-03:00  INFO 54460 --- [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2025-10-20T21:21:33.522-03:00 DEBUG 54460 --- [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Securing OPTIONS /auth/login
+2025-10-20T21:21:33.563-03:00 DEBUG 54460 --- [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Securing POST /auth/login
+2025-10-20T21:21:33.569-03:00 DEBUG 54460 --- [http-nio-8080-exec-2] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2025-10-20T21:21:33.572-03:00 DEBUG 54460 --- [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Secured POST /auth/login
+2025-10-20T21:21:33.858-03:00 DEBUG 54460 --- [http-nio-8080-exec-2] o.s.s.a.dao.DaoAuthenticationProvider    : Authenticated user
+2025-10-20T21:25:45.769-03:00  INFO 56580 --- [main] b.c.d.api.DesbravadoresApiApplication    : Starting DesbravadoresApiApplication using Java 21.0.8 with PID 56580 (C:\Users\silas.tristoni\Documents\DesbravadoresTeste\desbravadores-api\target\classes started by silas.tristoni in C:\Users\silas.tristoni\Documents\DesbravadoresTeste)
+2025-10-20T21:25:45.772-03:00  INFO 56580 --- [main] b.c.d.api.DesbravadoresApiApplication    : No active profile set, falling back to 1 default profile: "default"
+2025-10-20T21:25:46.606-03:00  INFO 56580 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-10-20T21:25:46.699-03:00  INFO 56580 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 82 ms. Found 9 JPA repository interfaces.
+2025-10-20T21:25:47.852-03:00  INFO 56580 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2025-10-20T21:25:47.871-03:00  INFO 56580 --- [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-10-20T21:25:47.872-03:00  INFO 56580 --- [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.46]
+2025-10-20T21:25:47.949-03:00  INFO 56580 --- [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-10-20T21:25:47.949-03:00  INFO 56580 --- [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 2094 ms
+2025-10-20T21:25:48.159-03:00  INFO 56580 --- [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-10-20T21:25:48.236-03:00  INFO 56580 --- [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.29.Final
+2025-10-20T21:25:48.299-03:00  INFO 56580 --- [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-10-20T21:25:48.696-03:00  INFO 56580 --- [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-10-20T21:25:48.749-03:00  INFO 56580 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-10-20T21:25:48.944-03:00  INFO 56580 --- [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@20a47036
+2025-10-20T21:25:48.946-03:00  INFO 56580 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-10-20T21:25:48.997-03:00  WARN 56580 --- [main] org.hibernate.dialect.Dialect            : HHH000511: The 5.5.5 version for [org.hibernate.dialect.MySQLDialect] is no longer supported, hence certain features may not work properly. The minimum supported version is 8.0.0. Check the community dialects project for available legacy versions.
+2025-10-20T21:25:49.009-03:00  WARN 56580 --- [main] org.hibernate.orm.deprecation            : HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-10-20T21:25:49.045-03:00  INFO 56580 --- [main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 5.5.5
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-10-20T21:25:50.036-03:00  INFO 56580 --- [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-10-20T21:25:50.198-03:00  INFO 56580 --- [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-10-20T21:25:50.882-03:00  INFO 56580 --- [main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name customUserDetailsService
+2025-10-20T21:25:51.053-03:00  WARN 56580 --- [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-10-20T21:25:51.427-03:00 DEBUG 56580 --- [main] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with filters: DisableEncodeUrlFilter, WebAsyncManagerIntegrationFilter, SecurityContextHolderFilter, HeaderWriterFilter, CorsFilter, LogoutFilter, JwtAuthFilter, RequestCacheAwareFilter, SecurityContextHolderAwareRequestFilter, AnonymousAuthenticationFilter, SessionManagementFilter, ExceptionTranslationFilter, AuthorizationFilter
+2025-10-20T21:25:51.710-03:00  INFO 56580 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2025-10-20T21:25:51.718-03:00  INFO 56580 --- [main] b.c.d.api.DesbravadoresApiApplication    : Started DesbravadoresApiApplication in 6.516 seconds (process running for 6.885)
+2025-10-20T21:26:09.157-03:00  INFO 56580 --- [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-10-20T21:26:09.157-03:00  INFO 56580 --- [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2025-10-20T21:26:09.158-03:00  INFO 56580 --- [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2025-10-20T21:26:09.179-03:00 DEBUG 56580 --- [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Securing POST /auth/login
+2025-10-20T21:26:09.210-03:00 DEBUG 56580 --- [http-nio-8080-exec-1] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2025-10-20T21:26:09.213-03:00 DEBUG 56580 --- [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Secured POST /auth/login
+2025-10-20T21:26:09.480-03:00 DEBUG 56580 --- [http-nio-8080-exec-1] o.s.s.a.dao.DaoAuthenticationProvider    : Authenticated user
+2025-10-20T21:28:02.746-03:00 DEBUG 56580 --- [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/groups?page=0&size=999
+2025-10-20T21:28:02.747-03:00 DEBUG 56580 --- [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/admin/users?page=0&size=5
+2025-10-20T21:28:02.751-03:00 DEBUG 56580 --- [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Securing GET /api/groups?page=0&size=999
+2025-10-20T21:28:02.751-03:00 DEBUG 56580 --- [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Securing GET /api/admin/users?page=0&size=5
+2025-10-20T21:28:02.789-03:00 DEBUG 56580 --- [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Secured GET /api/groups?page=0&size=999
+2025-10-20T21:28:02.790-03:00 DEBUG 56580 --- [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Secured GET /api/admin/users?page=0&size=5
+2025-10-20T21:28:02.802-03:00 DEBUG 56580 --- [http-nio-8080-exec-5] horizationManagerBeforeMethodInterceptor : Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllUsers(java.lang.Long,org.springframework.data.domain.Pageable,org.springframework.security.core.Authentication); target is of class [br.com.desbravadores.api.controller.AdminController]
+2025-10-20T21:28:02.869-03:00 DEBUG 56580 --- [http-nio-8080-exec-5] horizationManagerBeforeMethodInterceptor : Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllUsers(java.lang.Long,org.springframework.data.domain.Pageable,org.springframework.security.core.Authentication); target is of class [br.com.desbravadores.api.controller.AdminController]
+2025-10-20T21:28:02.933-03:00  WARN 56580 --- [http-nio-8080-exec-5] ration$PageModule$WarningLoggingModifier : Serializing PageImpl instances as-is is not supported, meaning that there is no guarantee about the stability of the resulting JSON structure!
+	For a stable JSON structure, please use Spring Data's PagedModel (globally via @EnableSpringDataWebSupport(pageSerializationMode = VIA_DTO))
+	or Spring HATEOAS and Spring Data's PagedResourcesAssembler as documented in https://docs.spring.io/spring-data/commons/reference/repositories/core-extensions.html#core.web.pageables.
+
+2025-10-20T21:28:05.771-03:00 DEBUG 56580 --- [http-nio-8080-exec-9] o.s.security.web.FilterChainProxy        : Securing GET /api/groups?page=0&size=999
+2025-10-20T21:28:05.771-03:00 DEBUG 56580 --- [http-nio-8080-exec-10] o.s.security.web.FilterChainProxy        : Securing GET /api/admin/users?page=0&size=5
+2025-10-20T21:28:05.789-03:00 DEBUG 56580 --- [http-nio-8080-exec-10] o.s.security.web.FilterChainProxy        : Secured GET /api/admin/users?page=0&size=5
+2025-10-20T21:28:05.789-03:00 DEBUG 56580 --- [http-nio-8080-exec-9] o.s.security.web.FilterChainProxy        : Secured GET /api/groups?page=0&size=999
+2025-10-20T21:28:05.790-03:00 DEBUG 56580 --- [http-nio-8080-exec-10] horizationManagerBeforeMethodInterceptor : Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllUsers(java.lang.Long,org.springframework.data.domain.Pageable,org.springframework.security.core.Authentication); target is of class [br.com.desbravadores.api.controller.AdminController]
+2025-10-20T21:28:05.791-03:00 DEBUG 56580 --- [http-nio-8080-exec-10] horizationManagerBeforeMethodInterceptor : Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllUsers(java.lang.Long,org.springframework.data.domain.Pageable,org.springframework.security.core.Authentication); target is of class [br.com.desbravadores.api.controller.AdminController]
+2025-10-20T21:28:12.242-03:00 DEBUG 56580 --- [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/groups?page=0&size=999
+2025-10-20T21:28:12.242-03:00 DEBUG 56580 --- [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/admin/users?page=0&size=5
+2025-10-20T21:28:12.246-03:00 DEBUG 56580 --- [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Securing GET /api/admin/users?page=0&size=5
+2025-10-20T21:28:12.246-03:00 DEBUG 56580 --- [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Securing GET /api/groups?page=0&size=999
+2025-10-20T21:28:12.258-03:00 DEBUG 56580 --- [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Secured GET /api/admin/users?page=0&size=5
+2025-10-20T21:28:12.258-03:00 DEBUG 56580 --- [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Secured GET /api/groups?page=0&size=999
+2025-10-20T21:28:12.259-03:00 DEBUG 56580 --- [http-nio-8080-exec-3] horizationManagerBeforeMethodInterceptor : Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllUsers(java.lang.Long,org.springframework.data.domain.Pageable,org.springframework.security.core.Authentication); target is of class [br.com.desbravadores.api.controller.AdminController]
+2025-10-20T21:28:12.260-03:00 DEBUG 56580 --- [http-nio-8080-exec-3] horizationManagerBeforeMethodInterceptor : Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllUsers(java.lang.Long,org.springframework.data.domain.Pageable,org.springframework.security.core.Authentication); target is of class [br.com.desbravadores.api.controller.AdminController]
+2025-10-20T21:28:13.787-03:00 DEBUG 56580 --- [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/groups
+2025-10-20T21:28:13.787-03:00 DEBUG 56580 --- [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/admin/users/monitors
+2025-10-20T21:28:13.790-03:00 DEBUG 56580 --- [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Securing GET /api/groups
+2025-10-20T21:28:13.790-03:00 DEBUG 56580 --- [http-nio-8080-exec-8] o.s.security.web.FilterChainProxy        : Securing GET /api/admin/users/monitors
+2025-10-20T21:28:13.801-03:00 DEBUG 56580 --- [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Secured GET /api/groups
+2025-10-20T21:28:13.802-03:00 DEBUG 56580 --- [http-nio-8080-exec-8] o.s.security.web.FilterChainProxy        : Secured GET /api/admin/users/monitors
+2025-10-20T21:28:13.803-03:00 DEBUG 56580 --- [http-nio-8080-exec-8] horizationManagerBeforeMethodInterceptor : Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllMonitors(); target is of class [br.com.desbravadores.api.controller.AdminController]
+2025-10-20T21:28:13.804-03:00 DEBUG 56580 --- [http-nio-8080-exec-8] horizationManagerBeforeMethodInterceptor : Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllMonitors(); target is of class [br.com.desbravadores.api.controller.AdminController]
+2025-10-20T21:28:14.315-03:00 DEBUG 56580 --- [http-nio-8080-exec-10] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/tasks?year=2025&month=10
+2025-10-20T21:28:14.317-03:00 DEBUG 56580 --- [http-nio-8080-exec-9] o.s.security.web.FilterChainProxy        : Securing GET /api/tasks?year=2025&month=10
+2025-10-20T21:28:14.327-03:00 DEBUG 56580 --- [http-nio-8080-exec-9] o.s.security.web.FilterChainProxy        : Secured GET /api/tasks?year=2025&month=10
+2025-10-20T21:28:15.012-03:00 DEBUG 56580 --- [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Securing GET /api/groups?page=0&size=999
+2025-10-20T21:28:15.023-03:00 DEBUG 56580 --- [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Secured GET /api/groups?page=0&size=999
+2025-10-20T21:28:15.746-03:00 DEBUG 56580 --- [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/profile/me
+2025-10-20T21:28:15.748-03:00 DEBUG 56580 --- [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Securing GET /api/profile/me
+2025-10-20T21:28:15.758-03:00 DEBUG 56580 --- [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Secured GET /api/profile/me
+2025-10-20T21:28:15.763-03:00  INFO 56580 --- [http-nio-8080-exec-3] b.c.d.api.controller.ProfileController   : PROFILE_ACCESS: Acessando perfil de adm@gmail.com. Iniciando campos lazy...
+2025-10-20T21:28:15.765-03:00  INFO 56580 --- [http-nio-8080-exec-3] b.c.d.api.controller.ProfileController   : PROFILE_ACCESS: Serialização de adm@gmail.com concluída com sucesso.
+2025-10-20T21:28:15.782-03:00 DEBUG 56580 --- [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/backgrounds
+2025-10-20T21:28:15.784-03:00 DEBUG 56580 --- [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Securing GET /api/backgrounds
+2025-10-20T21:28:15.792-03:00 DEBUG 56580 --- [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Secured GET /api/backgrounds
+2025-10-20T21:28:16.308-03:00 DEBUG 56580 --- [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/gamification/achievements
+2025-10-20T21:28:16.308-03:00 DEBUG 56580 --- [http-nio-8080-exec-8] o.s.security.web.FilterChainProxy        : Securing GET /api/backgrounds
+2025-10-20T21:28:16.311-03:00 DEBUG 56580 --- [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Securing GET /api/gamification/achievements
+2025-10-20T21:28:16.317-03:00 DEBUG 56580 --- [http-nio-8080-exec-8] o.s.security.web.FilterChainProxy        : Secured GET /api/backgrounds
+2025-10-20T21:28:16.320-03:00 DEBUG 56580 --- [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Secured GET /api/gamification/achievements
+2025-10-20T21:29:12.916-03:00 DEBUG 56580 --- [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/admin/achievements
+2025-10-20T21:29:12.921-03:00 DEBUG 56580 --- [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Securing POST /api/admin/achievements
+2025-10-20T21:29:12.930-03:00 DEBUG 56580 --- [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Secured POST /api/admin/achievements
+2025-10-20T21:29:12.973-03:00 DEBUG 56580 --- [http-nio-8080-exec-1] horizationManagerBeforeMethodInterceptor : Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AchievementController.createAchievement(java.lang.String,java.lang.String,int,java.lang.String,org.springframework.web.multipart.MultipartFile); target is of class [br.com.desbravadores.api.controller.AchievementController]
+2025-10-20T21:29:12.974-03:00 DEBUG 56580 --- [http-nio-8080-exec-1] horizationManagerBeforeMethodInterceptor : Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AchievementController.createAchievement(java.lang.String,java.lang.String,int,java.lang.String,org.springframework.web.multipart.MultipartFile); target is of class [br.com.desbravadores.api.controller.AchievementController]
+2025-10-20T21:29:13.175-03:00 DEBUG 56580 --- [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Securing GET /api/groups?page=0&size=999
+2025-10-20T21:29:13.178-03:00 DEBUG 56580 --- [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Securing GET /api/admin/users?page=0&size=5
+2025-10-20T21:29:13.188-03:00 DEBUG 56580 --- [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Secured GET /api/groups?page=0&size=999
+2025-10-20T21:29:13.188-03:00 DEBUG 56580 --- [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Secured GET /api/admin/users?page=0&size=5
+2025-10-20T21:29:13.189-03:00 DEBUG 56580 --- [http-nio-8080-exec-4] horizationManagerBeforeMethodInterceptor : Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllUsers(java.lang.Long,org.springframework.data.domain.Pageable,org.springframework.security.core.Authentication); target is of class [br.com.desbravadores.api.controller.AdminController]
+2025-10-20T21:29:13.190-03:00 DEBUG 56580 --- [http-nio-8080-exec-4] horizationManagerBeforeMethodInterceptor : Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllUsers(java.lang.Long,org.springframework.data.domain.Pageable,org.springframework.security.core.Authentication); target is of class [br.com.desbravadores.api.controller.AdminController]
+2025-10-20T21:38:21.967-03:00 DEBUG 56580 --- [http-nio-8080-exec-8] o.s.security.web.FilterChainProxy        : Securing GET /api/groups?page=0&size=999
+2025-10-20T21:38:21.967-03:00 DEBUG 56580 --- [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Securing GET /api/admin/users?page=0&size=5
+2025-10-20T21:38:21.975-03:00 DEBUG 56580 --- [http-nio-8080-exec-7] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2025-10-20T21:38:21.975-03:00 DEBUG 56580 --- [http-nio-8080-exec-8] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2025-10-20T21:38:21.976-03:00 DEBUG 56580 --- [http-nio-8080-exec-8] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2025-10-20T21:38:21.976-03:00 DEBUG 56580 --- [http-nio-8080-exec-7] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2025-10-20T21:38:21.994-03:00 DEBUG 56580 --- [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Securing GET /error?page=0&size=5
+2025-10-20T21:38:21.994-03:00 DEBUG 56580 --- [http-nio-8080-exec-8] o.s.security.web.FilterChainProxy        : Securing GET /error?page=0&size=999
+2025-10-20T21:38:21.995-03:00 DEBUG 56580 --- [http-nio-8080-exec-7] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2025-10-20T21:38:21.995-03:00 DEBUG 56580 --- [http-nio-8080-exec-8] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2025-10-20T21:38:21.995-03:00 DEBUG 56580 --- [http-nio-8080-exec-7] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2025-10-20T21:38:21.996-03:00 DEBUG 56580 --- [http-nio-8080-exec-8] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2025-10-20T21:39:50.393-03:00  INFO 30520 --- [main] b.c.d.api.DesbravadoresApiApplication    : Starting DesbravadoresApiApplication using Java 21.0.8 with PID 30520 (C:\Users\silas.tristoni\Documents\DesbravadoresTeste\desbravadores-api\target\classes started by silas.tristoni in C:\Users\silas.tristoni\Documents\DesbravadoresTeste)
+2025-10-20T21:39:50.395-03:00  INFO 30520 --- [main] b.c.d.api.DesbravadoresApiApplication    : No active profile set, falling back to 1 default profile: "default"
+2025-10-20T21:39:51.265-03:00  INFO 30520 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-10-20T21:39:51.372-03:00  INFO 30520 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 89 ms. Found 9 JPA repository interfaces.
+2025-10-20T21:39:52.671-03:00  INFO 30520 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2025-10-20T21:39:52.699-03:00  INFO 30520 --- [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-10-20T21:39:52.699-03:00  INFO 30520 --- [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.46]
+2025-10-20T21:39:52.782-03:00  INFO 30520 --- [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-10-20T21:39:52.783-03:00  INFO 30520 --- [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 2306 ms
+2025-10-20T21:39:53.032-03:00  INFO 30520 --- [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-10-20T21:39:53.135-03:00  INFO 30520 --- [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.29.Final
+2025-10-20T21:39:53.216-03:00  INFO 30520 --- [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-10-20T21:39:53.654-03:00  INFO 30520 --- [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-10-20T21:39:53.691-03:00  INFO 30520 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-10-20T21:39:53.872-03:00  INFO 30520 --- [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@3c9f4376
+2025-10-20T21:39:53.874-03:00  INFO 30520 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-10-20T21:39:53.919-03:00  WARN 30520 --- [main] org.hibernate.dialect.Dialect            : HHH000511: The 5.5.5 version for [org.hibernate.dialect.MySQLDialect] is no longer supported, hence certain features may not work properly. The minimum supported version is 8.0.0. Check the community dialects project for available legacy versions.
+2025-10-20T21:39:53.924-03:00  WARN 30520 --- [main] org.hibernate.orm.deprecation            : HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-10-20T21:39:53.943-03:00  INFO 30520 --- [main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 5.5.5
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-10-20T21:39:55.020-03:00  INFO 30520 --- [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-10-20T21:39:55.160-03:00  INFO 30520 --- [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-10-20T21:39:55.838-03:00  INFO 30520 --- [main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name customUserDetailsService
+2025-10-20T21:39:56.002-03:00  WARN 30520 --- [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-10-20T21:39:56.381-03:00 DEBUG 30520 --- [main] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with filters: DisableEncodeUrlFilter, WebAsyncManagerIntegrationFilter, SecurityContextHolderFilter, HeaderWriterFilter, CorsFilter, LogoutFilter, JwtAuthFilter, RequestCacheAwareFilter, SecurityContextHolderAwareRequestFilter, AnonymousAuthenticationFilter, SessionManagementFilter, ExceptionTranslationFilter, AuthorizationFilter
+2025-10-20T21:39:56.679-03:00  INFO 30520 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2025-10-20T21:39:56.687-03:00  INFO 30520 --- [main] b.c.d.api.DesbravadoresApiApplication    : Started DesbravadoresApiApplication in 6.855 seconds (process running for 7.211)
+2025-10-20T21:40:30.610-03:00  INFO 30520 --- [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-10-20T21:40:30.610-03:00  INFO 30520 --- [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2025-10-20T21:40:30.611-03:00  INFO 30520 --- [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 0 ms
+2025-10-20T21:40:30.633-03:00 DEBUG 30520 --- [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Securing POST /auth/login
+2025-10-20T21:40:30.663-03:00 DEBUG 30520 --- [http-nio-8080-exec-1] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2025-10-20T21:40:30.665-03:00 DEBUG 30520 --- [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Secured POST /auth/login
+2025-10-20T21:40:30.906-03:00 DEBUG 30520 --- [http-nio-8080-exec-1] o.s.s.a.dao.DaoAuthenticationProvider    : Authenticated user
+2025-10-20T21:40:31.074-03:00 DEBUG 30520 --- [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Securing GET /api/tasks?year=2025&month=10
+2025-10-20T21:40:31.102-03:00 DEBUG 30520 --- [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Secured GET /api/tasks?year=2025&month=10
+2025-10-20T21:40:35.766-03:00 DEBUG 30520 --- [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Securing GET /api/tasks?year=2025&month=10
+2025-10-20T21:40:35.775-03:00 DEBUG 30520 --- [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Secured GET /api/tasks?year=2025&month=10
+2025-10-20T21:40:37.024-03:00 DEBUG 30520 --- [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Securing GET /api/profile/me
+2025-10-20T21:40:37.024-03:00 DEBUG 30520 --- [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Securing GET /api/gamification/achievements
+2025-10-20T21:40:37.034-03:00 DEBUG 30520 --- [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Secured GET /api/gamification/achievements
+2025-10-20T21:40:37.034-03:00 DEBUG 30520 --- [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Secured GET /api/profile/me
+2025-10-20T21:40:37.048-03:00  INFO 30520 --- [http-nio-8080-exec-6] b.c.d.api.controller.ProfileController   : PROFILE_ACCESS: Acessando perfil de fernando@gmail.com. Iniciando campos lazy...
+2025-10-20T21:40:37.068-03:00  INFO 30520 --- [http-nio-8080-exec-6] b.c.d.api.controller.ProfileController   : PROFILE_ACCESS: Serialização de fernando@gmail.com concluída com sucesso.
+2025-10-20T21:40:37.106-03:00 DEBUG 30520 --- [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Securing GET /uploads/54aa71b4-f8d3-4357-8633-f580364b0d73_taskflow.png
+2025-10-20T21:40:37.107-03:00 DEBUG 30520 --- [http-nio-8080-exec-7] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2025-10-20T21:40:37.107-03:00 DEBUG 30520 --- [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Secured GET /uploads/54aa71b4-f8d3-4357-8633-f580364b0d73_taskflow.png
+2025-10-20T21:40:37.125-03:00 DEBUG 30520 --- [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Securing GET /error
+2025-10-20T21:40:37.125-03:00 DEBUG 30520 --- [http-nio-8080-exec-7] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2025-10-20T21:40:37.127-03:00 DEBUG 30520 --- [http-nio-8080-exec-7] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2025-10-20T21:40:38.542-03:00 DEBUG 30520 --- [http-nio-8080-exec-8] o.s.security.web.FilterChainProxy        : Securing GET /api/profile/me
+2025-10-20T21:40:38.552-03:00 DEBUG 30520 --- [http-nio-8080-exec-8] o.s.security.web.FilterChainProxy        : Secured GET /api/profile/me
+2025-10-20T21:40:38.557-03:00  INFO 30520 --- [http-nio-8080-exec-8] b.c.d.api.controller.ProfileController   : PROFILE_ACCESS: Acessando perfil de fernando@gmail.com. Iniciando campos lazy...
+2025-10-20T21:40:38.562-03:00  INFO 30520 --- [http-nio-8080-exec-8] b.c.d.api.controller.ProfileController   : PROFILE_ACCESS: Serialização de fernando@gmail.com concluída com sucesso.
+2025-10-20T21:40:38.567-03:00 DEBUG 30520 --- [http-nio-8080-exec-9] o.s.security.web.FilterChainProxy        : Securing GET /api/backgrounds
+2025-10-20T21:40:38.575-03:00 DEBUG 30520 --- [http-nio-8080-exec-9] o.s.security.web.FilterChainProxy        : Secured GET /api/backgrounds
+2025-10-20T21:40:39.902-03:00 DEBUG 30520 --- [http-nio-8080-exec-10] o.s.security.web.FilterChainProxy        : Securing GET /api/groups?page=0&size=999
+2025-10-20T21:40:39.913-03:00 DEBUG 30520 --- [http-nio-8080-exec-10] o.s.security.web.FilterChainProxy        : Secured GET /api/groups?page=0&size=999
+2025-10-20T21:40:39.957-03:00  WARN 30520 --- [http-nio-8080-exec-10] ration$PageModule$WarningLoggingModifier : Serializing PageImpl instances as-is is not supported, meaning that there is no guarantee about the stability of the resulting JSON structure!
+	For a stable JSON structure, please use Spring Data's PagedModel (globally via @EnableSpringDataWebSupport(pageSerializationMode = VIA_DTO))
+	or Spring HATEOAS and Spring Data's PagedResourcesAssembler as documented in https://docs.spring.io/spring-data/commons/reference/repositories/core-extensions.html#core.web.pageables.
+
+2025-10-20T21:40:41.606-03:00 DEBUG 30520 --- [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Securing GET /api/profile/me
+2025-10-20T21:40:41.617-03:00 DEBUG 30520 --- [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Secured GET /api/profile/me
+2025-10-20T21:40:41.621-03:00  INFO 30520 --- [http-nio-8080-exec-1] b.c.d.api.controller.ProfileController   : PROFILE_ACCESS: Acessando perfil de fernando@gmail.com. Iniciando campos lazy...
+2025-10-20T21:40:41.626-03:00  INFO 30520 --- [http-nio-8080-exec-1] b.c.d.api.controller.ProfileController   : PROFILE_ACCESS: Serialização de fernando@gmail.com concluída com sucesso.
+2025-10-20T21:40:59.622-03:00 DEBUG 30520 --- [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Securing GET /api/profile/me
+2025-10-20T21:40:59.622-03:00 DEBUG 30520 --- [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Securing GET /api/gamification/achievements
+2025-10-20T21:40:59.632-03:00 DEBUG 30520 --- [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Secured GET /api/profile/me
+2025-10-20T21:40:59.633-03:00 DEBUG 30520 --- [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Secured GET /api/gamification/achievements
+2025-10-20T21:40:59.636-03:00  INFO 30520 --- [http-nio-8080-exec-6] b.c.d.api.controller.ProfileController   : PROFILE_ACCESS: Acessando perfil de fernando@gmail.com. Iniciando campos lazy...
+2025-10-20T21:40:59.639-03:00  INFO 30520 --- [http-nio-8080-exec-6] b.c.d.api.controller.ProfileController   : PROFILE_ACCESS: Serialização de fernando@gmail.com concluída com sucesso.
+2025-10-20T21:40:59.647-03:00 DEBUG 30520 --- [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Securing GET /uploads/54aa71b4-f8d3-4357-8633-f580364b0d73_taskflow.png
+2025-10-20T21:40:59.648-03:00 DEBUG 30520 --- [http-nio-8080-exec-7] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2025-10-20T21:40:59.648-03:00 DEBUG 30520 --- [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Secured GET /uploads/54aa71b4-f8d3-4357-8633-f580364b0d73_taskflow.png
+2025-10-20T21:40:59.669-03:00 DEBUG 30520 --- [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Securing GET /error
+2025-10-20T21:40:59.670-03:00 DEBUG 30520 --- [http-nio-8080-exec-7] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2025-10-20T21:40:59.670-03:00 DEBUG 30520 --- [http-nio-8080-exec-7] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2025-10-20T21:41:00.054-03:00 DEBUG 30520 --- [http-nio-8080-exec-8] o.s.security.web.FilterChainProxy        : Securing GET /api/groups?page=0&size=999
+2025-10-20T21:41:00.065-03:00 DEBUG 30520 --- [http-nio-8080-exec-8] o.s.security.web.FilterChainProxy        : Secured GET /api/groups?page=0&size=999
+2025-10-20T21:41:00.974-03:00 DEBUG 30520 --- [http-nio-8080-exec-9] o.s.security.web.FilterChainProxy        : Securing GET /api/tasks?year=2025&month=10
+2025-10-20T21:41:00.985-03:00 DEBUG 30520 --- [http-nio-8080-exec-9] o.s.security.web.FilterChainProxy        : Secured GET /api/tasks?year=2025&month=10
+2025-10-20T21:41:14.071-03:00 DEBUG 30520 --- [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Securing POST /auth/login
+2025-10-20T21:41:14.073-03:00 DEBUG 30520 --- [http-nio-8080-exec-2] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2025-10-20T21:41:14.073-03:00 DEBUG 30520 --- [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Secured POST /auth/login
+2025-10-20T21:41:14.133-03:00 DEBUG 30520 --- [http-nio-8080-exec-2] o.s.s.a.dao.DaoAuthenticationProvider    : Authenticated user
+2025-10-20T21:41:14.236-03:00 DEBUG 30520 --- [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Securing GET /api/groups?page=0&size=999
+2025-10-20T21:41:14.237-03:00 DEBUG 30520 --- [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Securing GET /api/admin/users?page=0&size=5
+2025-10-20T21:41:14.244-03:00 DEBUG 30520 --- [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Secured GET /api/groups?page=0&size=999
+2025-10-20T21:41:14.245-03:00 DEBUG 30520 --- [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Secured GET /api/admin/users?page=0&size=5
+2025-10-20T21:41:14.247-03:00 DEBUG 30520 --- [http-nio-8080-exec-5] horizationManagerBeforeMethodInterceptor : Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllUsers(java.lang.Long,org.springframework.data.domain.Pageable,org.springframework.security.core.Authentication); target is of class [br.com.desbravadores.api.controller.AdminController]
+2025-10-20T21:41:14.290-03:00 DEBUG 30520 --- [http-nio-8080-exec-5] horizationManagerBeforeMethodInterceptor : Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllUsers(java.lang.Long,org.springframework.data.domain.Pageable,org.springframework.security.core.Authentication); target is of class [br.com.desbravadores.api.controller.AdminController]
+2025-10-20T21:41:16.383-03:00 DEBUG 30520 --- [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/notifications
+2025-10-20T21:41:16.386-03:00 DEBUG 30520 --- [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Securing GET /api/notifications
+2025-10-20T21:41:16.395-03:00 DEBUG 30520 --- [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Secured GET /api/notifications
+2025-10-20T21:41:37.255-03:00 DEBUG 30520 --- [http-nio-8080-exec-10] o.s.security.web.FilterChainProxy        : Securing GET /api/groups?page=0&size=999
+2025-10-20T21:41:37.255-03:00 DEBUG 30520 --- [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Securing GET /api/admin/users?page=0&size=5
+2025-10-20T21:41:37.267-03:00 DEBUG 30520 --- [http-nio-8080-exec-10] o.s.security.web.FilterChainProxy        : Secured GET /api/groups?page=0&size=999
+2025-10-20T21:41:37.267-03:00 DEBUG 30520 --- [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Secured GET /api/admin/users?page=0&size=5
+2025-10-20T21:41:37.268-03:00 DEBUG 30520 --- [http-nio-8080-exec-1] horizationManagerBeforeMethodInterceptor : Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllUsers(java.lang.Long,org.springframework.data.domain.Pageable,org.springframework.security.core.Authentication); target is of class [br.com.desbravadores.api.controller.AdminController]
+2025-10-20T21:41:37.269-03:00 DEBUG 30520 --- [http-nio-8080-exec-1] horizationManagerBeforeMethodInterceptor : Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllUsers(java.lang.Long,org.springframework.data.domain.Pageable,org.springframework.security.core.Authentication); target is of class [br.com.desbravadores.api.controller.AdminController]
+2025-10-20T21:41:39.242-03:00 DEBUG 30520 --- [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Securing GET /api/groups?page=0&size=999
+2025-10-20T21:41:39.243-03:00 DEBUG 30520 --- [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Securing GET /api/admin/users?page=0&size=5
+2025-10-20T21:41:39.251-03:00 DEBUG 30520 --- [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Secured GET /api/groups?page=0&size=999
+2025-10-20T21:41:39.251-03:00 DEBUG 30520 --- [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Secured GET /api/admin/users?page=0&size=5
+2025-10-20T21:41:39.252-03:00 DEBUG 30520 --- [http-nio-8080-exec-2] horizationManagerBeforeMethodInterceptor : Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllUsers(java.lang.Long,org.springframework.data.domain.Pageable,org.springframework.security.core.Authentication); target is of class [br.com.desbravadores.api.controller.AdminController]
+2025-10-20T21:41:39.253-03:00 DEBUG 30520 --- [http-nio-8080-exec-2] horizationManagerBeforeMethodInterceptor : Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllUsers(java.lang.Long,org.springframework.data.domain.Pageable,org.springframework.security.core.Authentication); target is of class [br.com.desbravadores.api.controller.AdminController]
+2025-10-20T21:41:49.066-03:00 DEBUG 30520 --- [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Securing GET /api/groups?page=0&size=999
+2025-10-20T21:41:49.067-03:00 DEBUG 30520 --- [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Securing GET /api/admin/users?page=0&size=5
+2025-10-20T21:41:49.077-03:00 DEBUG 30520 --- [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Secured GET /api/groups?page=0&size=999
+2025-10-20T21:41:49.077-03:00 DEBUG 30520 --- [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Secured GET /api/admin/users?page=0&size=5
+2025-10-20T21:41:49.078-03:00 DEBUG 30520 --- [http-nio-8080-exec-7] horizationManagerBeforeMethodInterceptor : Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllUsers(java.lang.Long,org.springframework.data.domain.Pageable,org.springframework.security.core.Authentication); target is of class [br.com.desbravadores.api.controller.AdminController]
+2025-10-20T21:41:49.079-03:00 DEBUG 30520 --- [http-nio-8080-exec-7] horizationManagerBeforeMethodInterceptor : Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllUsers(java.lang.Long,org.springframework.data.domain.Pageable,org.springframework.security.core.Authentication); target is of class [br.com.desbravadores.api.controller.AdminController]
+2025-10-20T21:41:51.256-03:00 DEBUG 30520 --- [http-nio-8080-exec-8] o.s.security.web.FilterChainProxy        : Securing GET /api/groups?page=0&size=999
+2025-10-20T21:41:51.256-03:00 DEBUG 30520 --- [http-nio-8080-exec-9] o.s.security.web.FilterChainProxy        : Securing GET /api/admin/users?page=0&size=5
+2025-10-20T21:41:51.267-03:00 DEBUG 30520 --- [http-nio-8080-exec-9] o.s.security.web.FilterChainProxy        : Secured GET /api/admin/users?page=0&size=5
+2025-10-20T21:41:51.267-03:00 DEBUG 30520 --- [http-nio-8080-exec-8] o.s.security.web.FilterChainProxy        : Secured GET /api/groups?page=0&size=999
+2025-10-20T21:41:51.269-03:00 DEBUG 30520 --- [http-nio-8080-exec-9] horizationManagerBeforeMethodInterceptor : Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllUsers(java.lang.Long,org.springframework.data.domain.Pageable,org.springframework.security.core.Authentication); target is of class [br.com.desbravadores.api.controller.AdminController]
+2025-10-20T21:41:51.269-03:00 DEBUG 30520 --- [http-nio-8080-exec-9] horizationManagerBeforeMethodInterceptor : Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllUsers(java.lang.Long,org.springframework.data.domain.Pageable,org.springframework.security.core.Authentication); target is of class [br.com.desbravadores.api.controller.AdminController]
+2025-10-20T21:44:51.000-03:00 DEBUG 30520 --- [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Securing GET /api/groups?page=0&size=999
+2025-10-20T21:44:51.000-03:00 DEBUG 30520 --- [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Securing GET /api/admin/users?page=0&size=5
+2025-10-20T21:44:51.017-03:00 DEBUG 30520 --- [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Secured GET /api/admin/users?page=0&size=5
+2025-10-20T21:44:51.017-03:00 DEBUG 30520 --- [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Secured GET /api/groups?page=0&size=999
+2025-10-20T21:44:51.018-03:00 DEBUG 30520 --- [http-nio-8080-exec-3] horizationManagerBeforeMethodInterceptor : Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllUsers(java.lang.Long,org.springframework.data.domain.Pageable,org.springframework.security.core.Authentication); target is of class [br.com.desbravadores.api.controller.AdminController]
+2025-10-20T21:44:51.019-03:00 DEBUG 30520 --- [http-nio-8080-exec-3] horizationManagerBeforeMethodInterceptor : Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllUsers(java.lang.Long,org.springframework.data.domain.Pageable,org.springframework.security.core.Authentication); target is of class [br.com.desbravadores.api.controller.AdminController]
+2025-10-20T21:44:52.263-03:00 DEBUG 30520 --- [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Securing GET /api/admin/users?page=0&size=5
+2025-10-20T21:44:52.263-03:00 DEBUG 30520 --- [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Securing GET /api/groups?page=0&size=999
+2025-10-20T21:44:52.275-03:00 DEBUG 30520 --- [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Secured GET /api/admin/users?page=0&size=5
+2025-10-20T21:44:52.275-03:00 DEBUG 30520 --- [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Secured GET /api/groups?page=0&size=999
+2025-10-20T21:44:52.277-03:00 DEBUG 30520 --- [http-nio-8080-exec-6] horizationManagerBeforeMethodInterceptor : Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllUsers(java.lang.Long,org.springframework.data.domain.Pageable,org.springframework.security.core.Authentication); target is of class [br.com.desbravadores.api.controller.AdminController]
+2025-10-20T21:44:52.278-03:00 DEBUG 30520 --- [http-nio-8080-exec-6] horizationManagerBeforeMethodInterceptor : Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllUsers(java.lang.Long,org.springframework.data.domain.Pageable,org.springframework.security.core.Authentication); target is of class [br.com.desbravadores.api.controller.AdminController]
+2025-10-20T21:44:59.050-03:00 DEBUG 30520 --- [http-nio-8080-exec-9] o.s.security.web.FilterChainProxy        : Securing GET /api/groups?page=0&size=999
+2025-10-20T21:44:59.054-03:00 DEBUG 30520 --- [http-nio-8080-exec-8] o.s.security.web.FilterChainProxy        : Securing GET /api/admin/users?page=0&size=5
+2025-10-20T21:44:59.071-03:00 DEBUG 30520 --- [http-nio-8080-exec-8] o.s.security.web.FilterChainProxy        : Secured GET /api/admin/users?page=0&size=5
+2025-10-20T21:44:59.073-03:00 DEBUG 30520 --- [http-nio-8080-exec-8] horizationManagerBeforeMethodInterceptor : Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllUsers(java.lang.Long,org.springframework.data.domain.Pageable,org.springframework.security.core.Authentication); target is of class [br.com.desbravadores.api.controller.AdminController]
+2025-10-20T21:44:59.073-03:00 DEBUG 30520 --- [http-nio-8080-exec-9] o.s.security.web.FilterChainProxy        : Secured GET /api/groups?page=0&size=999
+2025-10-20T21:44:59.074-03:00 DEBUG 30520 --- [http-nio-8080-exec-8] horizationManagerBeforeMethodInterceptor : Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllUsers(java.lang.Long,org.springframework.data.domain.Pageable,org.springframework.security.core.Authentication); target is of class [br.com.desbravadores.api.controller.AdminController]
+2025-10-20T21:45:09.112-03:00 DEBUG 30520 --- [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Securing GET /api/admin/users?page=0&size=5
+2025-10-20T21:45:09.112-03:00 DEBUG 30520 --- [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Securing GET /api/groups?page=0&size=999
+2025-10-20T21:45:09.129-03:00 DEBUG 30520 --- [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Secured GET /api/admin/users?page=0&size=5
+2025-10-20T21:45:09.130-03:00 DEBUG 30520 --- [http-nio-8080-exec-2] horizationManagerBeforeMethodInterceptor : Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllUsers(java.lang.Long,org.springframework.data.domain.Pageable,org.springframework.security.core.Authentication); target is of class [br.com.desbravadores.api.controller.AdminController]
+2025-10-20T21:45:09.132-03:00 DEBUG 30520 --- [http-nio-8080-exec-2] horizationManagerBeforeMethodInterceptor : Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllUsers(java.lang.Long,org.springframework.data.domain.Pageable,org.springframework.security.core.Authentication); target is of class [br.com.desbravadores.api.controller.AdminController]
+2025-10-20T21:45:09.135-03:00 DEBUG 30520 --- [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Secured GET /api/groups?page=0&size=999
+2025-10-20T21:45:09.585-03:00 DEBUG 30520 --- [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Securing GET /api/groups?page=0&size=999
+2025-10-20T21:45:09.585-03:00 DEBUG 30520 --- [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Securing GET /api/admin/users?page=0&size=5
+2025-10-20T21:45:09.600-03:00 DEBUG 30520 --- [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Secured GET /api/groups?page=0&size=999
+2025-10-20T21:45:09.601-03:00 DEBUG 30520 --- [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Secured GET /api/admin/users?page=0&size=5
+2025-10-20T21:45:09.602-03:00 DEBUG 30520 --- [http-nio-8080-exec-4] horizationManagerBeforeMethodInterceptor : Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllUsers(java.lang.Long,org.springframework.data.domain.Pageable,org.springframework.security.core.Authentication); target is of class [br.com.desbravadores.api.controller.AdminController]
+2025-10-20T21:45:09.602-03:00 DEBUG 30520 --- [http-nio-8080-exec-4] horizationManagerBeforeMethodInterceptor : Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllUsers(java.lang.Long,org.springframework.data.domain.Pageable,org.springframework.security.core.Authentication); target is of class [br.com.desbravadores.api.controller.AdminController]
+2025-10-20T21:45:13.157-03:00 DEBUG 30520 --- [http-nio-8080-exec-8] o.s.security.web.FilterChainProxy        : Securing GET /api/groups?page=0&size=999
+2025-10-20T21:45:13.158-03:00 DEBUG 30520 --- [http-nio-8080-exec-9] o.s.security.web.FilterChainProxy        : Securing GET /api/admin/users?page=0&size=5
+2025-10-20T21:45:13.175-03:00 DEBUG 30520 --- [http-nio-8080-exec-9] o.s.security.web.FilterChainProxy        : Secured GET /api/admin/users?page=0&size=5
+2025-10-20T21:45:13.175-03:00 DEBUG 30520 --- [http-nio-8080-exec-8] o.s.security.web.FilterChainProxy        : Secured GET /api/groups?page=0&size=999
+2025-10-20T21:45:13.176-03:00 DEBUG 30520 --- [http-nio-8080-exec-9] horizationManagerBeforeMethodInterceptor : Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllUsers(java.lang.Long,org.springframework.data.domain.Pageable,org.springframework.security.core.Authentication); target is of class [br.com.desbravadores.api.controller.AdminController]
+2025-10-20T21:45:13.178-03:00 DEBUG 30520 --- [http-nio-8080-exec-9] horizationManagerBeforeMethodInterceptor : Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllUsers(java.lang.Long,org.springframework.data.domain.Pageable,org.springframework.security.core.Authentication); target is of class [br.com.desbravadores.api.controller.AdminController]
+2025-10-20T21:45:13.544-03:00 DEBUG 30520 --- [http-nio-8080-exec-10] o.s.security.web.FilterChainProxy        : Securing GET /api/groups?page=0&size=999
+2025-10-20T21:45:13.544-03:00 DEBUG 30520 --- [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Securing GET /api/admin/users?page=0&size=5
+2025-10-20T21:45:13.557-03:00 DEBUG 30520 --- [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Secured GET /api/admin/users?page=0&size=5
+2025-10-20T21:45:13.557-03:00 DEBUG 30520 --- [http-nio-8080-exec-10] o.s.security.web.FilterChainProxy        : Secured GET /api/groups?page=0&size=999
+2025-10-20T21:45:13.558-03:00 DEBUG 30520 --- [http-nio-8080-exec-1] horizationManagerBeforeMethodInterceptor : Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllUsers(java.lang.Long,org.springframework.data.domain.Pageable,org.springframework.security.core.Authentication); target is of class [br.com.desbravadores.api.controller.AdminController]
+2025-10-20T21:45:13.559-03:00 DEBUG 30520 --- [http-nio-8080-exec-1] horizationManagerBeforeMethodInterceptor : Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllUsers(java.lang.Long,org.springframework.data.domain.Pageable,org.springframework.security.core.Authentication); target is of class [br.com.desbravadores.api.controller.AdminController]
+2025-10-20T21:45:28.867-03:00 DEBUG 30520 --- [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Securing GET /api/admin/users?page=0&size=5
+2025-10-20T21:45:28.868-03:00 DEBUG 30520 --- [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Securing GET /api/groups?page=0&size=999
+2025-10-20T21:45:28.901-03:00 DEBUG 30520 --- [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Secured GET /api/admin/users?page=0&size=5
+2025-10-20T21:45:28.904-03:00 DEBUG 30520 --- [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Secured GET /api/groups?page=0&size=999
+2025-10-20T21:45:28.904-03:00 DEBUG 30520 --- [http-nio-8080-exec-5] horizationManagerBeforeMethodInterceptor : Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllUsers(java.lang.Long,org.springframework.data.domain.Pageable,org.springframework.security.core.Authentication); target is of class [br.com.desbravadores.api.controller.AdminController]
+2025-10-20T21:45:28.907-03:00 DEBUG 30520 --- [http-nio-8080-exec-5] horizationManagerBeforeMethodInterceptor : Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllUsers(java.lang.Long,org.springframework.data.domain.Pageable,org.springframework.security.core.Authentication); target is of class [br.com.desbravadores.api.controller.AdminController]
+2025-10-20T21:45:29.435-03:00 DEBUG 30520 --- [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Securing GET /api/admin/users?page=0&size=5
+2025-10-20T21:45:29.435-03:00 DEBUG 30520 --- [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Securing GET /api/groups?page=0&size=999
+2025-10-20T21:45:29.455-03:00 DEBUG 30520 --- [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Secured GET /api/groups?page=0&size=999
+2025-10-20T21:45:29.455-03:00 DEBUG 30520 --- [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Secured GET /api/admin/users?page=0&size=5
+2025-10-20T21:45:29.456-03:00 DEBUG 30520 --- [http-nio-8080-exec-6] horizationManagerBeforeMethodInterceptor : Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllUsers(java.lang.Long,org.springframework.data.domain.Pageable,org.springframework.security.core.Authentication); target is of class [br.com.desbravadores.api.controller.AdminController]
+2025-10-20T21:45:29.457-03:00 DEBUG 30520 --- [http-nio-8080-exec-6] horizationManagerBeforeMethodInterceptor : Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllUsers(java.lang.Long,org.springframework.data.domain.Pageable,org.springframework.security.core.Authentication); target is of class [br.com.desbravadores.api.controller.AdminController]
+2025-10-20T21:45:45.065-03:00 DEBUG 30520 --- [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Securing GET /api/groups?page=0&size=999
+2025-10-20T21:45:45.065-03:00 DEBUG 30520 --- [http-nio-8080-exec-10] o.s.security.web.FilterChainProxy        : Securing GET /api/admin/users?page=0&size=5
+2025-10-20T21:45:45.076-03:00 DEBUG 30520 --- [http-nio-8080-exec-10] o.s.security.web.FilterChainProxy        : Secured GET /api/admin/users?page=0&size=5
+2025-10-20T21:45:45.076-03:00 DEBUG 30520 --- [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Secured GET /api/groups?page=0&size=999
+2025-10-20T21:45:45.078-03:00 DEBUG 30520 --- [http-nio-8080-exec-10] horizationManagerBeforeMethodInterceptor : Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllUsers(java.lang.Long,org.springframework.data.domain.Pageable,org.springframework.security.core.Authentication); target is of class [br.com.desbravadores.api.controller.AdminController]
+2025-10-20T21:45:45.078-03:00 DEBUG 30520 --- [http-nio-8080-exec-10] horizationManagerBeforeMethodInterceptor : Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllUsers(java.lang.Long,org.springframework.data.domain.Pageable,org.springframework.security.core.Authentication); target is of class [br.com.desbravadores.api.controller.AdminController]
+2025-10-20T21:46:17.495-03:00  INFO 56876 --- [main] b.c.d.api.DesbravadoresApiApplication    : Starting DesbravadoresApiApplication using Java 21.0.8 with PID 56876 (C:\Users\silas.tristoni\Documents\DesbravadoresTeste\desbravadores-api\target\classes started by silas.tristoni in C:\Users\silas.tristoni\Documents\DesbravadoresTeste)
+2025-10-20T21:46:17.498-03:00  INFO 56876 --- [main] b.c.d.api.DesbravadoresApiApplication    : No active profile set, falling back to 1 default profile: "default"
+2025-10-20T21:46:18.381-03:00  INFO 56876 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-10-20T21:46:18.530-03:00  INFO 56876 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 84 ms. Found 9 JPA repository interfaces.
+2025-10-20T21:46:19.855-03:00  INFO 56876 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2025-10-20T21:46:19.881-03:00  INFO 56876 --- [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-10-20T21:46:19.882-03:00  INFO 56876 --- [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.46]
+2025-10-20T21:46:19.950-03:00  INFO 56876 --- [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-10-20T21:46:19.951-03:00  INFO 56876 --- [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 2367 ms
+2025-10-20T21:46:20.190-03:00  INFO 56876 --- [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-10-20T21:46:20.288-03:00  INFO 56876 --- [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.29.Final
+2025-10-20T21:46:20.376-03:00  INFO 56876 --- [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-10-20T21:46:20.826-03:00  INFO 56876 --- [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-10-20T21:46:20.872-03:00  INFO 56876 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-10-20T21:46:21.058-03:00  INFO 56876 --- [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@5fc7255c
+2025-10-20T21:46:21.060-03:00  INFO 56876 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-10-20T21:46:21.103-03:00  WARN 56876 --- [main] org.hibernate.dialect.Dialect            : HHH000511: The 5.5.5 version for [org.hibernate.dialect.MySQLDialect] is no longer supported, hence certain features may not work properly. The minimum supported version is 8.0.0. Check the community dialects project for available legacy versions.
+2025-10-20T21:46:21.111-03:00  WARN 56876 --- [main] org.hibernate.orm.deprecation            : HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-10-20T21:46:21.150-03:00  INFO 56876 --- [main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 5.5.5
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-10-20T21:46:22.246-03:00  INFO 56876 --- [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-10-20T21:46:22.374-03:00  INFO 56876 --- [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-10-20T21:46:23.115-03:00  INFO 56876 --- [main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name customUserDetailsService
+2025-10-20T21:46:23.275-03:00  WARN 56876 --- [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-10-20T21:46:23.697-03:00 DEBUG 56876 --- [main] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with filters: DisableEncodeUrlFilter, WebAsyncManagerIntegrationFilter, SecurityContextHolderFilter, HeaderWriterFilter, CorsFilter, LogoutFilter, JwtAuthFilter, RequestCacheAwareFilter, SecurityContextHolderAwareRequestFilter, AnonymousAuthenticationFilter, SessionManagementFilter, ExceptionTranslationFilter, AuthorizationFilter
+2025-10-20T21:46:24.037-03:00  INFO 56876 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2025-10-20T21:46:24.045-03:00  INFO 56876 --- [main] b.c.d.api.DesbravadoresApiApplication    : Started DesbravadoresApiApplication in 7.143 seconds (process running for 7.504)
+2025-10-20T21:46:24.943-03:00  INFO 56876 --- [http-nio-8080-exec-2] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-10-20T21:46:24.943-03:00  INFO 56876 --- [http-nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2025-10-20T21:46:24.944-03:00  INFO 56876 --- [http-nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2025-10-20T21:46:24.969-03:00 DEBUG 56876 --- [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/admin/users?page=0&size=5
+2025-10-20T21:46:24.969-03:00 DEBUG 56876 --- [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Securing OPTIONS /api/groups?page=0&size=999
+2025-10-20T21:46:25.000-03:00 DEBUG 56876 --- [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Securing GET /api/groups?page=0&size=999
+2025-10-20T21:46:25.000-03:00 DEBUG 56876 --- [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Securing GET /api/admin/users?page=0&size=5
+2025-10-20T21:46:25.095-03:00 DEBUG 56876 --- [http-nio-8080-exec-4] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2025-10-20T21:46:25.095-03:00 DEBUG 56876 --- [http-nio-8080-exec-3] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2025-10-20T21:46:25.101-03:00 DEBUG 56876 --- [http-nio-8080-exec-3] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2025-10-20T21:46:25.101-03:00 DEBUG 56876 --- [http-nio-8080-exec-4] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2025-10-20T21:46:25.109-03:00 DEBUG 56876 --- [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Securing GET /error?page=0&size=999
+2025-10-20T21:46:25.109-03:00 DEBUG 56876 --- [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Securing GET /error?page=0&size=5
+2025-10-20T21:46:25.109-03:00 DEBUG 56876 --- [http-nio-8080-exec-3] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2025-10-20T21:46:25.109-03:00 DEBUG 56876 --- [http-nio-8080-exec-4] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2025-10-20T21:46:25.110-03:00 DEBUG 56876 --- [http-nio-8080-exec-4] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2025-10-20T21:46:25.110-03:00 DEBUG 56876 --- [http-nio-8080-exec-3] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2025-10-20T21:46:30.140-03:00 DEBUG 56876 --- [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Securing POST /auth/login
+2025-10-20T21:46:30.142-03:00 DEBUG 56876 --- [http-nio-8080-exec-5] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2025-10-20T21:46:30.143-03:00 DEBUG 56876 --- [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Secured POST /auth/login
+2025-10-20T21:46:30.370-03:00 DEBUG 56876 --- [http-nio-8080-exec-5] o.s.s.a.dao.DaoAuthenticationProvider    : Authenticated user
+2025-10-20T21:46:30.476-03:00 DEBUG 56876 --- [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Securing GET /api/groups?page=0&size=999
+2025-10-20T21:46:30.476-03:00 DEBUG 56876 --- [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Securing GET /api/admin/users?page=0&size=5
+2025-10-20T21:46:30.492-03:00 DEBUG 56876 --- [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Secured GET /api/groups?page=0&size=999
+2025-10-20T21:46:30.492-03:00 DEBUG 56876 --- [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Secured GET /api/admin/users?page=0&size=5
+2025-10-20T21:46:30.508-03:00 DEBUG 56876 --- [http-nio-8080-exec-7] horizationManagerBeforeMethodInterceptor : Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllUsers(java.lang.Long,org.springframework.data.domain.Pageable,org.springframework.security.core.Authentication); target is of class [br.com.desbravadores.api.controller.AdminController]
+2025-10-20T21:46:30.587-03:00 DEBUG 56876 --- [http-nio-8080-exec-7] horizationManagerBeforeMethodInterceptor : Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllUsers(java.lang.Long,org.springframework.data.domain.Pageable,org.springframework.security.core.Authentication); target is of class [br.com.desbravadores.api.controller.AdminController]
+2025-10-20T21:46:30.659-03:00  WARN 56876 --- [http-nio-8080-exec-7] ration$PageModule$WarningLoggingModifier : Serializing PageImpl instances as-is is not supported, meaning that there is no guarantee about the stability of the resulting JSON structure!
+	For a stable JSON structure, please use Spring Data's PagedModel (globally via @EnableSpringDataWebSupport(pageSerializationMode = VIA_DTO))
+	or Spring HATEOAS and Spring Data's PagedResourcesAssembler as documented in https://docs.spring.io/spring-data/commons/reference/repositories/core-extensions.html#core.web.pageables.
+
+2025-10-20T21:46:33.177-03:00 DEBUG 56876 --- [http-nio-8080-exec-9] o.s.security.web.FilterChainProxy        : Securing GET /api/admin/users/monitors
+2025-10-20T21:46:33.177-03:00 DEBUG 56876 --- [http-nio-8080-exec-8] o.s.security.web.FilterChainProxy        : Securing GET /api/groups
+2025-10-20T21:46:33.188-03:00 DEBUG 56876 --- [http-nio-8080-exec-8] o.s.security.web.FilterChainProxy        : Secured GET /api/groups
+2025-10-20T21:46:33.189-03:00 DEBUG 56876 --- [http-nio-8080-exec-9] o.s.security.web.FilterChainProxy        : Secured GET /api/admin/users/monitors
+2025-10-20T21:46:33.190-03:00 DEBUG 56876 --- [http-nio-8080-exec-9] horizationManagerBeforeMethodInterceptor : Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllMonitors(); target is of class [br.com.desbravadores.api.controller.AdminController]
+2025-10-20T21:46:33.190-03:00 DEBUG 56876 --- [http-nio-8080-exec-9] horizationManagerBeforeMethodInterceptor : Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllMonitors(); target is of class [br.com.desbravadores.api.controller.AdminController]
+2025-10-20T21:46:34.434-03:00 DEBUG 56876 --- [http-nio-8080-exec-10] o.s.security.web.FilterChainProxy        : Securing GET /api/tasks?year=2025&month=10
+2025-10-20T21:46:34.443-03:00 DEBUG 56876 --- [http-nio-8080-exec-10] o.s.security.web.FilterChainProxy        : Secured GET /api/tasks?year=2025&month=10
+2025-10-20T21:46:34.864-03:00 DEBUG 56876 --- [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Securing GET /api/groups?page=0&size=999
+2025-10-20T21:46:34.873-03:00 DEBUG 56876 --- [http-nio-8080-exec-1] o.s.security.web.FilterChainProxy        : Secured GET /api/groups?page=0&size=999
+2025-10-20T21:46:35.337-03:00 DEBUG 56876 --- [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Securing GET /api/profile/me
+2025-10-20T21:46:35.347-03:00 DEBUG 56876 --- [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Secured GET /api/profile/me
+2025-10-20T21:46:35.361-03:00 DEBUG 56876 --- [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Securing GET /api/backgrounds
+2025-10-20T21:46:35.371-03:00 DEBUG 56876 --- [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Secured GET /api/backgrounds
+2025-10-20T21:46:35.889-03:00 DEBUG 56876 --- [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Securing GET /api/gamification/achievements
+2025-10-20T21:46:35.889-03:00 DEBUG 56876 --- [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Securing GET /api/backgrounds
+2025-10-20T21:46:35.900-03:00 DEBUG 56876 --- [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Secured GET /api/backgrounds
+2025-10-20T21:46:35.900-03:00 DEBUG 56876 --- [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Secured GET /api/gamification/achievements
+2025-10-20T21:46:35.920-03:00 DEBUG 56876 --- [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Securing GET /uploads/54aa71b4-f8d3-4357-8633-f580364b0d73_taskflow.png
+2025-10-20T21:46:35.921-03:00 DEBUG 56876 --- [http-nio-8080-exec-7] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2025-10-20T21:46:35.921-03:00 DEBUG 56876 --- [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Secured GET /uploads/54aa71b4-f8d3-4357-8633-f580364b0d73_taskflow.png
+2025-10-20T21:46:35.926-03:00 DEBUG 56876 --- [http-nio-8080-exec-7] o.s.security.web.FilterChainProxy        : Securing GET /error
+2025-10-20T21:46:35.926-03:00 DEBUG 56876 --- [http-nio-8080-exec-7] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2025-10-20T21:46:35.927-03:00 DEBUG 56876 --- [http-nio-8080-exec-7] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2025-10-20T21:46:36.608-03:00 DEBUG 56876 --- [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Securing GET /api/notifications
+2025-10-20T21:46:36.619-03:00 DEBUG 56876 --- [http-nio-8080-exec-6] o.s.security.web.FilterChainProxy        : Secured GET /api/notifications
+2025-10-20T21:46:44.801-03:00 DEBUG 56876 --- [http-nio-8080-exec-9] o.s.security.web.FilterChainProxy        : Securing GET /api/groups?page=0&size=999
+2025-10-20T21:46:44.810-03:00 DEBUG 56876 --- [http-nio-8080-exec-9] o.s.security.web.FilterChainProxy        : Secured GET /api/groups?page=0&size=999
+2025-10-20T21:49:27.010-03:00 DEBUG 56876 --- [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Securing GET /api/admin/users?page=0&size=5
+2025-10-20T21:49:27.010-03:00 DEBUG 56876 --- [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Securing GET /api/groups?page=0&size=999
+2025-10-20T21:49:27.024-03:00 DEBUG 56876 --- [http-nio-8080-exec-2] o.s.security.web.FilterChainProxy        : Secured GET /api/groups?page=0&size=999
+2025-10-20T21:49:27.024-03:00 DEBUG 56876 --- [http-nio-8080-exec-3] o.s.security.web.FilterChainProxy        : Secured GET /api/admin/users?page=0&size=5
+2025-10-20T21:49:27.025-03:00 DEBUG 56876 --- [http-nio-8080-exec-3] horizationManagerBeforeMethodInterceptor : Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllUsers(java.lang.Long,org.springframework.data.domain.Pageable,org.springframework.security.core.Authentication); target is of class [br.com.desbravadores.api.controller.AdminController]
+2025-10-20T21:49:27.026-03:00 DEBUG 56876 --- [http-nio-8080-exec-3] horizationManagerBeforeMethodInterceptor : Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllUsers(java.lang.Long,org.springframework.data.domain.Pageable,org.springframework.security.core.Authentication); target is of class [br.com.desbravadores.api.controller.AdminController]
+2025-10-20T21:49:32.557-03:00 DEBUG 56876 --- [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Securing GET /api/groups?page=0&size=999
+2025-10-20T21:49:32.558-03:00 DEBUG 56876 --- [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Securing GET /api/admin/users?page=0&size=5
+2025-10-20T21:49:32.568-03:00 DEBUG 56876 --- [http-nio-8080-exec-5] o.s.security.web.FilterChainProxy        : Secured GET /api/groups?page=0&size=999
+2025-10-20T21:49:32.568-03:00 DEBUG 56876 --- [http-nio-8080-exec-4] o.s.security.web.FilterChainProxy        : Secured GET /api/admin/users?page=0&size=5
+2025-10-20T21:49:32.569-03:00 DEBUG 56876 --- [http-nio-8080-exec-4] horizationManagerBeforeMethodInterceptor : Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllUsers(java.lang.Long,org.springframework.data.domain.Pageable,org.springframework.security.core.Authentication); target is of class [br.com.desbravadores.api.controller.AdminController]
+2025-10-20T21:49:32.570-03:00 DEBUG 56876 --- [http-nio-8080-exec-4] horizationManagerBeforeMethodInterceptor : Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity br.com.desbravadores.api.controller.AdminController.getAllUsers(java.lang.Long,org.springframework.data.domain.Pageable,org.springframework.security.core.Authentication); target is of class [br.com.desbravadores.api.controller.AdminController]
+2025-11-02 22:19:19.821 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-11-02 22:19:19.879 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 50 ms. Found 9 JPA repository interfaces.
+2025-11-02 22:19:20.638 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2025-11-02 22:19:20.728 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1367 ms
+2025-11-02 22:19:21.248 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-11-02 22:19:22.479 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-11-02 22:19:23.077 [main] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-11-02 22:19:23.537 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
+2025-11-02 22:19:23.728 [http-nio-8080-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2025-11-02 22:19:23.729 [http-nio-8080-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 1 ms
+2025-11-02 22:19:27.515 [http-nio-8080-exec-7] WARN  o.s.d.w.c.SpringDataJacksonConfiguration$PageModule$WarningLoggingModifier - Serializing PageImpl instances as-is is not supported, meaning that there is no guarantee about the stability of the resulting JSON structure!
+	For a stable JSON structure, please use Spring Data's PagedModel (globally via @EnableSpringDataWebSupport(pageSerializationMode = VIA_DTO))
+	or Spring HATEOAS and Spring Data's PagedResourcesAssembler as documented in https://docs.spring.io/spring-data/commons/reference/repositories/core-extensions.html#core.web.pageables.
+
+2025-11-02 22:26:19.852 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-11-02 22:26:19.907 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 44 ms. Found 9 JPA repository interfaces.
+2025-11-02 22:26:20.649 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2025-11-02 22:26:20.723 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1374 ms
+2025-11-02 22:26:21.233 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-11-02 22:26:22.374 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-11-02 22:26:22.936 [main] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-11-02 22:26:23.415 [main] WARN  o.s.b.w.s.c.AnnotationConfigServletWebServerApplicationContext - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.context.ApplicationContextException: Failed to start bean 'webServerStartStop'
+2025-11-02 22:26:23.417 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-11-02 22:26:23.438 [main] INFO  o.s.b.a.l.ConditionEvaluationReportLogger - 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2025-11-02 22:26:23.455 [main] ERROR o.s.b.d.LoggingFailureAnalysisReporter - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Web server failed to start. Port 8080 was already in use.
+
+Action:
+
+Identify and stop the process that's listening on port 8080 or configure this application to listen on another port.
+
