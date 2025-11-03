@@ -10,9 +10,12 @@ if (typeof window.showToast === 'undefined') {
     window.showToast = toastFunc;
 }
 
-
-// Estado para rastrear qual tarefa está sendo editada
+// --- NOVO ESTADO E CONSTANTES ---
 let editingTaskId = null;
+let currentTaskPage = 0; // Rastreia a página atual
+const TASK_PAGE_SIZE = 10; // Define o tamanho da página
+// --- FIM NOVO ESTADO ---
+
 
 // Função auxiliar para criar corpo do modal de confirmação
 function createConfirmationModalBody(message, confirmCallback) {
@@ -30,9 +33,51 @@ function createConfirmationModalBody(message, confirmCallback) {
     return container;
 }
 
+/**
+ * NOVO: Função para renderizar os controlos de paginação
+ * (Baseada em manage-users.js)
+ */
+function renderPaginationControls(paginationContainer, viewElement, taskPage, loadFunction) {
+    paginationContainer.innerHTML = ''; // Limpa controlos antigos
 
-// Função auxiliar para obter as tarefas do mês atual e renderizar a tabela
-async function renderTaskList(viewElement) {
+    const { number, totalPages, first, last } = taskPage;
+    currentTaskPage = number; // Atualiza o estado global
+
+    // Botão "Anterior"
+    const prevBtn = document.createElement('button');
+    prevBtn.className = 'pagination-btn';
+    prevBtn.innerHTML = '<i class="fa-solid fa-arrow-left"></i> Anterior';
+    prevBtn.disabled = first;
+    prevBtn.addEventListener('click', () => {
+        loadFunction(viewElement, number - 1);
+    });
+
+    // Informação da Página
+    const info = document.createElement('span');
+    info.className = 'pagination-info';
+    info.textContent = `Página ${number + 1} de ${totalPages}`;
+
+    // Botão "Próxima"
+    const nextBtn = document.createElement('button');
+    nextBtn.className = 'pagination-btn';
+    nextBtn.innerHTML = 'Próxima <i class="fa-solid fa-arrow-right"></i>';
+    nextBtn.disabled = last;
+    nextBtn.addEventListener('click', () => {
+        loadFunction(viewElement, number + 1);
+    });
+
+    paginationContainer.appendChild(prevBtn);
+    paginationContainer.appendChild(info);
+    paginationContainer.appendChild(nextBtn);
+}
+
+
+/**
+ * FUNÇÃO ATUALIZADA: Renomeada e modificada para paginação
+ * @param {HTMLElement} viewElement 
+ * @param {number} page - O número da página a carregar
+ */
+async function loadAndRenderTasks(viewElement, page = 0) {
     const now = new Date();
     const currentYear = now.getFullYear();
     const currentMonth = now.getMonth() + 1; // API espera 1-12
@@ -41,15 +86,17 @@ async function renderTaskList(viewElement) {
     taskListContainer.innerHTML = '<p>A carregar tarefas...</p>';
 
     try {
-        const tasks = await fetchApi(`/api/tasks?year=${currentYear}&month=${currentMonth}`);
+        // ATUALIZADO: Fetch com parâmetros de paginação e ordenação
+        const endpoint = `/api/tasks?year=${currentYear}&month=${currentMonth}&page=${page}&size=${TASK_PAGE_SIZE}&sort=date,asc&sort=time,asc`;
+        const taskPage = await fetchApi(endpoint);
+        const tasks = taskPage.content; // Tarefas estão dentro de 'content'
 
-        if (tasks.length === 0) {
+        if (taskPage.totalElements === 0) {
             taskListContainer.innerHTML = `<p>Nenhuma tarefa agendada para este mês (${currentMonth}/${currentYear}).</p>`;
             return;
         }
-
-        // Ordena por data
-        tasks.sort((a, b) => new Date(a.date) - new Date(b.date));
+        
+        // A ordenação agora é feita pela API (sort=date,asc&sort=time,asc)
 
         taskListContainer.innerHTML = `
             <table class="user-table">
@@ -64,6 +111,7 @@ async function renderTaskList(viewElement) {
                 </thead>
                 <tbody>
                     ${tasks.map(task => {
+                        // ... (renderização da linha <TR> permanece a mesma) ...
                         const dateObj = new Date(task.date + 'T00:00:00'); // Evita problemas de fuso horário
                         const dateFormatted = dateObj.toLocaleDateString('pt-BR');
                         const timeFormatted = task.time.substring(0, 5);
@@ -109,9 +157,18 @@ async function renderTaskList(viewElement) {
                     }).join('')}
                 </tbody>
             </table>
+            <div id="task-list-pagination" class="pagination-controls" style="margin-top: 1rem;"></div>
         `;
 
-        // --- LISTENERS DE AÇÃO ---
+        // --- NOVO: Renderiza controles de paginação ---
+        const paginationContainer = viewElement.querySelector("#task-list-pagination");
+        if (taskPage.totalPages > 1) {
+            renderPaginationControls(paginationContainer, viewElement, taskPage, loadAndRenderTasks);
+        } else {
+            paginationContainer.remove();
+        }
+
+        // --- LISTENERS DE AÇÃO (ATUALIZADOS) ---
 
         // 1. Apagar tarefa
         taskListContainer.querySelectorAll('.delete-task-btn').forEach(btn => {
@@ -127,7 +184,7 @@ async function renderTaskList(viewElement) {
                         await fetchApi(`/api/tasks/${taskId}`, { method: 'DELETE' });
                         showToast(`Tarefa "${taskTitle}" apagada com sucesso!`, 'success');
                         editingTaskId = null;
-                        renderTaskList(viewElement);
+                        loadAndRenderTasks(viewElement, currentTaskPage); // ATUALIZADO
                     } catch (error) {
                         showToast(`Erro ao apagar tarefa: ${error.message}`, 'error');
                         btn.disabled = false;
@@ -142,7 +199,7 @@ async function renderTaskList(viewElement) {
         taskListContainer.querySelectorAll('.edit-task-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 editingTaskId = parseInt(e.currentTarget.dataset.taskId, 10);
-                renderTaskList(viewElement);
+                loadAndRenderTasks(viewElement, currentTaskPage); // ATUALIZADO
             });
         });
 
@@ -150,7 +207,7 @@ async function renderTaskList(viewElement) {
         taskListContainer.querySelectorAll('.cancel-edit-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 editingTaskId = null;
-                renderTaskList(viewElement);
+                loadAndRenderTasks(viewElement, currentTaskPage); // ATUALIZADO
             });
         });
 
@@ -180,7 +237,7 @@ async function renderTaskList(viewElement) {
 
                     showToast('Tarefa atualizada com sucesso!', 'success');
                     editingTaskId = null;
-                    renderTaskList(viewElement);
+                    loadAndRenderTasks(viewElement, currentTaskPage); // ATUALIZADO
 
                 } catch (error) {
                     showToast(`Erro ao salvar tarefa: ${error.message}`, 'error');
@@ -253,7 +310,7 @@ export function renderManageTasksView(viewElement) {
 
         showToast(`Tarefa "${newTask.title}" adicionada com sucesso!`, 'success');
         taskForm.reset();
-        renderTaskList(viewElement); // Re-renderiza a lista
+        loadAndRenderTasks(viewElement, 0); // ATUALIZADO: Recarrega na página 0
 
     } catch (error) {
         console.error("Falha ao criar tarefa:", error);
@@ -264,6 +321,6 @@ export function renderManageTasksView(viewElement) {
     }
   });
 
-  // Renderiza a lista de tarefas ao carregar a vista
-  renderTaskList(viewElement);
+  // ATUALIZADO: Renderiza a lista de tarefas (página 0) ao carregar a vista
+  loadAndRenderTasks(viewElement, 0);
 }

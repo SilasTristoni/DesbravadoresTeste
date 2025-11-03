@@ -1,33 +1,20 @@
-HELP.md
-target/
-.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
+# Ignora a pasta de build do Maven
+/target/
 
-### STS ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
-
-### IntelliJ IDEA ###
-.idea
-*.iws
-*.iml
-*.ipr
-
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-build/
-!**/src/main/**/build/
-!**/src/test/**/build/
-
-### VS Code ###
+# Ignora pastas de IDE
+.idea/
 .vscode/
+*.iml
+
+# Ignora pastas de logs
+/logs/
+
+# Ignora pastas de uploads do usuário
+/uploads/
+/file/
+
+# Ignora arquivos compilados do Java
+*.class
+
+# Ignora arquivos de configuração de tempo de execução
+.env

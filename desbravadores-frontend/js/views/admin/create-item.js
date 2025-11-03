@@ -1,9 +1,60 @@
 // js/views/admin/create-item.js
 
-async function fetchAndRenderAchievements(container) {
+// --- NOVA CONSTANTE E FUNÇÃO ---
+const ITEM_PAGE_SIZE = 5; // Tamanho da página para ambas as listas
+
+/**
+ * NOVO: Função para renderizar os controlos de paginação
+ * (Idêntica à de manage-tasks, mas recebe 'container' e 'loadFunction' diferentes)
+ */
+function renderPaginationControls(paginationContainer, container, itemPage, loadFunction) {
+    paginationContainer.innerHTML = ''; // Limpa controlos antigos
+
+    const { number, totalPages, first, last } = itemPage;
+
+    // Botão "Anterior"
+    const prevBtn = document.createElement('button');
+    prevBtn.className = 'pagination-btn';
+    prevBtn.innerHTML = '<i class="fa-solid fa-arrow-left"></i> Anterior';
+    prevBtn.disabled = first;
+    prevBtn.addEventListener('click', () => {
+        loadFunction(container, number - 1); // Recarrega a lista
+    });
+
+    // Informação da Página
+    const info = document.createElement('span');
+    info.className = 'pagination-info';
+    info.textContent = `Página ${number + 1} de ${totalPages}`;
+
+    // Botão "Próxima"
+    const nextBtn = document.createElement('button');
+    nextBtn.className = 'pagination-btn';
+    nextBtn.innerHTML = 'Próxima <i class="fa-solid fa-arrow-right"></i>';
+    nextBtn.disabled = last;
+    nextBtn.addEventListener('click', () => {
+        loadFunction(container, number + 1); // Recarrega a lista
+    });
+
+    paginationContainer.appendChild(prevBtn);
+    paginationContainer.appendChild(info);
+    paginationContainer.appendChild(nextBtn);
+}
+// --- FIM NOVOS ITENS ---
+
+
+/**
+ * FUNÇÃO ATUALIZADA para paginação
+ * @param {HTMLElement} container - O elemento <div id="achievements-list">
+ * @param {number} page - O número da página
+ */
+async function loadAndRenderAchievements(container, page = 0) {
     try {
-        const achievements = await fetchApi('/api/gamification/achievements');
-        if (achievements && achievements.length > 0) {
+        // ATUALIZADO: Endpoint e parâmetros de paginação
+        const endpoint = `/api/admin/achievements?page=${page}&size=${ITEM_PAGE_SIZE}&sort=name,asc`;
+        const achievementPage = await fetchApi(endpoint);
+        const achievements = achievementPage.content;
+        
+        if (achievementPage.totalElements > 0) {
             container.innerHTML = achievements.map(ach => `
                 <div class="list-item-preview">
                     <img src="http://localhost:8080${ach.icon}" alt="${ach.name}" class="preview-icon">
@@ -13,15 +64,33 @@ async function fetchAndRenderAchievements(container) {
         } else {
             container.innerHTML = '<p>Nenhuma conquista criada ainda.</p>';
         }
+
+        // NOVO: Renderiza paginação
+        const paginationContainer = container.nextElementSibling; // Pega o <div id="achievements-list-pagination">
+        if (achievementPage.totalPages > 1) {
+            renderPaginationControls(paginationContainer, container, achievementPage, loadAndRenderAchievements);
+        } else {
+            paginationContainer.innerHTML = '';
+        }
+
     } catch (error) {
-        container.innerHTML = `<p style="color: red;">Erro ao carregar conquistas.</p>`;
+        container.innerHTML = `<p style="color: red;">Erro ao carregar conquistas: ${error.message}</p>`;
     }
 }
 
-async function fetchAndRenderBackgrounds(container) {
+/**
+ * FUNÇÃO ATUALIZADA para paginação
+ * @param {HTMLElement} container - O elemento <div id="backgrounds-list">
+ * @param {number} page - O número da página
+ */
+async function loadAndRenderBackgrounds(container, page = 0) {
     try {
-        const backgrounds = await fetchApi('/api/backgrounds');
-        if (backgrounds && backgrounds.length > 0) {
+        // ATUALIZADO: Endpoint e parâmetros de paginação
+        const endpoint = `/api/backgrounds?page=${page}&size=${ITEM_PAGE_SIZE}&sort=name,asc`;
+        const backgroundPage = await fetchApi(endpoint);
+        const backgrounds = backgroundPage.content;
+        
+        if (backgroundPage.totalElements > 0) {
             container.innerHTML = backgrounds.map(bg => {
                 const style = bg.imageUrl 
                     ? `background: url(http://localhost:8080${bg.imageUrl}) center/cover no-repeat; color: ${bg.textColor};`
@@ -36,8 +105,17 @@ async function fetchAndRenderBackgrounds(container) {
         } else {
             container.innerHTML = '<p>Nenhum fundo criado ainda.</p>';
         }
+
+        // NOVO: Renderiza paginação
+        const paginationContainer = container.nextElementSibling; // Pega o <div id="backgrounds-list-pagination">
+        if (backgroundPage.totalPages > 1) {
+            renderPaginationControls(paginationContainer, container, backgroundPage, loadAndRenderBackgrounds);
+        } else {
+            paginationContainer.innerHTML = '';
+        }
+
     } catch (error) {
-        container.innerHTML = `<p style="color: red;">Erro ao carregar fundos.</p>`;
+        container.innerHTML = `<p style="color: red;">Erro ao carregar fundos: ${error.message}</p>`;
     }
 }
 
@@ -103,15 +181,22 @@ export function renderCreateItemView(viewElement) {
             <div id="achievements-list-container" style="margin-bottom: 2rem;">
                 <h3>🏆 Conquistas</h3>
                 <div id="achievements-list"></div>
+                <div id="achievements-list-pagination" class="pagination-controls"></div>
             </div>
             <div id="backgrounds-list-container">
                 <h3>Fundos de Perfil</h3>
                 <div id="backgrounds-list"></div>
+                <div id="backgrounds-list-pagination" class="pagination-controls"></div>
             </div>
         </div>
         <style>
             .list-item-preview { display: flex; align-items: center; border-bottom: 1px solid #eee; padding: 10px 0; gap: 15px; }
             .preview-icon { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; }
+            /* Estilo para paginação (pode mover para admin.css) */
+            .pagination-controls { display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; }
+            .pagination-btn { padding: 8px 12px; background-color: var(--scout-blue); color: white; border: none; border-radius: 5px; cursor: pointer; }
+            .pagination-btn:disabled { background-color: var(--text-secondary); cursor: not-allowed; }
+            .pagination-info { font-size: 0.9rem; color: var(--text-secondary); }
         </style>
     `;
 
@@ -141,10 +226,12 @@ export function renderCreateItemView(viewElement) {
         formData.append('iconFile', iconFile);
 
         try {
+            // ATUALIZADO: O endpoint POST já estava correto
             await fetchApi('/api/admin/achievements', { method: 'POST', body: formData });
             showToast('Conquista criada com sucesso!', 'success');
             achievementForm.reset();
-            fetchAndRenderAchievements(viewElement.querySelector("#achievements-list"));
+            // ATUALIZADO: Recarrega a lista paginada
+            loadAndRenderAchievements(viewElement.querySelector("#achievements-list"), 0);
         } catch (error) {
             showToast(`Erro: ${error.message}`, 'error');
         } finally {
@@ -165,13 +252,14 @@ export function renderCreateItemView(viewElement) {
         const formData = new FormData();
         formData.append('name', document.getElementById('bg-name').value);
         formData.append('imageFile', imageFile);
-        formData.append('textColor', '#FFFFFF');
+        formData.append('textColor', '#FFFFFF'); // Você pode querer adicionar um input para isso
 
         try {
             await fetchApi('/api/admin/backgrounds', { method: 'POST', body: formData });
             showToast('Fundo criado com sucesso!', 'success');
             backgroundForm.reset();
-            fetchAndRenderBackgrounds(viewElement.querySelector("#backgrounds-list"));
+            // ATUALIZADO: Recarrega a lista paginada
+            loadAndRenderBackgrounds(viewElement.querySelector("#backgrounds-list"), 0);
         } catch (error) {
             showToast(`Erro: ${error.message}`, 'error');
         } finally {
@@ -180,6 +268,7 @@ export function renderCreateItemView(viewElement) {
         }
     });
     
-    fetchAndRenderAchievements(viewElement.querySelector("#achievements-list"));
-    fetchAndRenderBackgrounds(viewElement.querySelector("#backgrounds-list"));
+    // ATUALIZADO: Carrega a primeira página de cada lista
+    loadAndRenderAchievements(viewElement.querySelector("#achievements-list"), 0);
+    loadAndRenderBackgrounds(viewElement.querySelector("#backgrounds-list"), 0);
 }

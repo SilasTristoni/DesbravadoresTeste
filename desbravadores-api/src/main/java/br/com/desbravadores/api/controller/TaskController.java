@@ -2,9 +2,10 @@ package br.com.desbravadores.api.controller;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController; // NOVO IMPORT
+import org.springframework.web.bind.annotation.RestController;
 
 import br.com.desbravadores.api.model.Task;
 import br.com.desbravadores.api.repository.TaskRepository;
@@ -55,14 +56,20 @@ public class TaskController {
 
     /**
      * Endpoint para listar as tarefas de um determinado mês e ano.
+     * MÉTODO ATUALIZADO COM PAGINAÇÃO
      */
     @GetMapping
-    public ResponseEntity<List<Task>> getTasksByMonth(@RequestParam int year, @RequestParam int month) {
+    public ResponseEntity<Page<Task>> getTasksByMonth(
+            @RequestParam int year, 
+            @RequestParam int month,
+            Pageable pageable) { // ADICIONADO
+        
         YearMonth yearMonth = YearMonth.of(year, month);
         LocalDate startDate = yearMonth.atDay(1);
         LocalDate endDate = yearMonth.atEndOfMonth();
 
-        List<Task> tasks = taskRepository.findByDateBetween(startDate, endDate);
+        // ATUALIZADO para usar o método paginado
+        Page<Task> tasks = taskRepository.findByDateBetween(startDate, endDate, pageable);
         return ResponseEntity.ok(tasks);
     }
 

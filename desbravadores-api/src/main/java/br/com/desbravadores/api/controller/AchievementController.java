@@ -1,8 +1,12 @@
 package br.com.desbravadores.api.controller;
 
+// NOVOS IMPORTS
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -25,8 +29,18 @@ public class AchievementController {
     @Autowired
     private FileStorageService fileStorageService;
 
+    /**
+     * NOVO ENDPOINT: Para listar conquistas com paginação
+     */
+    @GetMapping
+    public ResponseEntity<Page<Achievement>> getAllAchievements(Pageable pageable) {
+        Page<Achievement> achievements = achievementRepository.findAll(pageable);
+        return ResponseEntity.ok(achievements);
+    }
+
     @PostMapping
     public ResponseEntity<Achievement> createAchievement(
+            // ... (parâmetros existentes) ...
             @RequestParam("name") String name,
             @RequestParam("description") String description,
             @RequestParam("xpReward") int xpReward,
