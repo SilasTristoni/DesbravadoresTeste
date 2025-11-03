@@ -17728,3 +17728,55 @@ Caused by: java.nio.file.InvalidPathException: Illegal char <"> at index 25: upl
     where
         g1_0.id=?
 2025-10-28 01:05:38.015 [http-nio-8080-exec-3] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:BIGINT) <- [4]
+2025-11-02 22:02:14.598 [background-preinit] INFO  o.h.validator.internal.util.Version - HV000001: Hibernate Validator 8.0.3.Final
+2025-11-02 22:02:14.648 [main] INFO  b.c.d.a.DesbravadoresApiApplication - Starting DesbravadoresApiApplication using Java 21.0.8 with PID 23976 (C:\Users\Silas\Desktop\DesbravadoresTeste\desbravadores-api\target\classes started by Silas in C:\Users\Silas\Desktop\DesbravadoresTeste)
+2025-11-02 22:02:14.649 [main] INFO  b.c.d.a.DesbravadoresApiApplication - No active profile set, falling back to 1 default profile: "default"
+2025-11-02 22:02:15.268 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-11-02 22:02:15.322 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 45 ms. Found 9 JPA repository interfaces.
+2025-11-02 22:02:16.079 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2025-11-02 22:02:16.091 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8080"]
+2025-11-02 22:02:16.093 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-11-02 22:02:16.093 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.46]
+2025-11-02 22:02:16.154 [main] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2025-11-02 22:02:16.155 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1462 ms
+2025-11-02 22:02:16.320 [main] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-11-02 22:02:16.366 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.6.29.Final
+2025-11-02 22:02:16.398 [main] INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2025-11-02 22:02:16.642 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-11-02 22:02:16.667 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-11-02 22:02:16.817 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@ca2be53
+2025-11-02 22:02:16.819 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-11-02 22:02:16.852 [main] WARN  org.hibernate.dialect.Dialect - HHH000511: The 5.5.5 version for [org.hibernate.dialect.MySQLDialect] is no longer supported, hence certain features may not work properly. The minimum supported version is 8.0.0. Check the community dialects project for available legacy versions.
+2025-11-02 22:02:16.856 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-11-02 22:02:16.874 [main] INFO  o.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 5.5.5
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-11-02 22:02:17.653 [main] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-11-02 22:02:17.770 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-11-02 22:02:18.350 [main] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-11-02 22:02:18.790 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8080"]
+2025-11-02 22:02:18.808 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
+2025-11-02 22:02:18.815 [main] INFO  b.c.d.a.DesbravadoresApiApplication - Started DesbravadoresApiApplication in 4.665 seconds (process running for 4.965)
+2025-11-02 22:02:18.932 [main] DEBUG org.hibernate.SQL - 
+    select
+        u1_0.id,
+        u1_0.avatar,
+        u1_0.email,
+        u1_0.group_id,
+        u1_0.level,
+        u1_0.name,
+        u1_0.password,
+        u1_0.role,
+        u1_0.selected_background_id,
+        u1_0.surname,
+        u1_0.xp 
+    from
+        users u1_0 
+    where
+        u1_0.email=?
+2025-11-02 22:02:18.934 [main] TRACE org.hibernate.orm.jdbc.bind - binding parameter (1:VARCHAR) <- [adm@gmail.com]

@@ -1,7 +1,6 @@
 package br.com.desbravadores.api.controller;
 
-import java.util.List;
-import java.util.Map; // Adicionar este import
+import java.util.Map; // O import de List é mantido
 
 import org.hibernate.Hibernate;
 import org.slf4j.Logger;
@@ -13,11 +12,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.DeleteMapping; // Alterar imports específicos para wildcard
+import org.springframework.web.bind.annotation.DeleteMapping; 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping; // Adicionar este import
+import org.springframework.web.bind.annotation.PutMapping; 
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -61,6 +60,7 @@ public class AdminController {
         }).orElse(ResponseEntity.notFound().build());
     }
 
+    // Este endpoint busca DESBRAVADORES (paginado)
     @GetMapping("/users")
     @PreAuthorize("hasAnyAuthority('MONITOR', 'DIRETOR')")
     @Transactional
@@ -98,11 +98,24 @@ public class AdminController {
         return ResponseEntity.ok(userPage);
     }
 
+    // --- MÉTODO MODIFICADO ---
+    // Agora busca MONITORES (paginado)
     @GetMapping("/users/monitors")
     @PreAuthorize("hasAuthority('DIRETOR')")
-    public ResponseEntity<List<User>> getAllMonitors() {
-        List<User> monitors = userRepository.findByRole(Role.MONITOR);
-        return ResponseEntity.ok(monitors);
+    @Transactional // Adicionado Transactional
+    public ResponseEntity<Page<User>> getAllMonitors(Pageable pageable) { // Adicionado Pageable
+        // O repositório já suportava este método
+        Page<User> monitorsPage = userRepository.findByRole(Role.MONITOR, pageable); 
+        
+        // Adicionado Hibernate.initialize para consistência
+        monitorsPage.getContent().forEach(user -> {
+             Hibernate.initialize(user.getSelectedBackground());
+             Hibernate.initialize(user.getGroup());
+             Hibernate.initialize(user.getBadges());
+             Hibernate.initialize(user.getUnlockedBackgrounds());
+        });
+        
+        return ResponseEntity.ok(monitorsPage); // Retorna a Página
     }
 
     // NOVOS MÉTODOS ADICIONADOS AQUI
