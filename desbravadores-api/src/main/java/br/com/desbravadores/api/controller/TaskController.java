@@ -59,6 +59,7 @@ public class TaskController {
      * MÉTODO ATUALIZADO COM PAGINAÇÃO
      */
     @GetMapping
+    @PreAuthorize("hasAnyAuthority('DESBRAVADOR', 'MONITOR', 'DIRETOR')") // Permite que Desbravadores vejam as tarefas
     public ResponseEntity<Page<Task>> getTasksByMonth(
             @RequestParam int year, 
             @RequestParam int month,

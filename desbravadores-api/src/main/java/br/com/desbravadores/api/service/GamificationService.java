@@ -107,7 +107,25 @@ public class GamificationService {
         Achievement achievement = achievementRepository.findById(achievementId)
             .orElseThrow(() -> new RuntimeException("Conquista não encontrada com o ID: " + achievementId));
 
-        user.getBadges().removeIf(badge -> badge.getName().equals(achievement.getName()));
+        // 1. Encontra o Badge a ser removido
+        Badge badgeToRemove = user.getBadges().stream()
+            .filter(badge -> badge.getName().equals(achievement.getName()))
+            .findFirst()
+            .orElse(null);
+
+        if (badgeToRemove != null) {
+            // 2. Remove o Badge da coleção do usuário
+            user.getBadges().remove(badgeToRemove);
+            
+            // 3. Subtrai o XP
+            user.setXp(user.getXp() - achievement.getXpReward());
+            logger.info("XP Subtraído: {} de {} devido à revogação da conquista '{}'.", achievement.getXpReward(), user.getName(), achievement.getName());
+            
+            // 4. Opcional: Deleta o Badge da tabela Badge (se for um Badge específico para o usuário, o que parece ser o caso pela lógica de criação)
+            // badgeRepository.delete(badgeToRemove); // Comentado por segurança, mas pode ser necessário dependendo da regra de negócio.
+        } else {
+            logger.warn("Tentativa de revogar conquista '{}' de {} falhou: Conquista não encontrada no perfil do usuário.", achievement.getName(), user.getName());
+        }
         logger.info("Revogando a conquista '{}' de {}", achievement.getName(), user.getName());
 
         return userRepository.save(user);

@@ -14,4 +14,7 @@ public interface AttendanceRecordRepository extends JpaRepository<AttendanceReco
     // ---- NOVO MÉTODO ADICIONADO AQUI ----
     // Procura todos os registos de presença para um grupo específico numa data específica.
     List<AttendanceRecord> findByGroupIdAndDate(Long groupId, LocalDate date);
+
+    // NOVO MÉTODO: Procura todos os registos de presença para um usuário específico.
+    List<AttendanceRecord> findByUserIdOrderByDateDesc(Long userId);
 }

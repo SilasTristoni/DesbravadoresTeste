@@ -143,8 +143,67 @@ function renderIdentityBlock(viewElement, user) {
 }
 
 
-// Renderiza a lista de fundos e adiciona interatividade
-async function renderBackgroundsTab(viewElement, user, allBackgrounds) {
+	// --- FUNÇÃO DE RENDERIZAÇÃO DO HISTÓRICO DE CHAMADAS ---
+	async function renderAttendanceHistoryTab(viewElement, user) {
+	    const tabContent = viewElement.querySelector('#attendance-tab-content');
+	    if (!tabContent) return;
+	
+	    tabContent.innerHTML = '<p>A carregar histórico de chamadas...</p>';
+	
+	    try {
+	        const history = await fetchApi('/api/chamada/history');
+	
+	        if (history.length === 0) {
+	            tabContent.innerHTML = '<p>Nenhum registro de chamada encontrado.</p>';
+	            return;
+	        }
+	
+	        const historyHtml = history.map(record => {
+	            const statusClass = record.present ? 'present' : 'absent';
+	            const statusText = record.present ? 'PRESENTE' : 'AUSENTE';
+	            const dateFormatted = new Date(record.date).toLocaleDateString('pt-BR', { year: 'numeric', month: 'long', day: 'numeric' });
+	
+	            return `
+	                <div class="attendance-record ${statusClass}">
+	                    <span class="date">${dateFormatted}</span>
+	                    <span class="status">${statusText}</span>
+	                    <span class="group">${record.groupName}</span>
+	                </div>
+	            `;
+	        }).join('');
+	
+	        tabContent.innerHTML = `
+	            <style>
+	                .attendance-record {
+	                    display: flex;
+	                    justify-content: space-between;
+	                    align-items: center;
+	                    padding: 10px;
+	                    margin-bottom: 5px;
+	                    border-radius: 5px;
+	                    background-color: var(--bg-light);
+	                    border-left: 5px solid;
+	                }
+	                .attendance-record.present { border-left-color: var(--scout-green); }
+	                .attendance-record.absent { border-left-color: var(--scout-red); }
+	                .attendance-record .date { font-weight: bold; }
+	                .attendance-record .status { font-size: 0.9em; padding: 3px 8px; border-radius: 3px; }
+	                .attendance-record.present .status { background-color: var(--scout-green); color: white; }
+	                .attendance-record.absent .status { background-color: var(--scout-red); color: white; }
+	                .attendance-record .group { font-size: 0.8em; color: var(--text-secondary); }
+	            </style>
+	            <div class="attendance-history-list">
+	                ${historyHtml}
+	            </div>
+	        `;
+	
+	    } catch (error) {
+	        tabContent.innerHTML = `<p style="color: red;">Erro ao carregar histórico: ${error.message}</p>`;
+	    }
+	}
+	
+	// Renderiza a lista de fundos e adiciona interatividade
+	async function renderBackgroundsTab(viewElement, user, allBackgrounds) {
     const isOwnProfile = !user.isOtherUser;
     const backgroundsGrid = allBackgrounds.map(bg => {
         // Corrige para usar API_BASE_URL se necessário, ou caminho relativo correto
@@ -307,14 +366,15 @@ export async function renderProfileView(viewElement, userId = null) {
                     </div>
                 ` : ''}
 
-                <div class="profile-achievements-block">
-                    <div class="tabs">
-                        <nav class="tab-nav">
-                            <button class="tab-btn active" data-tab="badges">Emblemas</button>
-                            ${isOwnProfile ? '<button class="tab-btn" data-tab="backgrounds">Fundos de Perfil</button>' : ''}
-                        </nav>
-
-                        <div id="badges-tab-content" class="tab-content active">
+	                <div class="profile-achievements-block">
+	                    <div class="tabs">
+	                        <nav class="tab-nav">
+	                            <button class="tab-btn active" data-tab="badges">Emblemas</button>
+	                            ${isOwnProfile ? '<button class="tab-btn" data-tab="backgrounds">Fundos de Perfil</button>' : ''}
+	                            ${isOwnProfile ? '<button class="tab-btn" data-tab="attendance">Histórico de Chamadas</button>' : ''}
+	                        </nav>
+	
+	                        <div id="badges-tab-content" class="tab-content active">
                             <div class="badges-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 1rem; justify-items: center;">
                                 ${user.badges && user.badges.length > 0 ? user.badges.map(badge => `
                                     <div class="badge-item" title="${badge.name}: ${badge.description}">
@@ -325,9 +385,10 @@ export async function renderProfileView(viewElement, userId = null) {
                             </div>
                         </div>
 
-                        ${isOwnProfile ? '<div id="backgrounds-tab-content" class="tab-content">A carregar fundos...</div>' : ''}
-                    </div>
-                </div>
+	                        ${isOwnProfile ? '<div id="backgrounds-tab-content" class="tab-content">A carregar fundos...</div>' : ''}
+	                        ${isOwnProfile ? '<div id="attendance-tab-content" class="tab-content">A carregar histórico...</div>' : ''}
+	                    </div>
+	                </div>
             </div>
         `;
 
@@ -360,16 +421,23 @@ export async function renderProfileView(viewElement, userId = null) {
                 viewElement.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
                 this.classList.add('active');
 
-                viewElement.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-                const targetContent = viewElement.querySelector(`#${targetTab}-tab-content`);
-                if (targetContent) targetContent.classList.add('active');
-            });
-        });
-
-        // Renderiza a tab de fundos se for o perfil próprio
-        if (isOwnProfile) {
-            renderBackgroundsTab(viewElement, user, allBackgrounds);
-        }
+	                viewElement.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+	                const targetContent = viewElement.querySelector(`#${targetTab}-tab-content`);
+	                if (targetContent) targetContent.classList.add('active');
+	
+	                // Renderiza o conteúdo da aba se for a de fundos ou histórico
+	                if (targetTab === 'backgrounds') {
+	                    renderBackgroundsTab(viewElement, user, allBackgrounds);
+	                } else if (targetTab === 'attendance') {
+	                    renderAttendanceHistoryTab(viewElement, user);
+	                }
+	            });
+	        });
+	
+	        // Renderiza a tab de fundos se for o perfil próprio
+	        if (isOwnProfile) {
+	            renderBackgroundsTab(viewElement, user, allBackgrounds);
+	        }
 
     } catch (error) {
         console.error("Erro ao carregar perfil:", error);

@@ -77,15 +77,15 @@ public class AdminController {
         
         if (isDirector) {
             if (groupId != null) {
-                userPage = userRepository.findByGroupIdAndRole(groupId, Role.DESBRAVADOR, pageable);
+                userPage = userRepository.findByGroupId(groupId, pageable); // DIRETOR pode ver todos do grupo
             } else {
-                userPage = userRepository.findByRole(Role.DESBRAVADOR, pageable); 
+                userPage = userRepository.findAll(pageable); // DIRETOR pode ver todos os usuários
             }
         } else {
             if (currentUser.getGroup() == null) {
                 return ResponseEntity.ok(Page.empty());
             }
-            userPage = userRepository.findByGroupIdAndRole(currentUser.getGroup().getId(), Role.DESBRAVADOR, pageable);
+            userPage = userRepository.findByGroupId(currentUser.getGroup().getId(), pageable); // MONITOR pode ver todos do seu grupo
         }
         
         userPage.getContent().forEach(user -> {

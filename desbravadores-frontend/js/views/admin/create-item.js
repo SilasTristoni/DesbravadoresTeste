@@ -259,6 +259,10 @@ async function loadAndRenderBackgrounds(container, page = 0) {
                                 <input type="text" name="textColor" value="${bg.textColor}" class="form-control" required>
                             </div>
                             <div class="form-group">
+                                <label>Gradiente (ex: linear-gradient(to right, #ff7e5f, #feb47b))</label>
+                                <input type="text" name="gradient" value="${bg.gradient || ''}" class="form-control">
+                            </div>
+                            <div class="form-group">
                                 <label>Nova Imagem (Opcional)</label>
                                 <input type="file" name="imageFile" class="form-control" accept="image/*">
                             </div>
@@ -370,6 +374,7 @@ function addBackgroundListeners(container, currentPage) {
             const formData = new FormData();
             formData.append('name', e.currentTarget.elements.name.value);
             formData.append('textColor', e.currentTarget.elements.textColor.value);
+            formData.append('gradient', e.currentTarget.elements.gradient.value);
             
             const imageFile = e.currentTarget.elements.imageFile.files[0];
             if (imageFile) {
