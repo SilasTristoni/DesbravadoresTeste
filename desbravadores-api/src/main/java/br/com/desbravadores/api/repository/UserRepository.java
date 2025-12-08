@@ -16,22 +16,18 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByEmail(String email);
     
-    // --- MÉTODOS ATUALIZADOS PARA PAGINAÇÃO ---
-    
+    // Paginação por Role
     Page<User> findByRole(Role role, Pageable pageable);
     
+    // Paginação por Grupo e Role
     Page<User> findByGroupIdAndRole(Long groupId, Role role, Pageable pageable);
     
-    // NOVO: Adicionado para corrigir o erro no AdminController
+    // CORREÇÃO: Método que faltava para o AdminController
     Page<User> findByGroupId(Long groupId, Pageable pageable);
     
-    // --- Métodos antigos (mantidos para compatibilidade) ---
-    
+    // Métodos Legados (List)
     List<User> findByRole(Role role); 
-    
     long countByGroupId(Long groupId);
-    
     List<User> findByGroupIdAndRole(Long groupId, Role role); 
-
     List<User> findByGroupId(Long groupId);
 }

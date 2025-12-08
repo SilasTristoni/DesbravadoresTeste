@@ -10,11 +10,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.DeleteMapping; 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping; 
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -29,8 +29,6 @@ import br.com.desbravadores.api.service.UserService;
 @RestController
 @RequestMapping("/api/admin")
 public class AdminController {
-
-    // private static final Logger logger = LoggerFactory.getLogger(AdminController.class); <-- Removido
 
     @Autowired
     private UserService userService;
@@ -74,7 +72,7 @@ public class AdminController {
         
         if (isDirector) {
             if (groupId != null) {
-                // AGORA FUNCIONARÁ pois adicionamos o método no UserRepository
+                // Usa o método findByGroupId com paginação (adicione ao UserRepository se não houver)
                 userPage = userRepository.findByGroupId(groupId, pageable); 
             } else {
                 userPage = userRepository.findAll(pageable); 
@@ -83,14 +81,14 @@ public class AdminController {
             if (currentUser.getGroup() == null) {
                 return ResponseEntity.ok(Page.empty());
             }
-            // Este método já existia e estava correto
             userPage = userRepository.findByGroupId(currentUser.getGroup().getId(), pageable); 
         }
         
         userPage.getContent().forEach(user -> {
              Hibernate.initialize(user.getSelectedBackground());
              Hibernate.initialize(user.getGroup());
-             Hibernate.initialize(user.getBadges());
+             // CORREÇÃO MVP: Inicializa Achievements em vez de Badges
+             Hibernate.initialize(user.getAchievements());
              Hibernate.initialize(user.getUnlockedBackgrounds());
         });
         
@@ -106,7 +104,8 @@ public class AdminController {
         monitorsPage.getContent().forEach(user -> {
              Hibernate.initialize(user.getSelectedBackground());
              Hibernate.initialize(user.getGroup());
-             Hibernate.initialize(user.getBadges());
+             // CORREÇÃO MVP: Inicializa Achievements em vez de Badges
+             Hibernate.initialize(user.getAchievements());
              Hibernate.initialize(user.getUnlockedBackgrounds());
         });
         

@@ -9,19 +9,19 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping; // NOVO IMPORT
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam; // NOVO IMPORT
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile; // NOVO IMPORT
+import org.springframework.web.multipart.MultipartFile;
 
-import br.com.desbravadores.api.dto.PasswordChangeDTO; // NOVO IMPORT
+import br.com.desbravadores.api.dto.PasswordChangeDTO;
 import br.com.desbravadores.api.model.User;
 import br.com.desbravadores.api.repository.UserRepository;
-import br.com.desbravadores.api.service.FileStorageService; // NOVO IMPORT
-import br.com.desbravadores.api.service.UserService; // NOVO IMPORT (será usado para o serviço de perfil)
+import br.com.desbravadores.api.service.FileStorageService;
+import br.com.desbravadores.api.service.UserService;
 
 @RestController
 @RequestMapping("/api/profile")
@@ -33,10 +33,10 @@ public class ProfileController {
     private UserRepository userRepository;
 
     @Autowired
-    private UserService userService; // INJETANDO O USER SERVICE
+    private UserService userService;
 
     @Autowired
-    private FileStorageService fileStorageService; // NOVO IMPORT
+    private FileStorageService fileStorageService;
 
     @GetMapping("/me")
     @Transactional
@@ -47,16 +47,13 @@ public class ProfileController {
         
         Hibernate.initialize(user.getSelectedBackground());
         Hibernate.initialize(user.getGroup());
-        Hibernate.initialize(user.getBadges());
+        // CORREÇÃO MVP:
+        Hibernate.initialize(user.getAchievements());
         Hibernate.initialize(user.getUnlockedBackgrounds());
         
         return ResponseEntity.ok(user);
     }
     
-    /**
-     * MÉTODO ATUALIZADO
-     * Agora aceita multipart/form-data (upload de arquivo) em vez de JSON.
-     */
     @PutMapping("/me")
     @Transactional
     public ResponseEntity<User> updateMyProfile(
@@ -69,7 +66,6 @@ public class ProfileController {
         
         return userRepository.findByEmail(userEmail).map(user -> {
             
-            // 1. Atualiza dados textuais
             if (name != null && !name.trim().isEmpty()) {
                 user.setName(name.trim());
             }
@@ -77,13 +73,9 @@ public class ProfileController {
                 user.setSurname(surname.trim());
             }
 
-            // 2. Processa o upload do novo avatar
             if (avatarFile != null && !avatarFile.isEmpty()) {
-                
-                // 3. Tenta apagar o avatar antigo, se existir
                 try {
                     if (user.getAvatar() != null && !user.getAvatar().isEmpty()) {
-                        // CORREÇÃO: Busca o nome do arquivo corretamente
                         String oldFilename = user.getAvatar().substring(user.getAvatar().lastIndexOf("/") + 1);
                         fileStorageService.delete(oldFilename);
                     }
@@ -91,18 +83,16 @@ public class ProfileController {
                     logger.warn("Não foi possível apagar o avatar antigo: " + e.getMessage());
                 }
 
-                // 4. Salva o novo avatar
                 String filename = fileStorageService.store(avatarFile);
-                user.setAvatar("/file/" + filename); // CORREÇÃO: Caminho atualizado
+                user.setAvatar("/file/" + filename);
             }
 
-            // 5. Salva o usuário
             User updatedUser = userRepository.save(user);
             
-            // 6. Inicializa os campos lazy (como no método original)
             Hibernate.initialize(updatedUser.getSelectedBackground());
             Hibernate.initialize(updatedUser.getGroup());
-            Hibernate.initialize(updatedUser.getBadges());
+            // CORREÇÃO MVP:
+            Hibernate.initialize(updatedUser.getAchievements());
             Hibernate.initialize(updatedUser.getUnlockedBackgrounds());
             
             return ResponseEntity.ok(updatedUser);
@@ -110,7 +100,6 @@ public class ProfileController {
         }).orElse(ResponseEntity.notFound().build());
     }
 
-    // NOVO ENDPOINT PARA ALTERAR A SENHA
     @PostMapping("/me/change-password")
     public ResponseEntity<?> changePassword(@RequestBody PasswordChangeDTO passwordChangeDTO, Authentication authentication) {
         try {

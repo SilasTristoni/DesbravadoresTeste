@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType; // Import necessário
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -43,21 +43,19 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    // CORREÇÃO: Voltando para LAZY loading para melhor performance
     @ManyToOne(fetch = FetchType.LAZY) 
     @JoinColumn(name = "group_id")
     private Group group;
 
-    // CORREÇÃO: Voltando para LAZY loading (padrão para @ManyToMany)
+    // ALTERAÇÃO MVP: Ligação direta com Achievements (sem tabela Badge)
     @ManyToMany(fetch = FetchType.LAZY) 
     @JoinTable(
-        name = "user_badges",
+        name = "user_achievements",
         joinColumns = @JoinColumn(name = "user_id"),
-        inverseJoinColumns = @JoinColumn(name = "badge_id")
+        inverseJoinColumns = @JoinColumn(name = "achievement_id")
     )
-    private Set<Badge> badges = new HashSet<>();
+    private Set<Achievement> achievements = new HashSet<>();
 
-    // CORREÇÃO: Voltando para LAZY loading
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
         name = "user_unlocked_backgrounds",
@@ -66,13 +64,13 @@ public class User {
     )
     private Set<Background> unlockedBackgrounds = new HashSet<>();
 
-    // CORREÇÃO: Voltando para LAZY loading
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "selected_background_id")
     private Background selectedBackground;
 
-    // Construtores, Getters e Setters permanecem os mesmos...
     public User() {}
+    
+    // Getters e Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public String getName() { return name; }
@@ -93,8 +91,11 @@ public class User {
     public void setRole(Role role) { this.role = role; }
     public Group getGroup() { return group; }
     public void setGroup(Group group) { this.group = group; }
-    public Set<Badge> getBadges() { return badges; }
-    public void setBadges(Set<Badge> badges) { this.badges = badges; }
+    
+    // Getter/Setter atualizado para Achievements
+    public Set<Achievement> getAchievements() { return achievements; }
+    public void setAchievements(Set<Achievement> achievements) { this.achievements = achievements; }
+    
     public Set<Background> getUnlockedBackgrounds() { return unlockedBackgrounds; }
     public void setUnlockedBackgrounds(Set<Background> unlockedBackgrounds) { this.unlockedBackgrounds = unlockedBackgrounds; }
     public Background getSelectedBackground() { return selectedBackground; }

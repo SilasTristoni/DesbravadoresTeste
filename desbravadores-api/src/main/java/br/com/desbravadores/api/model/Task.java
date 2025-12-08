@@ -7,6 +7,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn; // NOVO
+import jakarta.persistence.ManyToOne;  // NOVO
 import jakarta.persistence.Table;
 
 @Entity
@@ -22,11 +24,13 @@ public class Task {
     private LocalDate date;
     private LocalTime time;
 
-    // Construtor vazio
-    public Task() {
-    }
+    // MVP: Tarefa pertence a um grupo
+    @ManyToOne
+    @JoinColumn(name = "group_id")
+    private Group group;
 
-    // Getters e Setters
+    public Task() {}
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public String getTitle() { return title; }
@@ -37,4 +41,7 @@ public class Task {
     public void setDate(LocalDate date) { this.date = date; }
     public LocalTime getTime() { return time; }
     public void setTime(LocalTime time) { this.time = time; }
+    
+    public Group getGroup() { return group; }
+    public void setGroup(Group group) { this.group = group; }
 }

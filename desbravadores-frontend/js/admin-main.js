@@ -1,15 +1,21 @@
-// js/admin-main.js
-import { renderDashboardView } from "./views/admin/dashboard.js";
-import { renderChamadaView } from "./views/admin/chamada.js";
-import { renderManageTasksView } from "./views/admin/manage-tasks.js";
-import { renderManageUsersView } from "./views/admin/manage-users.js";
-import { renderAdminSettingsView } from "./views/admin/settings.js";
-import { setupModal } from '../components/modal.js';
-import { renderManageAchievementsView } from './views/admin/manage-achievements.js';
-import { renderCreateItemView } from './views/admin/create-item.js';
-import { renderManageGroupsView } from "./views/admin/manage-groups.js";
-import { renderProfileView } from './views/perfil.js';
-import { renderNotificationsView } from './views/notifications.js'; // NOVO IMPORT
+import { renderDashboardView } from "../js/views/admin/dashboard.js";
+import { renderChamadaView } from "../js/views/admin/chamada.js";
+import { renderManageTasksView } from "../js/views/admin/manage-tasks.js";
+import { renderManageUsersView } from "../js/views/admin/manage-users.js";
+import { renderAdminSettingsView } from "../js/views/admin/settings.js";
+import { renderManageGroupsView } from "../js/views/admin/manage-groups.js";
+import { renderProfileView } from '../js/views/perfil.js';
+import { renderNotificationsView } from '../js/views/notifications.js';
+import { setupModal } from '../components/modal.js'; // Caminho Absoluto
+import { showToast } from '../js/ui/toast.js';       // Caminho Absoluto
+
+window.showToast = showToast;
+
+if (!window.handleFutureFeature) {
+    window.handleFutureFeature = (featureName) => {
+        showToast(`🚧 A funcionalidade "${featureName}" estará disponível na próxima versão!`, 'info');
+    };
+}
 
 function getUserPayload() {
     const token = localStorage.getItem('jwtToken');
@@ -17,7 +23,6 @@ function getUserPayload() {
     try {
         return JSON.parse(atob(token.split('.')[1]));
     } catch (error) {
-        console.error("Erro ao decodificar o token:", error);
         return null;
     }
 }
@@ -30,9 +35,7 @@ const views = {
   "manage-users": document.getElementById("view-manage-users"),
   perfil: document.getElementById("view-perfil"),
   settings: document.getElementById("view-admin-settings"),
-  notifications: document.getElementById("view-notifications"), // NOVA VIEW
-  "manage-achievements": document.getElementById("view-manage-achievements"),
-  "create-item": document.getElementById("view-create-item"),
+  notifications: document.getElementById("view-notifications"),
   "my-profile": document.getElementById("view-perfil"),
 };
 
@@ -45,21 +48,17 @@ const viewRenderers = {
   perfil: renderProfileView,
   "my-profile": renderProfileView,
   settings: renderAdminSettingsView,
-  notifications: renderNotificationsView, // NOVO RENDERER
-  "manage-achievements": renderManageAchievementsView,
-  "create-item": renderCreateItemView,
+  notifications: renderNotificationsView,
 };
 
 function switchView(viewId, data = null) {
   for (const id in views) {
-    if (views[id]) {
-        views[id].classList.remove("active");
-    }
+    if (views[id]) views[id].classList.remove("active");
   }
 
   const finalData = viewId === 'my-profile' ? null : data;
-    
   const targetView = views[viewId];
+  
   if (targetView) {
     targetView.classList.add("active");
     if (viewRenderers[viewId]) {
@@ -67,11 +66,9 @@ function switchView(viewId, data = null) {
     }
   }
 
-  document.querySelector(".nav-btn.active")?.classList.remove("active");
+  document.querySelectorAll(".nav-btn").forEach(btn => btn.classList.remove("active"));
   const newActiveButton = document.querySelector(`.nav-btn[data-view="${viewId}"]`);
-  if (newActiveButton) {
-    newActiveButton.classList.add("active");
-  }
+  if (newActiveButton) newActiveButton.classList.add("active");
 }
 
 function adjustUiForRole() {
@@ -84,10 +81,12 @@ function adjustUiForRole() {
     const manageUsersBtn = document.querySelector('.nav-btn[data-view="manage-users"]');
     const createItemBtn = document.querySelector('.nav-btn[data-view="create-item"]');
 
+    // MVP: OCULTAR SEMPRE O BOTÃO "CRIAR ITEM"
+    if (createItemBtn) createItemBtn.style.display = 'none';
+
     if (userRole === 'DIRETOR') {
         if (chamadaBtn) chamadaBtn.style.display = 'none';
     } else if (userRole === 'MONITOR') {
-        if (createItemBtn) createItemBtn.style.display = 'none';
         if (manageUsersBtn) manageUsersBtn.style.display = 'none';
         if (manageGroupsBtn) manageGroupsBtn.style.display = 'none';
     }
@@ -95,7 +94,6 @@ function adjustUiForRole() {
 
 function initializeAdminApp() {
   document.body.classList.toggle('dark-mode', localStorage.getItem('theme') === 'dark');
-  
   adjustUiForRole();
 
   document.querySelectorAll(".nav-btn").forEach((button) => {

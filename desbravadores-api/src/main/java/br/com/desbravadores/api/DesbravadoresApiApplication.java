@@ -5,15 +5,16 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.scheduling.annotation.EnableScheduling; // NOVO
 
 @SpringBootApplication
 @EntityScan(basePackages = "br.com.desbravadores.api.model") 
 @EnableJpaRepositories(basePackages = "br.com.desbravadores.api.repository")
-@EnableCaching // Habilita o cache na aplicação
+@EnableCaching
+@EnableScheduling // Habilita o Scheduler
 public class DesbravadoresApiApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(DesbravadoresApiApplication.class, args);
     }
-
 }

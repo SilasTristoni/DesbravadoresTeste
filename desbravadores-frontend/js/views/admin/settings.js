@@ -1,6 +1,11 @@
 // js/views/admin/settings.js
 
-// Função para renderizar a view de configurações do admin
+// Importa showToast (CORRIGIDO: ../../ui/toast.js)
+import { showToast as toastFunc } from '../../ui/toast.js';
+if (typeof window.showToast === 'undefined') {
+    window.showToast = toastFunc;
+}
+
 export function renderAdminSettingsView(viewElement) {
     viewElement.innerHTML = `
         <div class="settings-container">
@@ -15,11 +20,11 @@ export function renderAdminSettingsView(viewElement) {
                             <span class="slider"></span>
                         </label>
                     </div>
-                    <div class="settings-item" onclick="alert('Funcionalidade em desenvolvimento!')">
+                    <div class="settings-item" id="admin-notifs-btn">
                         <div class="settings-item-icon">🔔</div>
                         <div class="settings-item-label">Notificações</div>
                     </div>
-                    <div class="settings-item" onclick="alert('Funcionalidade em desenvolvimento!')">
+                    <div class="settings-item" id="admin-perms-btn">
                         <div class="settings-item-icon">🛡️</div>
                         <div class="settings-item-label">Permissões de Usuário</div>
                     </div>
@@ -27,20 +32,23 @@ export function renderAdminSettingsView(viewElement) {
             </div>
             <div class="settings-banner">
                 <h3>Avisos do Sistema</h3>
-                <p>As configurações de tema são salvas localmente e aplicadas em toda a aplicação (Login, App e Admin).</p>
+                <p>As configurações de tema são salvas localmente e aplicadas em toda a aplicação.</p>
             </div>
         </div>
     `;
 
-    // --- LÓGICA DO TEMA ---
     const themeToggle = viewElement.querySelector("#adminThemeToggle");
-
-    // Sincroniza o toggle com o estado atual do tema
     themeToggle.checked = document.body.classList.contains("dark-mode");
-
-    // Adiciona o listener para a troca de tema
     themeToggle.addEventListener("change", () => {
         const isDarkMode = document.body.classList.toggle('dark-mode');
         localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+    });
+
+    // MVP: Avisos de futuro
+    viewElement.querySelector('#admin-notifs-btn').addEventListener('click', () => {
+        if(window.handleFutureFeature) window.handleFutureFeature('Configuração de Notificações');
+    });
+    viewElement.querySelector('#admin-perms-btn').addEventListener('click', () => {
+        if(window.handleFutureFeature) window.handleFutureFeature('Gestão Avançada de Permissões');
     });
 }

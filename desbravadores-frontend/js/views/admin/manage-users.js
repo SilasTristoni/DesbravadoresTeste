@@ -1,11 +1,10 @@
 // js/views/admin/manage-users.js
 
 // A função fetchApi e showToast estão disponíveis globalmente
-import { showToast as toastFunc } from '../../ui/toast.js'; // Ajuste o caminho se necessário
+import { showToast as toastFunc } from '../../ui/toast.js';
 if (typeof window.showToast === 'undefined') {
     window.showToast = toastFunc;
 }
-
 // Define o tamanho da página para AMBAS as listas
 const USER_LIST_PAGE_SIZE = 5; 
 

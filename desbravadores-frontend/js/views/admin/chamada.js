@@ -1,9 +1,6 @@
 // js/views/admin/chamada.js
 
-// A função fetchApi e showToast estarão disponíveis globalmente
-
 export async function renderChamadaView(viewElement) {
-
     const today = new Date().toISOString().split('T')[0];
 
     viewElement.innerHTML = `
@@ -12,13 +9,17 @@ export async function renderChamadaView(viewElement) {
                 <h2>Chamada do Grupo</h2>
 
                 <div class="form-group" style="margin-bottom: 1.5rem;">
-                    <label for="chamada-date">Selecione a data da chamada:</label>
+                    <label for="chamada-date">Selecione a data:</label>
                     <input type="date" id="chamada-date" class="form-control" value="${today}">
                 </div>
 
                 <p id="chamada-loading-message">A carregar membros do grupo...</p>
                 <div class="student-list" id="studentList"></div>
-                <button id="submit-chamada-btn" class="action-btn" style="display: none; margin-top: 1.5rem;">Submeter Chamada</button>
+                
+                <div class="form-actions" style="display: flex; gap: 10px; margin-top: 1.5rem;">
+                    <button id="submit-chamada-btn" class="action-btn" style="display: none;">Submeter Chamada</button>
+                    <button id="export-csv-btn" class="action-btn" style="display: none; background-color: var(--scout-blue, #0056b3);">Exportar CSV</button>
+                </div>
             </div>
         </div>
     `;
@@ -26,6 +27,7 @@ export async function renderChamadaView(viewElement) {
     const studentListContainer = viewElement.querySelector('#studentList');
     const loadingMessage = viewElement.querySelector('#chamada-loading-message');
     const submitBtn = viewElement.querySelector('#submit-chamada-btn');
+    const exportBtn = viewElement.querySelector('#export-csv-btn');
     const dateInput = viewElement.querySelector('#chamada-date');
 
     try {
@@ -38,10 +40,10 @@ export async function renderChamadaView(viewElement) {
 
         loadingMessage.style.display = 'none';
         submitBtn.style.display = 'block';
+        exportBtn.style.display = 'block';
 
         studentListContainer.innerHTML = members.map(student => `
             <div class="student-card" data-student-id="${student.id}">
-                {/* Usando avatar real ou padrão */}
                 <img src="${student.avatar || 'img/escoteiro1.png'}" alt="${student.name}" class="student-photo">
                 <div class="student-info">
                     <div class="student-name">${student.name} ${student.surname}</div>
@@ -52,6 +54,7 @@ export async function renderChamadaView(viewElement) {
 
         const presentUserIds = new Set();
 
+        // Lógica de Seleção de Presença
         studentListContainer.querySelectorAll('.student-card').forEach(card => {
             card.addEventListener('click', function() {
                 this.classList.toggle('present');
@@ -65,10 +68,11 @@ export async function renderChamadaView(viewElement) {
             });
         });
 
+        // Lógica de Submeter Chamada
         submitBtn.addEventListener('click', async () => {
             const selectedDate = dateInput.value;
             if (!selectedDate) {
-                showToast('Por favor, selecione uma data para a chamada.', 'error'); // Usa showToast
+                showToast('Por favor, selecione uma data para a chamada.', 'error');
                 return;
             }
 
@@ -86,7 +90,8 @@ export async function renderChamadaView(viewElement) {
                     body: JSON.stringify(payload)
                 });
 
-                showToast(response.message || 'Chamada submetida com sucesso!', 'success'); // Usa showToast
+                showToast(response.message || 'Chamada submetida com sucesso!', 'success');
+                
                 // Limpa a seleção visual e o set de IDs
                 studentListContainer.querySelectorAll('.student-card.present').forEach(card => {
                     card.classList.remove('present');
@@ -94,11 +99,46 @@ export async function renderChamadaView(viewElement) {
                 presentUserIds.clear();
 
             } catch (error) {
-                showToast(`Erro ao submeter chamada: ${error.message}`, 'error'); // Usa showToast
+                showToast(`Erro ao submeter chamada: ${error.message}`, 'error');
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Submeter Chamada';
             }
+        });
+
+        // Lógica de Exportar CSV
+        exportBtn.addEventListener('click', () => {
+            const selectedDate = dateInput.value;
+            if (!selectedDate) {
+                showToast('Selecione uma data para exportar.', 'error');
+                return;
+            }
+            
+            const token = localStorage.getItem('jwtToken');
+            
+            // Faz o download direto usando fetch com blob
+            fetch(`http://localhost:8080/api/chamada/export-csv?date=${selectedDate}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            })
+            .then(async res => {
+                if (!res.ok) throw new Error('Falha na exportação');
+                return res.blob();
+            })
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `chamada_${selectedDate}.csv`;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                window.URL.revokeObjectURL(url);
+                showToast('Exportação concluída!', 'success');
+            })
+            .catch(e => {
+                console.error(e);
+                showToast('Erro ao exportar relatório. Verifique se a data possui registros.', 'error');
+            });
         });
 
     } catch (error) {

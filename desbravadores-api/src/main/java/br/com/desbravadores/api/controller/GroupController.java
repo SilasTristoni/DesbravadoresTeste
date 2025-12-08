@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController; // CORREÇÃO CRÍTICA: IMPORT FALTANDO
+import org.springframework.web.bind.annotation.RestController;
 
 import br.com.desbravadores.api.dto.GroupDetailsDTO;
 import br.com.desbravadores.api.dto.MemberDTO;
@@ -43,33 +43,26 @@ public class GroupController {
     @Autowired
     private GroupService groupService;
 
-    /**
-     * MÉTODO ATUALIZADO PARA PAGINAÇÃO
-     */
     @GetMapping
     @Transactional
     public ResponseEntity<Page<GroupDetailsDTO>> getAllGroups(Pageable pageable) {
-        // Busca a página de grupos
         Page<Group> groupPage = groupRepository.findAll(pageable);
         
-        // Mapeia o conteúdo da página para GroupDetailsDTO
         List<GroupDetailsDTO> groupDetailsList = groupPage.getContent().stream().map(group -> {
             
-            // Inicializa o líder (lazy-loaded)
             if (group.getLeader() != null) {
                 Hibernate.initialize(group.getLeader());
             }
             
             List<User> allMembersInGroup = userRepository.findByGroupId(group.getId());
             
-            // Inicializa campos lazy de cada membro antes de criar o DTO
             allMembersInGroup.forEach(user -> {
                 Hibernate.initialize(user.getSelectedBackground());
-                Hibernate.initialize(user.getBadges());
+                // CORREÇÃO MVP: getBadges() -> getAchievements()
+                Hibernate.initialize(user.getAchievements());
                 Hibernate.initialize(user.getUnlockedBackgrounds());
             });
             
-            // Converte a lista de User para uma lista de MemberDTO
             List<MemberDTO> memberDTOs = allMembersInGroup.stream()
                 .filter(user -> user.getRole() != Role.DIRETOR)
                 .map(MemberDTO::new)
@@ -78,7 +71,6 @@ public class GroupController {
             return new GroupDetailsDTO(group, memberDTOs);
         }).collect(Collectors.toList());
         
-        // Constrói um novo objeto Page com o conteúdo mapeado e as informações de paginação
         Page<GroupDetailsDTO> groupDetailsPage = new PageImpl<>(groupDetailsList, pageable, groupPage.getTotalElements());
 
         return ResponseEntity.ok(groupDetailsPage);

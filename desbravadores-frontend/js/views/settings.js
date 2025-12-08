@@ -1,8 +1,7 @@
-// js/views/settings.js
-import { showModal } from '../../components/modal.js';
 
-// Garante que showToast esteja disponível globalmente
-import { showToast as toastFunc } from '../ui/toast.js'; // Ajuste o caminho se necessário
+// js/views/settings.js
+import { showModal } from '../../../components/modal.js';
+import { showToast as toastFunc } from '../../ui/toast.js';
 if (typeof window.showToast === 'undefined') {
     window.showToast = toastFunc;
 }
@@ -13,16 +12,15 @@ function createConfirmationModalBody(message, confirmCallback) {
     container.innerHTML = `<p>${message}</p>`;
     const confirmButton = document.createElement('button');
     confirmButton.textContent = 'Confirmar';
-    confirmButton.className = 'action-btn'; // Use uma classe de botão apropriada
+    confirmButton.className = 'action-btn';
     confirmButton.style.marginTop = '1rem';
     confirmButton.onclick = () => {
         confirmCallback();
-        document.getElementById('closeModalBtn').click(); // Fecha o modal após confirmar
+        document.getElementById('closeModalBtn').click();
     };
     container.appendChild(confirmButton);
     return container;
 }
-
 
 function handleLogout() {
     const modalBody = createConfirmationModalBody('Tem a certeza que deseja desconectar?', () => {
@@ -48,37 +46,38 @@ function openChangePasswordModal(viewElement) {
     `;
     showModal('Alterar Senha', modalBodyContent);
 
-    const form = document.getElementById('change-password-form');
-    // Remove listener antigo para evitar duplicação se a função for chamada múltiplas vezes
-    form.replaceWith(form.cloneNode(true));
-    const newForm = document.getElementById('change-password-form');
+    // Pequeno hack para garantir que o listener não seja duplicado se abrir o modal várias vezes
+    // (Poderia ser melhorado com delegação de eventos, mas funciona bem para o MVP)
+    setTimeout(() => {
+        const form = document.getElementById('change-password-form');
+        if(form) {
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const currentPassword = document.getElementById('current-password').value;
+                const newPassword = document.getElementById('new-password').value;
+                const submitButton = form.querySelector('button[type="submit"]');
 
-    newForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const currentPassword = document.getElementById('current-password').value;
-        const newPassword = document.getElementById('new-password').value;
-        const submitButton = newForm.querySelector('button[type="submit"]');
+                submitButton.disabled = true;
+                submitButton.textContent = 'Alterando...';
 
-        submitButton.disabled = true;
-        submitButton.textContent = 'Alterando...';
-
-        try {
-            await fetchApi('/api/profile/me/change-password', {
-                method: 'POST',
-                body: JSON.stringify({ currentPassword, newPassword })
+                try {
+                    await fetchApi('/api/profile/me/change-password', {
+                        method: 'POST',
+                        body: JSON.stringify({ currentPassword, newPassword })
+                    });
+                    showToast('Senha alterada com sucesso!', 'success');
+                    document.getElementById('closeModalBtn').click();
+                } catch (error) {
+                    showToast(`Erro: ${error.message}`, 'error');
+                    submitButton.disabled = false;
+                    submitButton.textContent = 'Alterar Senha';
+                }
             });
-            showToast('Senha alterada com sucesso!', 'success');
-            document.getElementById('closeModalBtn').click();
-        } catch (error) {
-            showToast(`Erro: ${error.message}`, 'error');
-            submitButton.disabled = false;
-            submitButton.textContent = 'Alterar Senha';
         }
-    });
+    }, 100);
 }
 
 export async function renderSettingsView(viewElement) {
-    // Removidos os comentários /* ... */ daqui
     viewElement.innerHTML = `
         <div class="settings-container">
             <div class="settings-section">
@@ -136,11 +135,20 @@ export async function renderSettingsView(viewElement) {
     viewElement.querySelector('#change-password-btn').addEventListener('click', () => openChangePasswordModal(viewElement));
     viewElement.querySelector('#logout-btn').addEventListener('click', handleLogout);
 
-    // Adiciona listeners para os botões "Sobre" usando showToast
+    // --- Tratamento de Funcionalidades Futuras (MVP) ---
     viewElement.querySelector('#settings-language-btn').addEventListener('click', () => {
-        showToast('Funcionalidade de Idioma em desenvolvimento!', 'info');
+        if (window.handleFutureFeature) {
+            window.handleFutureFeature('Mudar Idioma');
+        } else {
+            showToast('Funcionalidade em breve!', 'info');
+        }
     });
+    
     viewElement.querySelector('#settings-support-btn').addEventListener('click', () => {
-         showToast('Funcionalidade de Contato em desenvolvimento!', 'info');
+         if (window.handleFutureFeature) {
+            window.handleFutureFeature('Contato e Suporte');
+        } else {
+            showToast('Funcionalidade em breve!', 'info');
+        }
     });
 }
