@@ -1,6 +1,5 @@
 package br.com.desbravadores.api.model;
 
-// ---- NOVOS IMPORTS ADICIONADOS ----
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
@@ -13,8 +12,8 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "groups")
-// ---- NOVA ANOTAÇÃO ADICIONADA AQUI ----
+// CORREÇÃO AQUI: Adicionadas crases (`groups`) para escapar a palavra reservada do MySQL
+@Table(name = "`groups`") 
 @JsonIdentityInfo(
     generator = ObjectIdGenerators.PropertyGenerator.class,
     property = "id")
@@ -30,8 +29,9 @@ public class Group {
     @JoinColumn(name = "leader_id", referencedColumnName = "id")
     private User leader;
 
-    // Construtor e todos os Getters/Setters continuam os mesmos...
     public Group() {}
+    
+    // Getters e Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public String getName() { return name; }
