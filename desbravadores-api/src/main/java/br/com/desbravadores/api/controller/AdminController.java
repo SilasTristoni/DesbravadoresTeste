@@ -1,10 +1,8 @@
 package br.com.desbravadores.api.controller;
 
-import java.util.Map; // O import de List é mantido
+import java.util.Map;
 
 import org.hibernate.Hibernate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -32,7 +30,7 @@ import br.com.desbravadores.api.service.UserService;
 @RequestMapping("/api/admin")
 public class AdminController {
 
-    private static final Logger logger = LoggerFactory.getLogger(AdminController.class); 
+    // private static final Logger logger = LoggerFactory.getLogger(AdminController.class); <-- Removido
 
     @Autowired
     private UserService userService;
@@ -41,7 +39,7 @@ public class AdminController {
     private UserRepository userRepository;
 
     @Autowired
-    private GamificationService gamificationService; // Injetar o novo serviço
+    private GamificationService gamificationService;
 
     @PreAuthorize("hasAuthority('DIRETOR')")
     @PostMapping("/users")
@@ -60,7 +58,6 @@ public class AdminController {
         }).orElse(ResponseEntity.notFound().build());
     }
 
-    // Este endpoint busca DESBRAVADORES (paginado)
     @GetMapping("/users")
     @PreAuthorize("hasAnyAuthority('MONITOR', 'DIRETOR')")
     @Transactional
@@ -77,15 +74,17 @@ public class AdminController {
         
         if (isDirector) {
             if (groupId != null) {
-                userPage = userRepository.findByGroupId(groupId, pageable); // DIRETOR pode ver todos do grupo
+                // AGORA FUNCIONARÁ pois adicionamos o método no UserRepository
+                userPage = userRepository.findByGroupId(groupId, pageable); 
             } else {
-                userPage = userRepository.findAll(pageable); // DIRETOR pode ver todos os usuários
+                userPage = userRepository.findAll(pageable); 
             }
         } else {
             if (currentUser.getGroup() == null) {
                 return ResponseEntity.ok(Page.empty());
             }
-            userPage = userRepository.findByGroupId(currentUser.getGroup().getId(), pageable); // MONITOR pode ver todos do seu grupo
+            // Este método já existia e estava correto
+            userPage = userRepository.findByGroupId(currentUser.getGroup().getId(), pageable); 
         }
         
         userPage.getContent().forEach(user -> {
@@ -98,16 +97,12 @@ public class AdminController {
         return ResponseEntity.ok(userPage);
     }
 
-    // --- MÉTODO MODIFICADO ---
-    // Agora busca MONITORES (paginado)
     @GetMapping("/users/monitors")
     @PreAuthorize("hasAuthority('DIRETOR')")
-    @Transactional // Adicionado Transactional
-    public ResponseEntity<Page<User>> getAllMonitors(Pageable pageable) { // Adicionado Pageable
-        // O repositório já suportava este método
+    @Transactional
+    public ResponseEntity<Page<User>> getAllMonitors(Pageable pageable) {
         Page<User> monitorsPage = userRepository.findByRole(Role.MONITOR, pageable); 
         
-        // Adicionado Hibernate.initialize para consistência
         monitorsPage.getContent().forEach(user -> {
              Hibernate.initialize(user.getSelectedBackground());
              Hibernate.initialize(user.getGroup());
@@ -115,10 +110,9 @@ public class AdminController {
              Hibernate.initialize(user.getUnlockedBackgrounds());
         });
         
-        return ResponseEntity.ok(monitorsPage); // Retorna a Página
+        return ResponseEntity.ok(monitorsPage); 
     }
 
-    // NOVOS MÉTODOS ADICIONADOS AQUI
     @PostMapping("/users/{userId}/achievements/{achievementId}")
     @PreAuthorize("hasAnyAuthority('DIRETOR', 'MONITOR')")
     public ResponseEntity<?> grantAchievement(@PathVariable Long userId, @PathVariable Long achievementId) {

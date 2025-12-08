@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import br.com.desbravadores.api.dto.AttendanceHistoryDTO;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,12 +19,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.desbravadores.api.dto.AttendanceHistoryDTO;
 import br.com.desbravadores.api.model.AttendanceRecord;
 import br.com.desbravadores.api.model.Group;
 import br.com.desbravadores.api.model.Role;
 import br.com.desbravadores.api.model.User;
 import br.com.desbravadores.api.repository.AttendanceRecordRepository;
 import br.com.desbravadores.api.repository.UserRepository;
+import br.com.desbravadores.api.service.AttendanceService; // <--- IMPORT ADICIONADO AQUI
 
 class AttendancePayload {
     private LocalDate date;
@@ -48,7 +49,7 @@ public class ChamadaController {
     private AttendanceRecordRepository attendanceRepository;
 
     @Autowired
-    private AttendanceService attendanceService;
+    private AttendanceService attendanceService; // Agora deve funcionar
 
     @GetMapping("/my-group-members")
     @PreAuthorize("hasAnyAuthority('MONITOR', 'DIRETOR')")
@@ -75,7 +76,6 @@ public class ChamadaController {
         List<Long> presentUserIds = payload.getPresentUserIds();
         LocalDate date = payload.getDate();
 
-        // Validação para impedir registro de chamada para o passado
         if (date.isBefore(LocalDate.now())) {
             return ResponseEntity.badRequest().body(Map.of("message", "Erro: Não é possível registrar chamada para uma data passada."));
         }
@@ -97,9 +97,6 @@ public class ChamadaController {
         return ResponseEntity.ok(Map.of("message", message));
     }
 
-    /**
-     * NOVO ENDPOINT: Retorna o histórico de presenças do usuário logado.
-     */
     @GetMapping("/history")
     @PreAuthorize("hasAuthority('DESBRAVADOR')")
     public ResponseEntity<List<AttendanceHistoryDTO>> getMyAttendanceHistory(Authentication authentication) {
@@ -122,18 +119,7 @@ public class ChamadaController {
         boolean isDirector = currentUser.getRole() == Role.DIRETOR;
 
         if (isDirector) {
-            // Se for diretor e não especificar groupId, ele pode ver todos os grupos (ou o frontend deve passar o groupId)
-            // Como o endpoint busca por grupo, se groupId for null, o diretor não verá nada.
-            // Vou manter a lógica de que o diretor deve especificar o grupo ou o frontend deve listar os grupos para ele.
-            // O bug pode estar na linha 106, que retorna uma lista vazia. Se o diretor não especificar o grupo,
-            // ele deve ver a lista de grupos para escolher, mas o endpoint não retorna isso.
-            // Vou focar no bug de que o diretor não consegue ver *chamadas com usuários diretores*.
-            // O endpoint getAttendanceReport só lista DESBRAVADORES (linha 120).
-
             if (groupId == null) {
-                // Se o diretor não especificar o grupo, ele não pode ver o relatório de um grupo específico.
-                // O frontend deve garantir que o groupId seja passado ou listar os grupos.
-                // Por enquanto, vou manter a lógica, mas vou verificar a linha 120.
                 targetGroupId = currentUser.getGroup() != null ? currentUser.getGroup().getId() : null;
             } else {
                 targetGroupId = groupId;
@@ -149,18 +135,8 @@ public class ChamadaController {
             return ResponseEntity.ok(List.of());
         }
 
-        // O bug "Não é possível visualizar chamadas com usuários diretores" pode ser porque
-        // o relatório só busca DESBRAVADORES. Se o diretor quiser ver a presença de MONITORES/DIRETORES,
-        // o endpoint deve ser alterado. No entanto, o contexto sugere que a chamada é para Desbravadores.
-        // Vou manter o foco nos Desbravadores, mas o bug pode estar na lógica de autorização/grupo.
-        // O código atual já permite que o DIRETOR veja o relatório de qualquer grupo (se groupId for passado).
-        // Vou assumir que o bug é que o DIRETOR não consegue ver a chamada de *seu próprio grupo* se não passar o groupId.
-        // A correção acima já trata disso.
-
-        List<User> allMembers = userRepository.findByGroupId(targetGroupId); // Remove a restrição de Role.DESBRAVADOR para incluir todos os membros do grupo.
-        allMembers.removeIf(user -> user.getRole() == Role.DIRETOR); // Remove o DIRETOR da lista, pois o foco é nos membros do grupo.
-        // Se o bug for sobre ver a presença de outros diretores, o escopo do endpoint precisa ser revisto.
-        // Vou manter a busca por todos os membros do grupo, exceto o DIRETOR.
+        List<User> allMembers = userRepository.findByGroupId(targetGroupId); 
+        allMembers.removeIf(user -> user.getRole() == Role.DIRETOR); 
         List<AttendanceRecord> presentRecords = attendanceRepository.findByGroupIdAndDate(targetGroupId, date);
         Set<Long> presentUserIds = presentRecords.stream()
                                     .map(record -> record.getUser().getId())
