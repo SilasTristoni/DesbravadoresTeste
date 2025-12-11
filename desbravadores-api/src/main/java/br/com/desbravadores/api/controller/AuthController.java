@@ -1,11 +1,8 @@
 package br.com.desbravadores.api.controller;
 
 import java.util.Map;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.Valid;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Autowired; // IMPORT NOVO
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,6 +16,10 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.desbravadores.api.model.User;
 import br.com.desbravadores.api.repository.UserRepository;
 import br.com.desbravadores.api.service.TokenService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 
 class LoginRequest {
     @NotBlank(message = "O email não pode ser vazio.")
@@ -60,5 +61,25 @@ public class AuthController {
         } else {
             throw new UsernameNotFoundException("Requisição de usuário inválida!");
         }
+    }
+
+    // NOVO ENDPOINT DE REFRESH
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refreshToken(HttpServletRequest request) {
+        String headerAuth = request.getHeader("Authorization");
+        
+        if (headerAuth != null && headerAuth.startsWith("Bearer ")) {
+            try {
+                // Chama o serviço para criar um novo token baseado no antigo
+                String newToken = tokenService.refreshToken(headerAuth);
+                return ResponseEntity.ok(Map.of(
+                    "token", newToken,
+                    "type", "Bearer"
+                ));
+            } catch (Exception e) {
+                return ResponseEntity.status(403).body("Erro ao renovar token: " + e.getMessage());
+            }
+        }
+        return ResponseEntity.badRequest().body("Token não fornecido.");
     }
 }

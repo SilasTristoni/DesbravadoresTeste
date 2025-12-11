@@ -8,7 +8,8 @@ const API_BASE_URL = 'http://localhost:8080';
  * @param {object} options Opções de fetch (method, headers, body, etc.)
  * @returns {Promise<any>} A resposta da API em JSON.
  */
-async function fetchApi(endpoint, options = {}) {
+// ADICIONADO "export" AQUI PARA FUNCIONAR COM MÓDULOS
+export async function fetchApi(endpoint, options = {}) {
     const token = localStorage.getItem('jwtToken');
     
     // Configuração dos cabeçalhos padrão
@@ -40,9 +41,12 @@ async function fetchApi(endpoint, options = {}) {
         const response = await fetch(url, config);
 
         if (response.status === 401 || response.status === 403) {
-            localStorage.removeItem('jwtToken');
-            window.location.href = 'login.html';
-            throw new Error('Sessão expirada ou acesso negado. Redirecionando para o login.');
+            // Verifica se não estamos já na página de login para evitar loop
+            if (!window.location.pathname.endsWith('login.html')) {
+                localStorage.removeItem('jwtToken');
+                window.location.href = 'login.html';
+                throw new Error('Sessão expirada ou acesso negado. Redirecionando para o login.');
+            }
         }
 
         if (!response.ok) {
@@ -61,5 +65,6 @@ async function fetchApi(endpoint, options = {}) {
         throw error;
     }
 }
-// Torna fetchApi global para ser acessível em todos os módulos e scripts
+
+// Mantém a compatibilidade global para scripts que não usam import
 window.fetchApi = fetchApi;

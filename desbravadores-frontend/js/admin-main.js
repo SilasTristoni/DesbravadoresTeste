@@ -6,8 +6,9 @@ import { renderAdminSettingsView } from "../js/views/admin/settings.js";
 import { renderManageGroupsView } from "../js/views/admin/manage-groups.js";
 import { renderProfileView } from '../js/views/perfil.js';
 import { renderNotificationsView } from '../js/views/notifications.js';
-import { setupModal } from '../components/modal.js'; // Caminho Absoluto
-import { showToast } from '../js/ui/toast.js';       // Caminho Absoluto
+import { setupModal } from '../components/modal.js'; 
+import { showToast } from '../js/ui/toast.js';       
+import { initSessionMonitor } from '../js/sessionManager.js'; // IMPORT NOVO
 
 window.showToast = showToast;
 
@@ -81,7 +82,6 @@ function adjustUiForRole() {
     const manageUsersBtn = document.querySelector('.nav-btn[data-view="manage-users"]');
     const createItemBtn = document.querySelector('.nav-btn[data-view="create-item"]');
 
-    // MVP: OCULTAR SEMPRE O BOTÃO "CRIAR ITEM"
     if (createItemBtn) createItemBtn.style.display = 'none';
 
     if (userRole === 'DIRETOR') {
@@ -95,6 +95,9 @@ function adjustUiForRole() {
 function initializeAdminApp() {
   document.body.classList.toggle('dark-mode', localStorage.getItem('theme') === 'dark');
   adjustUiForRole();
+  
+  // Inicia monitoramento de sessão
+  initSessionMonitor(); // CHAMADA NOVA
 
   document.querySelectorAll(".nav-btn").forEach((button) => {
     button.addEventListener("click", () => {

@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-import org.springframework.beans.factory.annotation.Value; // IMPORT ADICIONADO
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -19,19 +19,12 @@ import io.jsonwebtoken.security.Keys;
 @Service
 public class TokenService {
 
-    // Lê o valor da propriedade 'jwt.expiration.ms' do application.properties
     @Value("${jwt.expiration.ms}")
     private long expirationTimeMillis;
 
-    // A chave secreta continua a mesma
     private final Key secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 
-    /**
-     * MÉTODO ATUALIZADO
-     * Agora usa o tempo de expiração configurado no application.properties.
-     */
     public String generateToken(User user) {
-        // Usa a variável injetada para calcular a data de expiração
         Date expirationDate = new Date(System.currentTimeMillis() + expirationTimeMillis);
 
         Map<String, Object> claims = new HashMap<>();
@@ -43,12 +36,36 @@ public class TokenService {
                 .setClaims(claims)
                 .setSubject(user.getEmail())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(expirationDate) // Define a nova data de expiração
+                .setExpiration(expirationDate)
                 .signWith(secretKey)
                 .compact();
     }
 
-    // O resto dos métodos para validar o token permanecem os mesmos
+    /**
+     * NOVO MÉTODO: Renova um token existente.
+     * Mantém as informações (claims) do token antigo, mas atualiza a data de expiração.
+     */
+    public String refreshToken(String oldToken) {
+        // Remove prefixo Bearer se existir
+        if (oldToken.startsWith("Bearer ")) {
+            oldToken = oldToken.substring(7);
+        }
+        
+        // Extrai todas as informações do token antigo
+        final Claims claims = extractAllClaims(oldToken);
+        
+        // Calcula a nova data de expiração
+        Date expirationDate = new Date(System.currentTimeMillis() + expirationTimeMillis);
+
+        return Jwts.builder()
+                .setClaims(claims) // Reaproveita os dados (userId, role, etc)
+                .setSubject(claims.getSubject())
+                .setIssuedAt(new Date(System.currentTimeMillis())) // Nova data de emissão
+                .setExpiration(expirationDate) // Nova data de expiração
+                .signWith(secretKey)
+                .compact();
+    }
+
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
@@ -61,8 +78,6 @@ public class TokenService {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
-
-
 
     private Claims extractAllClaims(String token) {
         return Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody();

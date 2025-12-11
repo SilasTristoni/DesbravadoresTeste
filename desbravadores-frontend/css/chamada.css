@@ -41,8 +41,6 @@
     gap: 15px;
 }
 
-/* --- ESTILOS ATUALIZADOS AQUI --- */
-
 /* Estilo padrão do cartão (agora representa AUSENTE) */
 .student-card {
     display: flex;
@@ -117,4 +115,29 @@
 .student-card.present .check-icon {
     opacity: 1;
     transform: scale(1);
+}
+
+/* --- NOVOS ESTILOS PARA AÇÕES DA CHAMADA --- */
+.chamada-actions {
+    display: flex;
+    justify-content: flex-end; /* Alinha à direita */
+    gap: 15px;
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.action-btn.btn-primary {
+    background-color: #0056b3; /* Azul Scout */
+    color: white;
+}
+
+.action-btn.btn-success {
+    background-color: #2e7d32; /* Verde Sucesso */
+    color: white;
+}
+
+.action-btn:hover {
+    filter: brightness(1.1);
+    transform: translateY(-2px);
 }

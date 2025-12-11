@@ -8,6 +8,7 @@ import { renderSettingsView } from './views/settings.js';
 import { renderNotificationsView } from './views/notifications.js'; 
 // CORREÇÃO: Mesmo nível (.) para achar ui dentro de js
 import { showToast } from './ui/toast.js';
+import { initSessionMonitor } from './sessionManager.js'; // IMPORT NOVO
 
 window.showToast = showToast;
 
@@ -53,6 +54,9 @@ function switchView(viewId, data = null) {
 }
 
 function initializeApp() {
+    // Inicia monitoramento de sessão
+    initSessionMonitor(); // CHAMADA NOVA
+
     // MVP: Oculta Conquistas
     const conquistasBtn = document.querySelector('.nav-btn[data-view="conquistas"]');
     if (conquistasBtn) conquistasBtn.style.display = 'none';

@@ -5,15 +5,12 @@ import { showToast as toastFunc } from '../../ui/toast.js';
 if (typeof window.showToast === 'undefined') {
     window.showToast = toastFunc;
 }
-// Define o tamanho da página para AMBAS as listas
+
+// Define o tamanho da página
 const USER_LIST_PAGE_SIZE = 5; 
 
 /**
- * Função para renderizar os controlos de paginação (agora usada por ambas as listas)
- * @param {HTMLElement} paginationContainer - O <div id="user-list-pagination">
- * @param {HTMLElement} listContainer - O <div id="user-list-container"> (para recarregar)
- * @param {object} userPage - O objeto Page retornado da API
- * @param {string} role - O cargo ('DESBRAVADOR' ou 'MONITOR') para saber qual lista recarregar
+ * Função para renderizar os controlos de paginação
  */
 function renderPaginationControls(paginationContainer, listContainer, userPage, role) {
     paginationContainer.innerHTML = ''; // Limpa controlos antigos
@@ -26,7 +23,7 @@ function renderPaginationControls(paginationContainer, listContainer, userPage, 
     prevBtn.innerHTML = '<i class="fa-solid fa-arrow-left"></i> Anterior';
     prevBtn.disabled = first; 
     prevBtn.addEventListener('click', () => {
-        loadList(listContainer, role, number - 1); // Recarrega a lista correta
+        loadList(listContainer, role, number - 1); 
     });
 
     // Informação da Página
@@ -40,7 +37,7 @@ function renderPaginationControls(paginationContainer, listContainer, userPage, 
     nextBtn.innerHTML = 'Próxima <i class="fa-solid fa-arrow-right"></i>';
     nextBtn.disabled = last; 
     nextBtn.addEventListener('click', () => {
-        loadList(listContainer, role, number + 1); // Recarrega a lista correta
+        loadList(listContainer, role, number + 1); 
     });
 
     paginationContainer.appendChild(prevBtn);
@@ -50,10 +47,7 @@ function renderPaginationControls(paginationContainer, listContainer, userPage, 
 
 
 /**
- * NOVO: Função ÚNICA para carregar listas (Desbravador OU Monitor)
- * @param {HTMLElement} container - O elemento onde a tabela será renderizada
- * @param {string} role - O cargo a carregar ('DESBRAVADOR' ou 'MONITOR')
- * @param {number} page - O número da página a carregar (0-indexado)
+ * Função ÚNICA para carregar listas (Desbravador, Monitor ou Diretor)
  */
 async function loadList(container, role, page = 0) {
   try {
@@ -62,7 +56,12 @@ async function loadList(container, role, page = 0) {
         return;
     }
 
-    container.innerHTML = `<p>A carregar ${role === 'DESBRAVADOR' ? 'desbravadores' : 'monitores'}...</p>`;
+    let roleLabel = '';
+    if (role === 'DESBRAVADOR') roleLabel = 'desbravadores';
+    else if (role === 'MONITOR') roleLabel = 'monitores';
+    else roleLabel = 'diretores';
+
+    container.innerHTML = `<p>A carregar ${roleLabel}...</p>`;
 
     // Define o endpoint e os cabeçalhos da tabela com base no cargo
     let endpoint = '';
@@ -71,15 +70,18 @@ async function loadList(container, role, page = 0) {
     if (role === 'DESBRAVADOR') {
         endpoint = `/api/admin/users?page=${page}&size=${USER_LIST_PAGE_SIZE}&sort=name,asc`;
         groupColumnHeader = 'Grupo';
-    } else { // 'MONITOR'
+    } else if (role === 'MONITOR') {
         endpoint = `/api/admin/users/monitors?page=${page}&size=${USER_LIST_PAGE_SIZE}&sort=name,asc`;
         groupColumnHeader = 'Grupo (Liderado)';
+    } else { // 'DIRETOR'
+        endpoint = `/api/admin/users/directors?page=${page}&size=${USER_LIST_PAGE_SIZE}&sort=name,asc`;
+        groupColumnHeader = 'Cargo Administrativo';
     }
 
     const userPage = await fetchApi(endpoint);
     const users = userPage.content;
 
-    let tableHtml = `<p>Nenhum utilizador (${role === 'DESBRAVADOR' ? 'Desbravador' : 'Monitor'}) encontrado.</p>`;
+    let tableHtml = `<p>Nenhum utilizador (${role}) encontrado.</p>`;
 
     if (users.length > 0) {
       tableHtml = `
@@ -92,18 +94,40 @@ async function loadList(container, role, page = 0) {
             </tr>
           </thead>
           <tbody>
-            ${users.map(user => `
-              <tr>
-                <td>
-                  <div class="user-info-cell">
-                    <img src="${user.avatar || 'img/escoteiro1.png'}" alt="Avatar" class="avatar-img-small">
-                    <span>${user.name} ${user.surname}</span>
-                  </div>
-                </td>
-                <td>${user.email}</td>
-                <td>${user.group ? user.group.name : (role === 'DESBRAVADOR' ? 'Sem grupo' : 'Nenhum')}</td>
-              </tr>
-            `).join('')}
+            ${users.map(user => {
+                // Lógica de exibição da coluna de grupo/cargo
+                let groupDisplay = 'Sem grupo'; // Valor padrão
+                
+                // Verifica o cargo do usuário atual da linha
+                // (Nota: mudei de 'role' para 'user.role' para garantir que pega o cargo do usuário da linha)
+                if (user.role === 'DIRETOR') {
+                    // Badge visual para Diretores
+                    groupDisplay = '<span class="badge-admin" style="background-color: #e74c3c; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.8em;">Admin Geral</span>';
+                } 
+                // --- AQUI ESTÁ A CORREÇÃO ---
+                // 1. Tenta ler o groupName (que o novo AdminController envia)
+                else if (user.groupName) {
+                    groupDisplay = user.groupName;
+                } 
+                // 2. Fallback: Se não tiver groupName, tenta ler o objeto antigo (segurança)
+                else if (user.group && user.group.name) {
+                    groupDisplay = user.group.name;
+                }
+                // -----------------------------
+
+                return `
+                  <tr>
+                    <td>
+                      <div class="user-info-cell">
+                        <img src="${user.avatar || 'img/escoteiro1.png'}" alt="Avatar" class="avatar-img-small">
+                        <span>${user.name} ${user.surname}</span>
+                      </div>
+                    </td>
+                    <td>${user.email}</td>
+                    <td>${groupDisplay}</td>
+                  </tr>
+                `;
+            }).join('')}
           </tbody>
         </table>
       `;
@@ -121,10 +145,9 @@ async function loadList(container, role, page = 0) {
     // Renderiza os controlos de paginação SE houver mais de 1 página
     const paginationContainer = container.querySelector("#user-list-pagination");
     if (userPage.totalPages > 1) {
-        // Passa o 'role' para a função de paginação saber o que recarregar
         renderPaginationControls(paginationContainer, container, userPage, role);
     } else {
-        paginationContainer.remove(); // Remove o container se não for necessário
+        paginationContainer.remove(); 
     }
 
   } catch (error) {
@@ -140,7 +163,7 @@ export async function renderManageUsersView(viewElement) {
   viewElement.innerHTML = `<div class="admin-widget"><p>A carregar formulário...</p></div>`;
 
   try {
-    // 1. Busca a lista de grupos disponíveis na API (lógica existente)
+    // 1. Busca a lista de grupos disponíveis na API
     const groupPage = await fetchApi('/api/groups?page=0&size=999');
     const groupDetails = groupPage.content;
     const groups = groupDetails
@@ -151,9 +174,10 @@ export async function renderManageUsersView(viewElement) {
     ).join('');
 
     // 2. Renderiza o HTML da view
+    // CORREÇÃO: Removida a tag <small> para corrigir o alinhamento visual
     viewElement.innerHTML = `
           <div class="admin-widget">
-              <h2>Adicionar Novo Utilizador (Admin)</h2>
+              <h2>Adicionar Novo Utilizador</h2>
               <form id="admin-user-form" class="user-form">
                    <div class="form-row">
                       <div class="form-group">
@@ -170,12 +194,12 @@ export async function renderManageUsersView(viewElement) {
                       <input type="email" id="user-email" required>
                   </div>
                   <div class="form-group">
-                      <label for="user-password">Senha Provisória</label>
+                      <label for="user-password">Senha</label>
                       <input type="password" id="user-password" required>
                   </div>
                   <div class="form-row">
                       <div class="form-group">
-                          <label for="user-group">Grupo (Opcional)</label>
+                          <label for="user-group">Grupo</label>
                           <select id="user-group">
                               <option value="">Sem grupo</option>
                               ${groupOptions}
@@ -187,6 +211,7 @@ export async function renderManageUsersView(viewElement) {
                               <option value="">Selecione um cargo...</option>
                               <option value="DESBRAVADOR">Desbravador (Aluno)</option>
                               <option value="MONITOR">Monitor</option>
+                              <option value="DIRETOR">Diretor (Admin)</option>
                           </select>
                       </div>
                   </div>
@@ -198,6 +223,7 @@ export async function renderManageUsersView(viewElement) {
               <div class="view-toggle-buttons">
                   <button id="view-desbravadores-btn" class="view-toggle-btn active" data-role="DESBRAVADOR">Desbravadores</button>
                   <button id="view-monitores-btn" class="view-toggle-btn" data-role="MONITOR">Monitores</button>
+                  <button id="view-diretores-btn" class="view-toggle-btn" data-role="DIRETOR">Diretores</button>
               </div>
               
               <div id="user-list-container">
@@ -205,33 +231,48 @@ export async function renderManageUsersView(viewElement) {
           </div>
       `;
 
-    // 3. Adiciona o listener ao formulário (lógica existente)
+    // 3. Adiciona listeners
     const userForm = viewElement.querySelector("#admin-user-form");
     const userListContainer = viewElement.querySelector("#user-list-container");
+    const roleSelect = viewElement.querySelector("#user-role");
+    const groupSelect = viewElement.querySelector("#user-group");
     
+    // NOVO: Listener para desabilitar o select de Grupo se for Diretor
+    roleSelect.addEventListener('change', () => {
+        if (roleSelect.value === 'DIRETOR') {
+            groupSelect.value = ""; // Limpa a seleção
+            groupSelect.disabled = true; // Bloqueia o campo
+        } else {
+            groupSelect.disabled = false; // Desbloqueia para outros cargos
+        }
+    });
+
     // Referências e listeners para os botões das abas
     const desbravadoresBtn = viewElement.querySelector("#view-desbravadores-btn");
     const monitoresBtn = viewElement.querySelector("#view-monitores-btn");
+    const diretoresBtn = viewElement.querySelector("#view-diretores-btn");
 
-    desbravadoresBtn.addEventListener('click', () => {
-        monitoresBtn.classList.remove('active');
-        desbravadoresBtn.classList.add('active');
-        loadList(userListContainer, 'DESBRAVADOR', 0); // Usa a nova função
-    });
+    function setActiveTab(btn, role) {
+        [desbravadoresBtn, monitoresBtn, diretoresBtn].forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        loadList(userListContainer, role, 0);
+    }
 
-    monitoresBtn.addEventListener('click', () => {
-        desbravadoresBtn.classList.remove('active');
-        monitoresBtn.classList.add('active');
-        loadList(userListContainer, 'MONITOR', 0); // Usa a nova função
-    });
-
+    desbravadoresBtn.addEventListener('click', () => setActiveTab(desbravadoresBtn, 'DESBRAVADOR'));
+    monitoresBtn.addEventListener('click', () => setActiveTab(monitoresBtn, 'MONITOR'));
+    diretoresBtn.addEventListener('click', () => setActiveTab(diretoresBtn, 'DIRETOR'));
 
     userForm.addEventListener("submit", async (e) => {
       e.preventDefault();
       const submitButton = userForm.querySelector('button[type="submit"]');
-
-      const groupIdValue = viewElement.querySelector("#user-group").value;
-      const groupId = groupIdValue && !isNaN(parseInt(groupIdValue, 10)) ? parseInt(groupIdValue, 10) : null;
+      
+      const role = roleSelect.value;
+      const groupIdValue = groupSelect.value;
+      
+      const groupId = (role !== 'DIRETOR' && groupIdValue && !isNaN(parseInt(groupIdValue, 10))) 
+          ? parseInt(groupIdValue, 10) 
+          : null;
+      
       const groupPayload = groupId !== null ? { id: groupId } : null;
 
       const newUser = {
@@ -239,11 +280,11 @@ export async function renderManageUsersView(viewElement) {
         surname: viewElement.querySelector("#user-surname").value,
         email: viewElement.querySelector("#user-email").value,
         password: viewElement.querySelector("#user-password").value,
-        role: viewElement.querySelector("#user-role").value,
+        role: role,
         group: groupPayload,
-        avatar: 'img/escoteiro1.png', // Avatar padrão
-        level: 1, // Nível inicial padrão
-        xp: 0    // XP inicial padrão
+        avatar: 'img/escoteiro1.png', 
+        level: 1,
+        xp: 0    
       };
 
       submitButton.disabled = true;
@@ -254,22 +295,18 @@ export async function renderManageUsersView(viewElement) {
           method: 'POST',
           body: JSON.stringify(newUser),
         });
-        showToast(`Utilizador ${createdUser.name} ${createdUser.surname} adicionado com sucesso!`, 'success'); 
+        showToast(`Utilizador ${createdUser.name} adicionado com sucesso!`, 'success'); 
         userForm.reset();
+        
+        // Reseta o estado do select de grupo também
+        groupSelect.disabled = false;
 
-        // MODIFICADO: Recarrega a aba que o utilizador acabou de criar
         if (createdUser.role === 'DESBRAVADOR') {
-            if (!desbravadoresBtn.classList.contains('active')) {
-                desbravadoresBtn.click();
-            } else {
-                await loadList(userListContainer, 'DESBRAVADOR', 0);
-            }
+            setActiveTab(desbravadoresBtn, 'DESBRAVADOR');
         } else if (createdUser.role === 'MONITOR') {
-            if (!monitoresBtn.classList.contains('active')) {
-                monitoresBtn.click();
-            } else {
-                await loadList(userListContainer, 'MONITOR', 0);
-            }
+            setActiveTab(monitoresBtn, 'MONITOR');
+        } else if (createdUser.role === 'DIRETOR') {
+            setActiveTab(diretoresBtn, 'DIRETOR');
         }
 
       } catch (error) {
@@ -281,11 +318,10 @@ export async function renderManageUsersView(viewElement) {
       }
     });
 
-    // 4. Carrega a lista inicial de Desbravadores (página 0)
+    // 4. Carrega a lista inicial
     await loadList(userListContainer, 'DESBRAVADOR', 0);
 
-  } catch (error)
- {
+  } catch (error) {
     console.error("Falha ao carregar a view de criação de utilizadores:", error);
     viewElement.innerHTML = `<div class="admin-widget"><p style="color: red;">Não foi possível carregar os grupos. ${error.message}</p></div>`;
   }

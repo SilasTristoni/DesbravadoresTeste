@@ -1,5 +1,6 @@
 package br.com.desbravadores.api.controller;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.hibernate.Hibernate;
@@ -51,15 +52,18 @@ public class AdminController {
     public ResponseEntity<User> removeUserFromGroup(@PathVariable Long userId) {
         return userRepository.findById(userId).map(user -> {
             user.setGroup(null);
-            userRepository.save(user);
+            // user.save(user); <--- LINHA REMOVIDA (ESTAVA ERRADA)
+            userRepository.save(user); // <--- ESTA É A FORMA CORRETA
             return ResponseEntity.ok(user);
         }).orElse(ResponseEntity.notFound().build());
     }
 
+    // Endpoint para listar DESBRAVADORES (Alunos)
+    // Retorna um Map para evitar erro de loop e undefined no front
     @GetMapping("/users")
     @PreAuthorize("hasAnyAuthority('MONITOR', 'DIRETOR')")
     @Transactional
-    public ResponseEntity<Page<User>> getAllUsers(
+    public ResponseEntity<Page<Map<String, Object>>> getAllUsers(
         @RequestParam(value = "groupId", required = false) Long groupId, 
         Pageable pageable,
         Authentication authentication) {
@@ -72,29 +76,52 @@ public class AdminController {
         
         if (isDirector) {
             if (groupId != null) {
-                // Usa o método findByGroupId com paginação (adicione ao UserRepository se não houver)
-                userPage = userRepository.findByGroupId(groupId, pageable); 
+                userPage = userRepository.findByGroupIdAndRole(groupId, Role.DESBRAVADOR, pageable); 
             } else {
-                userPage = userRepository.findAll(pageable); 
+                userPage = userRepository.findByRole(Role.DESBRAVADOR, pageable); 
             }
         } else {
             if (currentUser.getGroup() == null) {
                 return ResponseEntity.ok(Page.empty());
             }
-            userPage = userRepository.findByGroupId(currentUser.getGroup().getId(), pageable); 
+            userPage = userRepository.findByGroupIdAndRole(currentUser.getGroup().getId(), Role.DESBRAVADOR, pageable); 
         }
         
-        userPage.getContent().forEach(user -> {
-             Hibernate.initialize(user.getSelectedBackground());
-             Hibernate.initialize(user.getGroup());
-             // CORREÇÃO MVP: Inicializa Achievements em vez de Badges
-             Hibernate.initialize(user.getAchievements());
-             Hibernate.initialize(user.getUnlockedBackgrounds());
+        // Transforma User em Map para enviar o groupName corretamente
+        Page<Map<String, Object>> dtoPage = userPage.map(user -> {
+            Map<String, Object> dto = new HashMap<>();
+            dto.put("id", user.getId());
+            dto.put("name", user.getName());
+            dto.put("surname", user.getSurname());
+            dto.put("email", user.getEmail());
+            dto.put("role", user.getRole());
+            dto.put("level", user.getLevel());
+            dto.put("xp", user.getXp());
+            dto.put("avatar", user.getAvatar());
+            
+            Hibernate.initialize(user.getGroup());
+            
+            if (user.getGroup() != null) {
+                dto.put("groupName", user.getGroup().getName());
+                dto.put("groupId", user.getGroup().getId());
+                
+                Map<String, Object> simpleGroup = new HashMap<>();
+                simpleGroup.put("id", user.getGroup().getId());
+                simpleGroup.put("name", user.getGroup().getName());
+                dto.put("group", simpleGroup); 
+            } else {
+                dto.put("groupName", "Sem Grupo");
+                dto.put("groupId", null);
+                dto.put("group", null);
+            }
+
+            return dto;
         });
         
-        return ResponseEntity.ok(userPage);
+        return ResponseEntity.ok(dtoPage);
     }
 
+    // Endpoint para listar MONITORES
     @GetMapping("/users/monitors")
     @PreAuthorize("hasAuthority('DIRETOR')")
     @Transactional
@@ -104,12 +131,28 @@ public class AdminController {
         monitorsPage.getContent().forEach(user -> {
              Hibernate.initialize(user.getSelectedBackground());
              Hibernate.initialize(user.getGroup());
-             // CORREÇÃO MVP: Inicializa Achievements em vez de Badges
              Hibernate.initialize(user.getAchievements());
              Hibernate.initialize(user.getUnlockedBackgrounds());
         });
         
         return ResponseEntity.ok(monitorsPage); 
+    }
+
+    // Endpoint para listar DIRETORES
+    @GetMapping("/users/directors")
+    @PreAuthorize("hasAuthority('DIRETOR')")
+    @Transactional
+    public ResponseEntity<Page<User>> getAllDirectors(Pageable pageable) {
+        Page<User> directorsPage = userRepository.findByRole(Role.DIRETOR, pageable); 
+        
+        directorsPage.getContent().forEach(user -> {
+             Hibernate.initialize(user.getSelectedBackground());
+             Hibernate.initialize(user.getGroup());
+             Hibernate.initialize(user.getAchievements());
+             Hibernate.initialize(user.getUnlockedBackgrounds());
+        });
+        
+        return ResponseEntity.ok(directorsPage); 
     }
 
     @PostMapping("/users/{userId}/achievements/{achievementId}")

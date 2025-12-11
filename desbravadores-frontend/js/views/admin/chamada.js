@@ -16,9 +16,9 @@ export async function renderChamadaView(viewElement) {
                 <p id="chamada-loading-message">A carregar membros do grupo...</p>
                 <div class="student-list" id="studentList"></div>
                 
-                <div class="form-actions" style="display: flex; gap: 10px; margin-top: 1.5rem;">
-                    <button id="submit-chamada-btn" class="action-btn" style="display: none;">Submeter Chamada</button>
-                    <button id="export-csv-btn" class="action-btn" style="display: none; background-color: var(--scout-blue, #0056b3);">Exportar CSV</button>
+                <div class="form-actions chamada-actions">
+                    <button id="submit-chamada-btn" class="action-btn btn-success" style="display: none;">Submeter Chamada</button>
+                    <button id="export-csv-btn" class="action-btn btn-primary" style="display: none;">Exportar CSV</button>
                 </div>
             </div>
         </div>
@@ -29,6 +29,36 @@ export async function renderChamadaView(viewElement) {
     const submitBtn = viewElement.querySelector('#submit-chamada-btn');
     const exportBtn = viewElement.querySelector('#export-csv-btn');
     const dateInput = viewElement.querySelector('#chamada-date');
+
+    // --- NOVA FUNÇÃO DE VALIDAÇÃO ---
+    async function checkStatus() {
+        const date = dateInput.value;
+        if(!date) return;
+
+        try {
+            const response = await fetchApi(`/api/chamada/check-existence?date=${date}`);
+            
+            if (response.exists) {
+                submitBtn.disabled = true;
+                submitBtn.textContent = "Chamada já realizada";
+                submitBtn.style.opacity = "0.6";
+                submitBtn.style.cursor = "not-allowed";
+                
+                // Opcional: mostrar aviso apenas se o usuário tentar interagir ou mudar a data
+                // showToast("Já existe uma chamada para esta data.", "info"); 
+            } else {
+                submitBtn.disabled = false;
+                submitBtn.textContent = "Submeter Chamada";
+                submitBtn.style.opacity = "1";
+                submitBtn.style.cursor = "pointer";
+            }
+        } catch (e) {
+            console.error("Erro ao verificar status da chamada", e);
+        }
+    }
+
+    // Monitorar mudança de data para revalidar
+    dateInput.addEventListener('change', checkStatus);
 
     try {
         const members = await fetchApi('/api/chamada/my-group-members');
@@ -57,6 +87,9 @@ export async function renderChamadaView(viewElement) {
         // Lógica de Seleção de Presença
         studentListContainer.querySelectorAll('.student-card').forEach(card => {
             card.addEventListener('click', function() {
+                // Se o botão estiver desativado (chamada já feita), não permite alterar seleção visualmente?
+                // Opcional: if(submitBtn.disabled) return; 
+
                 this.classList.toggle('present');
                 const studentId = this.dataset.studentId;
 
@@ -67,6 +100,9 @@ export async function renderChamadaView(viewElement) {
                 }
             });
         });
+
+        // Executa validação inicial ao carregar a página
+        await checkStatus();
 
         // Lógica de Submeter Chamada
         submitBtn.addEventListener('click', async () => {
@@ -97,10 +133,12 @@ export async function renderChamadaView(viewElement) {
                     card.classList.remove('present');
                 });
                 presentUserIds.clear();
+                
+                // Revalida o botão (agora vai aparecer como "Chamada já realizada")
+                await checkStatus();
 
             } catch (error) {
                 showToast(`Erro ao submeter chamada: ${error.message}`, 'error');
-            } finally {
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Submeter Chamada';
             }
