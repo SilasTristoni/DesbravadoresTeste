@@ -1,14 +1,14 @@
-import { renderDashboardView } from "../js/views/admin/dashboard.js";
-import { renderChamadaView } from "../js/views/admin/chamada.js";
-import { renderManageTasksView } from "../js/views/admin/manage-tasks.js";
-import { renderManageUsersView } from "../js/views/admin/manage-users.js";
-import { renderAdminSettingsView } from "../js/views/admin/settings.js";
-import { renderManageGroupsView } from "../js/views/admin/manage-groups.js";
-import { renderProfileView } from '../js/views/perfil.js';
-import { renderNotificationsView } from '../js/views/notifications.js';
-import { setupModal } from '../components/modal.js'; 
+import { renderDashboardView } from "../js/features/admin/dashboard.js";
+import { renderChamadaView } from "../js/features/admin/chamada.js";
+import { renderManageTasksView } from "../js/features/admin/manage-tasks.js";
+import { renderManageUsersView } from "../js/features/admin/manage-users.js";
+import { renderAdminSettingsView } from "../js/features/admin/settings.js";
+import { renderManageGroupsView } from "../js/features/admin/manage-groups.js";
+import { renderProfileView } from '../js/features/app/perfil.js';
+import { renderNotificationsView } from '../js/features/app/notifications.js';
+import { setupModal } from '../js/components/modal.js'; 
 import { showToast } from '../js/ui/toast.js';       
-import { initSessionMonitor } from '../js/sessionManager.js'; // IMPORT NOVO
+import { initSessionMonitor } from '../js/core/sessionManager.js'; // IMPORT NOVO
 
 window.showToast = showToast;
 

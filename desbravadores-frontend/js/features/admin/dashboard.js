@@ -156,7 +156,7 @@ async function renderUserList(viewElement, groupId = null) {
                         <tr>
                             <td>
                                 <div class="user-info-cell">
-                                    <img src="${user.avatar || 'img/escoteiro1.png'}" alt="Avatar" class="avatar-img-small" />
+                                    <img src="${user.avatar || '../assets/images/escoteiro.png'}" alt="Avatar" class="avatar-img-small" />
                                     <span>${user.name} ${user.surname}</span>
                                 </div>
                             </td>
@@ -329,7 +329,7 @@ async function renderReportWidget(viewElement) {
                             <tr>
                                 <td>
                                     <div class="user-info-cell">
-                                        <img src="${item.avatar || 'img/escoteiro1.png'}" alt="Avatar" class="avatar-img-small" />
+                                        <img src="${item.avatar || 'assets/images/escoteiro1.png'}" alt="Avatar" class="avatar-img-small" />
                                         <span>${item.name}</span>
                                     </div>
                                 </td>

@@ -1,8 +1,8 @@
 // js/views/admin/manage-groups.js
 
 // Imports Corrigidos
-import { showToast as toastFunc} from '../../ui/toast.js';
-import { showModal } from '../../../components/modal.js';
+import { showToast as toastFunc } from '../../ui/toast.js';
+import { showModal } from '../../components/modal.js';
 
 if (typeof window.showToast === 'undefined') {
     window.showToast = toastFunc;

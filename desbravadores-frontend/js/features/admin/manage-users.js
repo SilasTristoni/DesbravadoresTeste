@@ -119,7 +119,7 @@ async function loadList(container, role, page = 0) {
                   <tr>
                     <td>
                       <div class="user-info-cell">
-                        <img src="${user.avatar || 'img/escoteiro1.png'}" alt="Avatar" class="avatar-img-small">
+                        <img src="${user.avatar || 'assets/images/escoteiro1.png'}" alt="Avatar" class="avatar-img-small">
                         <span>${user.name} ${user.surname}</span>
                       </div>
                     </td>
@@ -282,7 +282,7 @@ export async function renderManageUsersView(viewElement) {
         password: viewElement.querySelector("#user-password").value,
         role: role,
         group: groupPayload,
-        avatar: 'img/escoteiro1.png', 
+        avatar: 'assets/images/escoteiro1.png',
         level: 1,
         xp: 0    
       };

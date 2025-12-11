@@ -3,12 +3,13 @@ package br.com.desbravadores.api.controller;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.desbravadores.api.dto.AttendanceReportDTO;
 import br.com.desbravadores.api.model.AttendanceRecord;
 import br.com.desbravadores.api.model.Group;
 import br.com.desbravadores.api.model.Role;
@@ -34,13 +36,17 @@ import br.com.desbravadores.api.repository.UserRepository;
 @RequestMapping("/api/chamada")
 public class ChamadaController {
 
+    private static final Logger logger = LoggerFactory.getLogger(ChamadaController.class);
+
     @Autowired
     private UserRepository userRepository;
 
     @Autowired
     private AttendanceRecordRepository attendanceRepository;
 
-    // DTO interno para receber os dados do front-end
+    /**
+     * DTO interno para recebimento de dados de presença (Input).
+     */
     public static class AttendancePayload {
         private LocalDate date;
         private List<Long> presentUserIds;
@@ -55,9 +61,11 @@ public class ChamadaController {
     @PreAuthorize("hasAnyAuthority('MONITOR', 'DIRETOR')")
     public ResponseEntity<List<User>> getMyGroupMembers(Authentication authentication) {
         User currentUser = userRepository.findByEmail(authentication.getName()).orElseThrow();
+        
         if (currentUser.getGroup() == null) {
             return ResponseEntity.ok(List.of());
         }
+        
         List<User> members = userRepository.findByGroupIdAndRole(currentUser.getGroup().getId(), Role.DESBRAVADOR);
         return ResponseEntity.ok(members);
     }
@@ -70,6 +78,7 @@ public class ChamadaController {
         Group monitorGroup = monitor.getGroup();
         
         if (monitorGroup == null) {
+            logger.warn("Tentativa de chamada por monitor sem grupo: {}", monitor.getEmail());
             return ResponseEntity.status(403).body(Map.of("message", "Erro: O monitor não está associado a nenhum grupo."));
         }
 
@@ -79,16 +88,13 @@ public class ChamadaController {
             return ResponseEntity.badRequest().body(Map.of("message", "Erro: Não é possível registrar chamada futura."));
         }
 
-        // Verifica se já existem registros para essa data e grupo (seja presente ou ausente)
         List<AttendanceRecord> existing = attendanceRepository.findByGroupIdAndDate(monitorGroup.getId(), date);
         if (!existing.isEmpty()) {
              return ResponseEntity.badRequest().body(Map.of("message", "Erro: Já existe uma chamada para esta data."));
         }
 
-        // Busca TODOS os membros para registrar quem veio e quem faltou
         List<User> allMembers = userRepository.findByGroupIdAndRole(monitorGroup.getId(), Role.DESBRAVADOR);
-        
-        List<Long> presentIdsPayload = payload.getPresentUserIds();
+        List<Long> presentIdsPayload = payload.getPresentUserIds() != null ? payload.getPresentUserIds() : List.of();
 
         List<AttendanceRecord> records = allMembers.stream().map(member -> {
             AttendanceRecord record = new AttendanceRecord();
@@ -96,11 +102,7 @@ public class ChamadaController {
             record.setGroup(monitorGroup);
             record.setDate(date);
             record.setRecordedBy(monitor);
-            
-            // Define o novo campo 'present' baseado na lista enviada pelo front
-            boolean isPresent = presentIdsPayload.contains(member.getId());
-            record.setPresent(isPresent);
-            
+            record.setPresent(presentIdsPayload.contains(member.getId()));
             return record;
         }).collect(Collectors.toList());
 
@@ -109,8 +111,9 @@ public class ChamadaController {
         }
 
         attendanceRepository.saveAll(records);
+        logger.info("Chamada registrada com sucesso pelo monitor {} para a data {}", monitor.getEmail(), date);
 
-        return ResponseEntity.ok(Map.of("message", "Chamada registada com sucesso!"));
+        return ResponseEntity.ok(Map.of("message", "Chamada registrada com sucesso!"));
     }
 
     @GetMapping("/check-existence")
@@ -125,7 +128,6 @@ public class ChamadaController {
         if (group == null) return ResponseEntity.ok(Map.of("exists", false));
 
         LocalDate date = LocalDate.parse(dateString);
-        // Agora verifica se existe QUALQUER registro (presente ou ausente)
         boolean exists = !attendanceRepository.findByGroupIdAndDate(group.getId(), date).isEmpty();
         
         return ResponseEntity.ok(Map.of("exists", exists));
@@ -155,48 +157,56 @@ public class ChamadaController {
             @RequestParam(value = "groupId", required = false) Long groupId,
             Authentication authentication) {
 
-        LocalDate date = LocalDate.parse(dateString);
-        User currentUser = userRepository.findByEmail(authentication.getName()).orElseThrow();
-        Long targetGroupId = (currentUser.getRole() == Role.DIRETOR && groupId != null) ? groupId : 
-                             (currentUser.getGroup() != null ? currentUser.getGroup().getId() : null);
+        try {
+            LocalDate date = LocalDate.parse(dateString);
+            User currentUser = userRepository.findByEmail(authentication.getName()).orElseThrow();
+            
+            Long targetGroupId = (currentUser.getRole() == Role.DIRETOR && groupId != null) ? groupId : 
+                                 (currentUser.getGroup() != null ? currentUser.getGroup().getId() : null);
 
-        if (targetGroupId == null) return ResponseEntity.badRequest().build();
+            if (targetGroupId == null) return ResponseEntity.badRequest().build();
 
-        List<User> members = userRepository.findByGroupId(targetGroupId);
-        members.removeIf(u -> u.getRole() == Role.DIRETOR);
-        
-        List<AttendanceRecord> records = attendanceRepository.findByGroupIdAndDate(targetGroupId, date);
-        
-        // Filtra os IDs de quem estava com status 'present = true'
-        Set<Long> presentIds = records.stream()
-                .filter(AttendanceRecord::isPresent)
-                .map(r -> r.getUser().getId())
-                .collect(Collectors.toSet());
+            List<User> members = userRepository.findByGroupId(targetGroupId);
+            members.removeIf(u -> u.getRole() == Role.DIRETOR);
+            
+            List<AttendanceRecord> records = attendanceRepository.findByGroupIdAndDate(targetGroupId, date);
+            
+            Set<Long> presentIds = records.stream()
+                    .filter(AttendanceRecord::isPresent)
+                    .map(r -> r.getUser().getId())
+                    .collect(Collectors.toSet());
 
-        StringBuilder csv = new StringBuilder();
-        csv.append('\uFEFF'); // BOM para Excel
-        
-        csv.append("ID do Sistema;Nome Completo;Status da Presenca;Data\n");
-        
-        for (User u : members) {
-            String status = presentIds.contains(u.getId()) ? "PRESENTE" : "AUSENTE";
-            csv.append(u.getId()).append(";")
-                .append(u.getName()).append(" ").append(u.getSurname()).append(";")
-                .append(status).append(";")
-                .append(date).append("\n");
+            StringBuilder csv = new StringBuilder();
+            csv.append('\uFEFF'); // BOM para Excel
+            
+            csv.append("ID do Sistema;Nome Completo;Status da Presenca;Data\n");
+            
+            for (User u : members) {
+                String status = presentIds.contains(u.getId()) ? "PRESENTE" : "AUSENTE";
+                String fullName = (u.getName() + " " + u.getSurname()).replace(";", "");
+                
+                csv.append(u.getId()).append(";")
+                    .append(fullName).append(";")
+                    .append(status).append(";")
+                    .append(date).append("\n");
+            }
+
+            byte[] csvBytes = csv.toString().getBytes(StandardCharsets.UTF_8);
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=chamada_" + date + ".csv")
+                    .contentType(MediaType.parseMediaType("text/csv"))
+                    .body(csvBytes);
+                    
+        } catch (Exception e) {
+            logger.error("Erro ao exportar CSV. Data: {}", dateString, e);
+            return ResponseEntity.internalServerError().build();
         }
-
-        byte[] csvBytes = csv.toString().getBytes(StandardCharsets.UTF_8);
-
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=chamada_" + date + ".csv")
-                .contentType(MediaType.parseMediaType("text/csv"))
-                .body(csvBytes);
     }
     
     @GetMapping("/report")
     @PreAuthorize("hasAnyAuthority('MONITOR', 'DIRETOR')")
-    public ResponseEntity<List<Map<String, Object>>> getAttendanceReport(
+    public ResponseEntity<List<AttendanceReportDTO>> getAttendanceReport(
             @RequestParam("date") String dateString,
             @RequestParam(value = "groupId", required = false) Long groupId,
             Authentication authentication) {
@@ -209,6 +219,7 @@ public class ChamadaController {
 
             if (currentUser.getRole() == Role.DIRETOR) {
                 if (groupId == null) {
+                    logger.warn("Requisição de relatório sem GroupID por Diretor: {}", currentUser.getEmail());
                     return ResponseEntity.badRequest().body(List.of()); 
                 }
                 targetGroupId = groupId;
@@ -222,28 +233,29 @@ public class ChamadaController {
             List<User> members = userRepository.findByGroupIdAndRole(targetGroupId, Role.DESBRAVADOR);
             List<AttendanceRecord> records = attendanceRepository.findByGroupIdAndDate(targetGroupId, date);
             
-            // Filtra os IDs de quem estava com status 'present = true'
             Set<Long> presentIds = records.stream()
                     .filter(AttendanceRecord::isPresent)
                     .map(record -> record.getUser().getId())
                     .collect(Collectors.toSet());
 
-            List<Map<String, Object>> report = members.stream().map(user -> {
+            // Uso do DTO para resposta
+            List<AttendanceReportDTO> report = members.stream().map(user -> {
                 boolean isPresent = presentIds.contains(user.getId());
+               // COMO DEVE FICAR (CORRETO):
+                String avatar = user.getAvatar() != null ? user.getAvatar() : "assets/images/escoteiro1.png";
                 
-                Map<String, Object> item = new HashMap<>();
-                item.put("id", user.getId());
-                item.put("name", user.getName() + " " + user.getSurname());
-                item.put("status", isPresent ? "PRESENTE" : "AUSENTE");
-                item.put("avatar", user.getAvatar() != null ? user.getAvatar() : "img/escoteiro1.png");
-                
-                return item;
+                return new AttendanceReportDTO(
+                    user.getId(),
+                    user.getName() + " " + user.getSurname(),
+                    isPresent ? "PRESENTE" : "AUSENTE",
+                    avatar
+                );
             }).collect(Collectors.toList());
 
             return ResponseEntity.ok(report);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Erro crítico ao gerar relatório de chamada. Data: {}, Usuário: {}", dateString, authentication.getName(), e);
             return ResponseEntity.internalServerError().build();
         }
     }

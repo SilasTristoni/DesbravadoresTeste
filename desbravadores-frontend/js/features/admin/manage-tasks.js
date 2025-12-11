@@ -2,7 +2,7 @@
 
 // A função fetchApi está disponível globalmente
 // Importa showModal e showToast com os caminhos corretos
-import { showModal } from '../../../components/modal.js';
+import { showModal } from '../../components/modal.js';
 import { showToast as toastFunc} from '../../ui/toast.js';
 
 // Garante que showToast esteja disponível globalmente

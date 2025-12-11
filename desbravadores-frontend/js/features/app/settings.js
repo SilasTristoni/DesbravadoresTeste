@@ -1,7 +1,7 @@
 
 // js/views/settings.js
 import { showModal } from '../../components/modal.js';
-import { showToast as toastFunc } from '../ui/toast.js';
+import { showToast as toastFunc } from '../../ui/toast.js';
 if (typeof window.showToast === 'undefined') {
     window.showToast = toastFunc;
 }

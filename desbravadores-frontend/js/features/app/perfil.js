@@ -1,7 +1,8 @@
 // js/views/perfil.js
 
 // Importa showToast se ainda não estiver global
-import { showToast as toastFunc } from '../ui/toast.js'; // Ajuste o caminho se necessário
+import  { showToast as toastFunc} from '../../ui/toast.js';
+// Ajuste o caminho se necessário
 if (typeof window.showToast === 'undefined') {
     window.showToast = toastFunc;
 }

@@ -1,5 +1,5 @@
 import { fetchApi } from './apiClient.js';
-import { showToast } from './ui/toast.js';
+import { showToast } from '../ui/toast.js';
 
 // Configurações
 const WARNING_TIME_SECONDS = 120; // Avisar 2 minutos antes de expirar
