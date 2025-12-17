@@ -1,14 +1,14 @@
 // CORREÇÃO: Sobe um nível (..) para achar components
-import { setupModal } from '../components/modal.js';
-import { renderHomeView } from './views/home.js';
-import { renderAgendaView } from './views/agenda.js';
-import { renderProfileView } from './views/perfil.js';
-import { renderGruposView } from './views/grupos.js';
-import { renderSettingsView } from './views/settings.js';
-import { renderNotificationsView } from './views/notifications.js'; 
+import { setupModal } from '../js/components/modal.js'; 
+import { renderHomeView } from '../js/features/app/home.js';
+import { renderAgendaView } from '../js/features/app/agenda.js';
+import { renderProfileView } from '../js/features/app/perfil.js';
+import { renderGruposView } from '../js/features/app/grupos.js';
+import { renderSettingsView } from '../js/features/app/settings.js';
+import { renderNotificationsView } from '../js/features/app/notifications.js'; 
 // CORREÇÃO: Mesmo nível (.) para achar ui dentro de js
 import { showToast } from './ui/toast.js';
-import { initSessionMonitor } from './sessionManager.js'; // IMPORT NOVO
+import { initSessionMonitor } from '../js/core/sessionManager.js'; // IMPORT NOVO
 
 window.showToast = showToast;
 

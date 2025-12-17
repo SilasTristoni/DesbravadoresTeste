@@ -34,11 +34,15 @@ public class AttendanceRecord {
     @JoinColumn(name = "recorded_by_id", nullable = false)
     private User recordedBy;
 
-    // --- NOVO CAMPO: Indica se estava presente (true) ou ausente (false) ---
+    // Indica se estava presente (true) ou ausente (false)
     @Column(nullable = false)
     private boolean present;
 
-    // Construtor padrão obrigatório para o JPA
+    // --- NOVO CAMPO: Justificativa para falta (opcional) ---
+    // Armazena o motivo (ex: "Doença", "Viagem") caso present seja false.
+    @Column(length = 500)
+    private String justification;
+
     public AttendanceRecord() {
     }
 
@@ -89,5 +93,13 @@ public class AttendanceRecord {
 
     public void setPresent(boolean present) {
         this.present = present;
+    }
+
+    public String getJustification() {
+        return justification;
+    }
+
+    public void setJustification(String justification) {
+        this.justification = justification;
     }
 }

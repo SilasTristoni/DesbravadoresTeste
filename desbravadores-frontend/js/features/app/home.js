@@ -1,7 +1,7 @@
 // js/views/home.js
 
 // Importa showToast se ainda não estiver global
-import { showToast as toastFunc } from '../ui/toast.js'; // Ajuste o caminho se necessário
+import { showToast as toastFunc } from '../../ui/toast.js'; // Ajuste o caminho se necessário
 if (typeof window.showToast === 'undefined') {
     window.showToast = toastFunc;
 }
@@ -139,7 +139,6 @@ export function renderHomeView(viewElement) {
                 </div>
                 <div class="categories-section">
                     <h2 class="section-title">Categorias de Aventura</h2>
-                    {/* Adicionado data-category-title para usar com showToast */}
                     <div class="category-card" style="--category-color: #ff6b35;" data-category-title="Aventuras Radicais">
                         <span class="category-icon">⚜️</span>
                         <div>
@@ -147,7 +146,6 @@ export function renderHomeView(viewElement) {
                             <p class="category-description">Atividades de adrenalina para os mais corajosos.</p>
                         </div>
                     </div>
-                     {/* Adicionado data-category-title para usar com showToast */}
                     <div class="category-card" style="--category-color: #6b8e23;" data-category-title="Trilhas e Natureza">
                         <span class="category-icon">🌲</span>
                         <div>
@@ -155,7 +153,6 @@ export function renderHomeView(viewElement) {
                             <p class="category-description">Explore a flora e fauna em trilhas ecológicas.</p>
                         </div>
                     </div>
-                     {/* Adicionado data-category-title para usar com showToast */}
                     <div class="category-card" style="--category-color: #8b4513;" data-category-title="Camping Noturno">
                         <span class="category-icon">🏕️</span>
                         <div>
@@ -168,7 +165,6 @@ export function renderHomeView(viewElement) {
             <aside class="sidebar">
                  <div class="quick-stats">
                     <h3 class="stats-title">Estatísticas do Clube</h3>
-                    {/* Removido Desbravadores Ativos */}
                     <div class="stat-item"><span>Grupos Formados</span> <strong id="group-count">--</strong></div>
                     <div class="stat-item"><span>Tarefas Agendadas</span> <strong id="tasks-count">--</strong></div>
                 </div>

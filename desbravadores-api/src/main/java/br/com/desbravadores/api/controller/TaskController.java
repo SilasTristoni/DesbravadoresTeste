@@ -28,9 +28,6 @@ public class TaskController {
     @Autowired
     private TaskRepository taskRepository;
 
-    /**
-     * Endpoint para criar uma nova tarefa.
-     */
     @PostMapping
     @PreAuthorize("hasAnyAuthority('MONITOR', 'DIRETOR')")
     public ResponseEntity<Task> createTask(@RequestBody Task task) {
@@ -38,9 +35,6 @@ public class TaskController {
         return ResponseEntity.status(201).body(savedTask);
     }
 
-    /**
-     * NOVO ENDPOINT: Para um MONITOR ou DIRETOR atualizar uma tarefa existente.
-     */
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('MONITOR', 'DIRETOR')")
     public ResponseEntity<Task> updateTask(@PathVariable Long id, @RequestBody Task taskDetails) {
@@ -49,34 +43,24 @@ public class TaskController {
             task.setDescription(taskDetails.getDescription());
             task.setDate(taskDetails.getDate());
             task.setTime(taskDetails.getTime());
-            Task updatedTask = taskRepository.save(task);
-            return ResponseEntity.ok(updatedTask);
+            return ResponseEntity.ok(taskRepository.save(task));
         }).orElse(ResponseEntity.notFound().build());
     }
 
-    /**
-     * Endpoint para listar as tarefas de um determinado mês e ano.
-     * MÉTODO ATUALIZADO COM PAGINAÇÃO
-     */
     @GetMapping
-    @PreAuthorize("hasAnyAuthority('DESBRAVADOR', 'MONITOR', 'DIRETOR')") // Permite que Desbravadores vejam as tarefas
+    @PreAuthorize("hasAnyAuthority('DESBRAVADOR', 'MONITOR', 'DIRETOR')")
     public ResponseEntity<Page<Task>> getTasksByMonth(
             @RequestParam int year, 
             @RequestParam int month,
-            Pageable pageable) { // ADICIONADO
+            Pageable pageable) {
         
         YearMonth yearMonth = YearMonth.of(year, month);
         LocalDate startDate = yearMonth.atDay(1);
         LocalDate endDate = yearMonth.atEndOfMonth();
 
-        // ATUALIZADO para usar o método paginado
-        Page<Task> tasks = taskRepository.findByDateBetween(startDate, endDate, pageable);
-        return ResponseEntity.ok(tasks);
+        return ResponseEntity.ok(taskRepository.findByDateBetween(startDate, endDate, pageable));
     }
 
-    /**
-     * Endpoint para um MONITORE ou DIRETOR apagar uma tarefa pelo ID.
-     */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('MONITOR', 'DIRETOR')")
     public ResponseEntity<Void> deleteTask(@PathVariable Long id) {

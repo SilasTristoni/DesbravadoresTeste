@@ -2,7 +2,7 @@
   height: 50vh;
   border-radius: 20px;
   background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.5)),
-    url("../img/home-banner.png") center/cover;
+    url("../assets/images/home-banner.png") center/cover;
   display: flex;
   align-items: center;
   justify-content: center;
