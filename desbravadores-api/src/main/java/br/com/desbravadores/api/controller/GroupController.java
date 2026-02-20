@@ -58,7 +58,6 @@ public class GroupController {
             
             allMembersInGroup.forEach(user -> {
                 Hibernate.initialize(user.getSelectedBackground());
-                // CORREÇÃO MVP: getBadges() -> getAchievements()
                 Hibernate.initialize(user.getAchievements());
                 Hibernate.initialize(user.getUnlockedBackgrounds());
             });
@@ -79,7 +78,17 @@ public class GroupController {
     @PostMapping
     @PreAuthorize("hasAuthority('DIRETOR')")
     public ResponseEntity<Group> createGroup(@RequestBody Group newGroup) {
+        // Salva o grupo primeiro
         Group savedGroup = groupRepository.save(newGroup);
+        
+        // Se foi selecionado um líder, atualiza o cadastro do utilizador para pertencer a este grupo
+        if (savedGroup.getLeader() != null) {
+            userRepository.findById(savedGroup.getLeader().getId()).ifPresent(leader -> {
+                leader.setGroup(savedGroup);
+                userRepository.save(leader);
+            });
+        }
+        
         return ResponseEntity.status(201).body(savedGroup);
     }
 
@@ -89,7 +98,18 @@ public class GroupController {
         return groupRepository.findById(id).map(group -> {
             group.setName(groupDetails.getName());
             group.setLeader(groupDetails.getLeader());
+            
+            // Salva a alteração do grupo
             Group updatedGroup = groupRepository.save(group);
+            
+            // Se foi selecionado um novo líder, atualiza o cadastro dele também
+            if (updatedGroup.getLeader() != null) {
+                userRepository.findById(updatedGroup.getLeader().getId()).ifPresent(leader -> {
+                    leader.setGroup(updatedGroup);
+                    userRepository.save(leader);
+                });
+            }
+            
             return ResponseEntity.ok(updatedGroup);
         }).orElse(ResponseEntity.notFound().build());
     }

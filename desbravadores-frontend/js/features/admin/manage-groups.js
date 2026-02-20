@@ -1,6 +1,5 @@
-// js/views/admin/manage-groups.js
+// js/features/admin/manage-groups.js
 
-// Imports Corrigidos
 import { showToast as toastFunc } from '../../ui/toast.js';
 import { showModal } from '../../components/modal.js';
 
@@ -11,10 +10,14 @@ if (typeof window.showToast === 'undefined') {
 const GROUP_PAGE_SIZE = 5; 
 let editingGroupId = null;
 
-// ... (Resto do código de renderPaginationControls permanece igual) ...
 function renderPaginationControls(paginationContainer, listContainer, groupPage) {
     paginationContainer.innerHTML = ''; 
-    const { number, totalPages, first, last } = groupPage; 
+    
+    // --- CORREÇÃO: Lê os dados do Spring Boot antigo E do novo ---
+    const totalPages = groupPage.totalPages ?? groupPage.page?.totalPages ?? 1;
+    const number = groupPage.number ?? groupPage.page?.number ?? 0;
+    const first = groupPage.first ?? (number === 0);
+    const last = groupPage.last ?? (number === totalPages - 1);
 
     const prevBtn = document.createElement('button');
     prevBtn.className = 'pagination-btn';
@@ -37,19 +40,14 @@ function renderPaginationControls(paginationContainer, listContainer, groupPage)
     paginationContainer.appendChild(nextBtn);
 }
 
-// ... (Resto do código loadGroupList e renderManageGroupsView permanece inalterado) ...
-// (Para economizar espaço, copie a lógica de loadGroupList e renderManageGroupsView 
-//  do seu arquivo original, apenas garantindo que os imports acima estejam corretos)
-
 async function loadGroupList(container, page = 0) {
-    // ... (Copiar conteúdo da resposta anterior)
     try {
         container.innerHTML = `<p>A carregar grupos...</p>`;
         const [groupPage, monitorPage] = await Promise.all([
             fetchApi(`/api/groups?page=${page}&size=${GROUP_PAGE_SIZE}&sort=name,asc`),
             fetchApi('/api/admin/users/monitors?page=0&size=999')
         ]);
-        // ... (resto da lógica de renderização) ...
+        
         const groupDetailsList = groupPage.content;
         const monitors = monitorPage.content;
         const monitorOptionsHtml = monitors.map(monitor =>
@@ -102,8 +100,11 @@ async function loadGroupList(container, page = 0) {
         }
         container.innerHTML = `<div id="group-list-table-wrapper">${tableHtml}</div><div id="group-list-pagination" class="pagination-controls"></div>`;
         
-        // Listeners e Paginação (mesma lógica)
-        if (groupPage.totalPages > 1) renderPaginationControls(container.querySelector("#group-list-pagination"), container, groupPage);
+        // Listeners e Paginação (Atualizado para Spring Boot 3+)
+        const totalPagesSafe = groupPage.totalPages ?? groupPage.page?.totalPages ?? 1;
+        if (totalPagesSafe > 1) {
+            renderPaginationControls(container.querySelector("#group-list-pagination"), container, groupPage);
+        }
         addEventListeners(container, page);
 
     } catch (error) {
@@ -129,24 +130,25 @@ function addEventListeners(container, currentPage) {
             }, 100);
         });
     });
-    // ... Edit listeners ...
+    
     container.querySelectorAll('.edit-group-btn').forEach(btn => {
          btn.addEventListener('click', (e) => {
              editingGroupId = parseInt(e.currentTarget.dataset.groupId, 10);
              loadGroupList(listContainer, currentPage);
          });
      });
+     
      container.querySelectorAll('.cancel-edit-btn').forEach(btn => {
          btn.addEventListener('click', () => {
              editingGroupId = null;
              loadGroupList(listContainer, currentPage);
          });
      });
+     
      const editForm = container.querySelector('.edit-group-form');
      if(editForm) {
          editForm.addEventListener('submit', async (e) => {
              e.preventDefault();
-             // ... lógica de salvar (ver resposta anterior) ...
              const groupId = editForm.dataset.groupId;
              const payload = { name: editForm.elements.name.value, leader: editForm.elements.leader.value ? {id: editForm.elements.leader.value} : null };
              try {
@@ -160,8 +162,6 @@ function addEventListeners(container, currentPage) {
 }
 
 export async function renderManageGroupsView(viewElement) {
-    // ... Copiar lógica de renderização inicial da resposta anterior ...
-    // Apenas certifique-se de usar os imports corrigidos acima.
     viewElement.innerHTML = `<div class="admin-widget"><p>A carregar...</p></div>`;
     try {
         const monitorPage = await fetchApi('/api/admin/users/monitors?page=0&size=999');
@@ -169,8 +169,18 @@ export async function renderManageGroupsView(viewElement) {
         const monitorOptions = monitors.map(m => `<option value="${m.id}">${m.name} ${m.surname}</option>`).join('');
         
         viewElement.innerHTML = `
-          <div class="admin-widget"><h2>Adicionar Grupo</h2><form id="admin-group-form" class="user-form"><div class="form-group"><label>Nome</label><input type="text" id="group-name" required></div><div class="form-group"><label>Líder</label><select id="group-leader"><option value="">Sem líder</option>${monitorOptions}</select></div><button type="submit" class="action-btn">Adicionar</button></form></div>
-          <div class="admin-widget" style="margin-top: 2rem;"><h2>Grupos</h2><div id="group-list-container"></div></div>`;
+          <div class="admin-widget">
+            <h2>Adicionar Grupo</h2>
+            <form id="admin-group-form" class="user-form">
+                <div class="form-group"><label>Nome</label><input type="text" id="group-name" required></div>
+                <div class="form-group"><label>Líder</label><select id="group-leader"><option value="">Sem líder</option>${monitorOptions}</select></div>
+                <button type="submit" class="action-btn">Adicionar</button>
+            </form>
+          </div>
+          <div class="admin-widget" style="margin-top: 2rem;">
+            <h2>Grupos</h2>
+            <div id="group-list-container"></div>
+          </div>`;
           
         const form = viewElement.querySelector('#admin-group-form');
         form.addEventListener('submit', async (e) => {

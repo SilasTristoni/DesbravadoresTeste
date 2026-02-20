@@ -1,6 +1,6 @@
 // js/views/admin/chamada.js
 
-// --- MODAL CUSTOMIZADO (Para substituir confirm nativo) ---
+// --- MODAL CUSTOMIZADO PADRONIZADO ---
 function showConfirmModal(message) {
     return new Promise((resolve) => {
         const modalId = 'custom-confirm-modal';
@@ -8,19 +8,18 @@ function showConfirmModal(message) {
 
         const modalOverlay = document.createElement('div');
         modalOverlay.id = modalId;
-        modalOverlay.style.cssText = `
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center;
-            z-index: 10000; backdrop-filter: blur(2px);
-        `;
+        modalOverlay.className = 'modal active'; 
+        modalOverlay.style.zIndex = '10000';
 
         modalOverlay.innerHTML = `
-            <div style="background: white; padding: 25px; border-radius: 12px; max-width: 400px; width: 90%; box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center; animation: fadeIn 0.3s ease;">
-                <h3 style="margin-top: 0; color: #333; font-size: 1.2rem;">Confirmação</h3>
-                <p style="color: #666; margin: 15px 0 25px;">${message}</p>
-                <div style="display: flex; gap: 10px; justify-content: center;">
-                    <button id="modal-cancel-btn" style="padding: 10px 20px; border: none; background: #e0e0e0; color: #333; border-radius: 6px; cursor: pointer; font-weight: 600;">Cancelar</button>
-                    <button id="modal-confirm-btn" style="padding: 10px 20px; border: none; background: #2ecc71; color: white; border-radius: 6px; cursor: pointer; font-weight: 600;">Confirmar</button>
+            <div class="modal-content" style="text-align: center; max-width: 400px; padding: 25px;">
+                <div class="modal-header" style="justify-content: center; border-bottom: none; padding-bottom: 0;">
+                    <h3 class="modal-title" style="font-size: 1.5rem;">Confirmação</h3>
+                </div>
+                <p class="modal-description" style="margin: 15px 0 25px; color: var(--text-primary); font-size: 1.1rem;">${message}</p>
+                <div style="display: flex; gap: 15px; justify-content: center;">
+                    <button id="modal-cancel-btn" class="btn-action cancel" style="background-color: var(--border-color); color: var(--text-primary);">Cancelar</button>
+                    <button id="modal-confirm-btn" class="btn-action save">Confirmar</button>
                 </div>
             </div>
         `;
@@ -28,8 +27,8 @@ function showConfirmModal(message) {
         document.body.appendChild(modalOverlay);
 
         const close = (result) => {
-            modalOverlay.style.opacity = '0';
-            setTimeout(() => modalOverlay.remove(), 200);
+            modalOverlay.classList.remove('active');
+            setTimeout(() => modalOverlay.remove(), 300);
             resolve(result);
         };
 
@@ -48,20 +47,28 @@ export async function renderChamadaView(viewElement) {
 
                 <div class="form-group" style="margin-bottom: 1.5rem;">
                     <label for="chamada-date">Selecione a data:</label>
-                    <input type="date" id="chamada-date" class="form-control" value="${today}" max="${today}">
+                    <input type="date" id="chamada-date" class="form-control" value="${today}" max="${today}" style="padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 1rem;">
                 </div>
 
                 <p id="chamada-loading-message">A carregar membros do grupo...</p>
                 <div class="student-list" id="studentList"></div>
                 
-                <div class="form-actions chamada-actions" style="display: flex; gap: 10px; flex-wrap: wrap;">
-                    <button id="submit-chamada-btn" class="action-btn" style="display: none; background-color: #28a745; color: white;">Submeter Chamada</button>
+                <div class="chamada-actions">
+                    <button id="submit-chamada-btn" class="action-btn btn-success btn-action" style="display: none;">
+                        <i class="fa-solid fa-check"></i> Submeter Chamada
+                    </button>
                     
-                    <button id="request-correction-btn" class="action-btn" style="display: none; background-color: #e67e22; color: white;">Solicitar Correção</button>
+                    <button id="request-correction-btn" class="action-btn btn-action" style="display: none; background-color: var(--scout-orange);">
+                        <i class="fa-solid fa-triangle-exclamation"></i> Solicitar Correção
+                    </button>
                     
-                    <button id="pending-correction-btn" class="action-btn" style="display: none; background-color: #95a5a6; color: white; cursor: not-allowed;" disabled>⏳ Correção em Análise</button>
+                    <button id="pending-correction-btn" class="action-btn btn-action" style="display: none; background-color: var(--text-secondary); cursor: not-allowed;" disabled>
+                        <i class="fa-solid fa-hourglass-half"></i> Correção em Análise
+                    </button>
                     
-                    <button id="export-csv-btn" class="action-btn" style="display: none; background-color: #3498db; color: white;">Exportar CSV</button>
+                    <button id="export-csv-btn" class="action-btn btn-primary btn-action" style="display: none;">
+                        <i class="fa-solid fa-file-csv"></i> Exportar CSV
+                    </button>
                 </div>
             </div>
         </div>
@@ -78,7 +85,6 @@ export async function renderChamadaView(viewElement) {
     const presentUserIds = new Set();
     const justificationsMap = {}; 
 
-    // --- FUNÇÃO DE STATUS ATUALIZADA ---
     async function checkStatus() {
         const date = dateInput.value;
         if(!date) return;
@@ -86,27 +92,32 @@ export async function renderChamadaView(viewElement) {
         try {
             const response = await fetchApi(`/api/chamada/check-existence?date=${date}`);
             
-            // Reseta todos os botões
             submitBtn.style.display = 'none';
             correctionBtn.style.display = 'none';
             pendingBtn.style.display = 'none';
+            
+            // O botão de exportar fica SEMPRE visível, mas bloqueado por padrão
+            exportBtn.style.display = 'inline-flex';
             exportBtn.disabled = true;
+            exportBtn.style.opacity = '0.6';
+            exportBtn.style.cursor = 'not-allowed';
 
             if (response.exists) {
+                // Chamada existe: liberta o botão de exportar
                 exportBtn.disabled = false;
+                exportBtn.style.opacity = '1';
+                exportBtn.style.cursor = 'pointer';
                 
                 if (response.pending) {
-                    // Caso 1: Já existe solicitação pendente -> Mostra botão cinza
-                    pendingBtn.style.display = 'block';
+                    pendingBtn.style.display = 'inline-flex';
                 } else {
-                    // Caso 2: Chamada existe, mas sem pendências -> Pode solicitar correção
-                    correctionBtn.style.display = 'block';
+                    correctionBtn.style.display = 'inline-flex';
                 }
             } else {
-                // Caso 3: Não existe chamada -> Pode submeter
-                submitBtn.style.display = 'block';
+                // Chamada não existe: mostra botão de submeter
+                submitBtn.style.display = 'inline-flex';
                 submitBtn.disabled = false;
-                submitBtn.textContent = "Submeter Chamada";
+                submitBtn.innerHTML = '<i class="fa-solid fa-check"></i> Submeter Chamada';
             }
         } catch (e) {
             console.error(e);
@@ -123,19 +134,20 @@ export async function renderChamadaView(viewElement) {
             return;
         }
         loadingMessage.style.display = 'none';
-        exportBtn.style.display = 'block';
 
         studentListContainer.innerHTML = members.map(student => `
-            <div class="student-wrapper" style="margin-bottom: 12px; border-bottom: 1px solid #eee; padding-bottom: 8px;">
-                <div class="student-card present" data-student-id="${student.id}" style="cursor: pointer; display: flex; align-items: center; justify-content: space-between; padding: 10px; border-radius: 8px; background-color: #f8f9fa;">
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <img src="${student.avatar || 'img/escoteiro1.png'}" alt="${student.name}" class="student-photo" style="width: 40px; height: 40px; border-radius: 50%;">
-                        <div class="student-name" style="font-weight: 500;">${student.name} ${student.surname}</div>
+            <div class="student-wrapper" style="margin-bottom: 12px;">
+                <div class="student-card present" data-student-id="${student.id}" style="cursor: pointer; display: flex; align-items: center; justify-content: space-between; padding: 12px 15px; border-radius: 8px; background-color: var(--bg-primary); transition: all 0.2s;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <img src="${student.avatar || 'assets/images/escoteiro1.png'}" alt="${student.name}" class="student-photo">
+                        <div class="student-name" style="font-weight: 600; color: var(--text-primary); font-size: 1.1rem;">${student.name} ${student.surname}</div>
                     </div>
-                    <span class="check-icon" style="font-size: 1.2rem;">✔️</span>
+                    <span class="check-icon" style="font-size: 1.5rem; color: var(--toast-success-bg); transition: color 0.2s;">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </span>
                 </div>
-                <div id="justification-container-${student.id}" style="display: none; margin-top: 5px; padding-left: 10px;">
-                    <input type="text" id="justification-${student.id}" class="form-control" placeholder="Motivo da falta..." style="font-size: 0.9rem; padding: 6px;">
+                <div id="justification-container-${student.id}" style="display: none; margin-top: 8px;">
+                    <input type="text" id="justification-${student.id}" class="form-control" placeholder="Motivo da falta..." style="width: 100%; padding: 12px 15px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 0.95rem; background-color: var(--bg-secondary);">
                 </div>
             </div>
         `).join('');
@@ -144,8 +156,7 @@ export async function renderChamadaView(viewElement) {
 
         studentListContainer.querySelectorAll('.student-card').forEach(card => {
             card.addEventListener('click', function() {
-                // Bloqueia edição se estiver pendente
-                if(pendingBtn.style.display === 'block') {
+                if(pendingBtn.style.display === 'inline-flex') {
                     showToast("Aguarde a aprovação da correção pendente.", "warning");
                     return;
                 }
@@ -158,15 +169,17 @@ export async function renderChamadaView(viewElement) {
                 
                 if (this.classList.contains('present')) {
                     presentUserIds.add(studentId);
-                    this.querySelector('.check-icon').textContent = '✔️';
-                    this.style.backgroundColor = '#f8f9fa';
+                    this.querySelector('.check-icon').innerHTML = '<i class="fa-solid fa-circle-check"></i>';
+                    this.querySelector('.check-icon').style.color = 'var(--toast-success-bg)';
+                    this.style.backgroundColor = 'var(--bg-primary)';
                     justContainer.style.display = 'none';
                     justInput.value = '';
                     delete justificationsMap[studentId];
                 } else {
                     presentUserIds.delete(studentId);
-                    this.querySelector('.check-icon').textContent = '❌';
-                    this.style.backgroundColor = '#fff5f5';
+                    this.querySelector('.check-icon').innerHTML = '<i class="fa-solid fa-circle-xmark"></i>';
+                    this.querySelector('.check-icon').style.color = 'var(--toast-error-bg)';
+                    this.style.backgroundColor = '#fbe9e7'; 
                     justContainer.style.display = 'block';
                     justInput.focus();
                 }
@@ -192,25 +205,24 @@ export async function renderChamadaView(viewElement) {
             if (!dateInput.value) return showToast('Selecione uma data.', 'error');
             try {
                 submitBtn.disabled = true;
-                submitBtn.textContent = 'A enviar...';
+                submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> A enviar...';
                 const response = await fetchApi('/api/chamada/submit', { method: 'POST', body: JSON.stringify(getPayload()) });
                 showToast(response.message, 'success');
                 await checkStatus();
             } catch (error) {
                 showToast(error.message, 'error');
                 submitBtn.disabled = false;
-                submitBtn.textContent = 'Submeter Chamada';
+                submitBtn.innerHTML = '<i class="fa-solid fa-check"></i> Submeter Chamada';
             }
         });
 
-        // --- CORREÇÃO: Usando Modal Customizado ---
         correctionBtn.addEventListener('click', async () => {
             const confirmed = await showConfirmModal("Isso enviará uma solicitação para o Diretor aprovar. Deseja continuar?");
             if (!confirmed) return;
             
             try {
                 correctionBtn.disabled = true;
-                correctionBtn.textContent = 'A solicitar...';
+                correctionBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> A solicitar...';
                 
                 const response = await fetchApi('/api/chamada/request-correction', { 
                     method: 'POST', 
@@ -218,15 +230,15 @@ export async function renderChamadaView(viewElement) {
                 });
                 
                 showToast(response.message, 'success');
-                await checkStatus(); // Atualiza estado (deve virar pendente)
+                await checkStatus(); 
                 
                 correctionBtn.disabled = false; 
-                correctionBtn.textContent = 'Solicitar Correção';
+                correctionBtn.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Solicitar Correção';
 
             } catch (error) {
                 showToast(error.message, 'error');
                 correctionBtn.disabled = false;
-                correctionBtn.textContent = 'Solicitar Correção';
+                correctionBtn.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Solicitar Correção';
             }
         });
         

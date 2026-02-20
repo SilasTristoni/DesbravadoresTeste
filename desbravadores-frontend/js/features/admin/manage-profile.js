@@ -1,0 +1,158 @@
+// js/features/admin/manage-profile.js
+
+export async function renderManageProfileView(viewElement, user) {
+    // Segurança: se os dados não chegarem corretamente
+    if (!user || typeof user !== 'object') {
+        viewElement.innerHTML = `
+            <div class="admin-widget">
+                <p style="color: red;">Erro: Dados do utilizador não encontrados.</p>
+                <button class="btn-action cancel" onclick="window.dispatchEvent(new CustomEvent('navigate', {detail: {view: 'dashboard'}}))">Voltar</button>
+            </div>
+        `;
+        return;
+    }
+
+    viewElement.innerHTML = `<p>A carregar perfil de ${user.name}...</p>`;
+
+    try {
+        // Agora só busca os grupos, os dados do user já temos na mão!
+        const groupPage = await fetchApi('/api/groups?page=0&size=999');
+
+        const groupName = (user.group && user.group.name) ? user.group.name : 'Sem grupo';
+        const groupId = (user.group && user.group.id) ? user.group.id : '';
+
+        let groupOptionsHTML = '<option value="">Sem grupo</option>';
+        const groups = groupPage.content.map(d => d.group).filter(g => g && g.id && g.name);
+        groups.forEach(g => {
+            const selected = g.id === groupId ? 'selected' : '';
+            groupOptionsHTML += `<option value="${g.id}" ${selected}>${g.name}</option>`;
+        });
+
+        viewElement.innerHTML = `
+            <div class="admin-widget" style="margin-bottom: 2rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--border-color); padding-bottom: 1rem; margin-bottom: 1.5rem;">
+                    <h2 style="margin: 0; border: none; padding: 0;">
+                        <i class="fa-solid fa-user-shield" style="color: var(--scout-green); margin-right: 8px;"></i> Perfil do Desbravador
+                    </h2>
+                    <button id="back-to-dashboard-btn" class="btn-action cancel" style="background-color: var(--border-color); color: var(--text-primary);">
+                        <i class="fa-solid fa-arrow-left"></i> Voltar à Dashboard
+                    </button>
+                </div>
+                
+                <div style="display: flex; gap: 20px; align-items: flex-start;">
+                    <img src="${user.avatar || 'assets/images/escoteiro1.png'}" alt="Avatar" style="width: 100px; height: 100px; border-radius: 50%; border: 3px solid var(--scout-green); object-fit: cover; background-color: var(--bg-secondary); flex-shrink: 0;">
+                    
+                    <div id="full-user-view-mode" style="flex: 1; min-width: 0;">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                            <div>
+                                <h3 style="margin: 0 0 5px 0; font-size: 1.5rem; color: var(--text-primary);">${user.name} ${user.surname}</h3>
+                                <p style="margin: 0 0 15px 0; color: var(--text-secondary); font-size: 1rem;">
+                                    <i class="fa-solid fa-envelope" style="width: 16px;"></i> ${user.email || 'Não possui email'}
+                                </p>
+                            </div>
+                            <button id="full-edit-user-btn" class="btn-action-icon edit" title="Editar Desbravador" style="margin: 0; flex-shrink: 0; width: 40px; height: 40px; font-size: 1.1rem;">
+                                <i class="fa-solid fa-pencil"></i>
+                            </button>
+                        </div>
+                        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                            <span class="status-badge presente" style="background-color: #e8f5e9; color: #2e7d32; border-color: #c8e6c9; font-size: 1rem; padding: 8px 15px;">
+                                <i class="fa-solid fa-star"></i> Nível ${user.level}
+                            </span>
+                            <span class="status-badge" style="background-color: #e3f2fd; color: #1565c0; border-color: #bbdefb; font-size: 1rem; padding: 8px 15px;">
+                                <i class="fa-solid fa-users"></i> ${groupName}
+                            </span>
+                        </div>
+                    </div>
+
+                    <form id="full-user-edit-mode" style="display: none; flex: 1; flex-direction: column; gap: 15px; width: 100%;">
+                        <div class="form-row">
+                            <div class="form-group" style="margin: 0;"><input type="text" id="edit-name" value="${user.name}" placeholder="Nome" required></div>
+                            <div class="form-group" style="margin: 0;"><input type="text" id="edit-surname" value="${user.surname}" placeholder="Sobrenome" required></div>
+                        </div>
+                        <div class="form-group" style="margin: 0;">
+                            <input type="email" id="edit-email" value="${user.email || ''}" placeholder="Email (opcional)">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group" style="flex: 0 0 100px; margin: 0;">
+                                <input type="number" id="edit-level" value="${user.level}" min="1" placeholder="Nível">
+                            </div>
+                            <div class="form-group" style="margin: 0;">
+                                <select id="edit-group">
+                                    ${groupOptionsHTML}
+                                </select>
+                            </div>
+                        </div>
+                        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px;">
+                            <button type="button" id="full-cancel-edit-btn" class="btn-action cancel" style="background-color: var(--border-color); color: var(--text-primary); width: auto; padding: 10px 20px;">Cancelar</button>
+                            <button type="button" id="full-save-edit-btn" class="btn-action save" style="width: auto; padding: 10px 20px;">Salvar Alterações</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="admin-widget widget-warning" style="border-left: 5px solid var(--scout-orange);">
+                <h4 style="margin-top: 0; margin-bottom: 10px; color: var(--scout-orange); display: flex; align-items: center; gap: 8px; font-size: 1.2rem;">
+                    <i class="fa-solid fa-person-digging"></i> Funcionalidade em Desenvolvimento
+                </h4>
+                <p style="color: var(--text-primary); font-size: 1rem; margin-bottom: 0; line-height: 1.6;">
+                    O histórico detalhado, gestão de XP e atribuição manual de conquistas chegará numa atualização futura! Por enquanto, utilize o lápis acima para editar as informações básicas do Desbravador.
+                </p>
+            </div>
+        `;
+
+        // Eventos
+        viewElement.querySelector('#back-to-dashboard-btn').addEventListener('click', () => {
+            const event = new CustomEvent('navigate', { detail: { view: 'dashboard' } });
+            window.dispatchEvent(event);
+        });
+
+        const viewMode = viewElement.querySelector('#full-user-view-mode');
+        const editMode = viewElement.querySelector('#full-user-edit-mode');
+        const editBtn = viewElement.querySelector('#full-edit-user-btn');
+        const saveBtn = viewElement.querySelector('#full-save-edit-btn');
+        const cancelBtn = viewElement.querySelector('#full-cancel-edit-btn');
+
+        editBtn.addEventListener('click', () => { viewMode.style.display = 'none'; editMode.style.display = 'flex'; });
+        cancelBtn.addEventListener('click', () => { editMode.style.display = 'none'; viewMode.style.display = 'block'; });
+
+        saveBtn.addEventListener('click', async () => {
+            const nameInput = document.getElementById('edit-name').value;
+            const surnameInput = document.getElementById('edit-surname').value;
+            
+            if (!nameInput || !surnameInput) return window.showToast('Nome e Sobrenome são obrigatórios!', 'warning');
+
+            const payload = {
+                name: nameInput,
+                surname: surnameInput,
+                email: document.getElementById('edit-email').value,
+                level: parseInt(document.getElementById('edit-level').value, 10),
+                role: user.role,
+                group: document.getElementById('edit-group').value ? { id: parseInt(document.getElementById('edit-group').value, 10) } : null
+            };
+
+            try {
+                saveBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> A guardar...';
+                saveBtn.disabled = true;
+
+                // Quando salvar, faz a requisição pro back-end atualizar
+                await fetchApi(`/api/admin/users/${user.id}`, {
+                    method: 'PUT',
+                    body: JSON.stringify(payload)
+                });
+
+                window.showToast('Desbravador atualizado!', 'success');
+                // Após salvar com sucesso, volta para a dashboard
+                const event = new CustomEvent('navigate', { detail: { view: 'dashboard' } });
+                window.dispatchEvent(event);
+
+            } catch (error) {
+                window.showToast('Erro ao atualizar: ' + error.message, 'error');
+                saveBtn.innerHTML = 'Salvar Alterações';
+                saveBtn.disabled = false;
+            }
+        });
+
+    } catch (e) {
+        viewElement.innerHTML = `<div class="admin-widget"><p style="color: red;">Erro ao carregar perfil: ${e.message}</p></div>`;
+    }
+}

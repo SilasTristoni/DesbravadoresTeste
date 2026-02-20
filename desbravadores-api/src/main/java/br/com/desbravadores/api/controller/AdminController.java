@@ -2,6 +2,7 @@ package br.com.desbravadores.api.controller;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,14 +53,11 @@ public class AdminController {
     public ResponseEntity<User> removeUserFromGroup(@PathVariable Long userId) {
         return userRepository.findById(userId).map(user -> {
             user.setGroup(null);
-            // user.save(user); <--- LINHA REMOVIDA (ESTAVA ERRADA)
-            userRepository.save(user); // <--- ESTA É A FORMA CORRETA
+            userRepository.save(user); 
             return ResponseEntity.ok(user);
         }).orElse(ResponseEntity.notFound().build());
     }
 
-    // Endpoint para listar DESBRAVADORES (Alunos)
-    // Retorna um Map para evitar erro de loop e undefined no front
     @GetMapping("/users")
     @PreAuthorize("hasAnyAuthority('MONITOR', 'DIRETOR')")
     @Transactional
@@ -87,7 +85,6 @@ public class AdminController {
             userPage = userRepository.findByGroupIdAndRole(currentUser.getGroup().getId(), Role.DESBRAVADOR, pageable); 
         }
         
-        // Transforma User em Map para enviar o groupName corretamente
         Page<Map<String, Object>> dtoPage = userPage.map(user -> {
             Map<String, Object> dto = new HashMap<>();
             dto.put("id", user.getId());
@@ -121,7 +118,6 @@ public class AdminController {
         return ResponseEntity.ok(dtoPage);
     }
 
-    // Endpoint para listar MONITORES
     @GetMapping("/users/monitors")
     @PreAuthorize("hasAuthority('DIRETOR')")
     @Transactional
@@ -138,7 +134,6 @@ public class AdminController {
         return ResponseEntity.ok(monitorsPage); 
     }
 
-    // Endpoint para listar DIRETORES
     @GetMapping("/users/directors")
     @PreAuthorize("hasAuthority('DIRETOR')")
     @Transactional
@@ -167,5 +162,41 @@ public class AdminController {
     public ResponseEntity<?> revokeAchievement(@PathVariable Long userId, @PathVariable Long achievementId) {
         gamificationService.revokeAchievement(userId, achievementId);
         return ResponseEntity.ok().body(Map.of("message", "Conquista revogada com sucesso."));
+    }
+
+    // --- NOVOS MÉTODOS ADICIONADOS ABAIXO ---
+
+    /**
+     * Busca um utilizador específico pelo ID para a página de perfil.
+     * URL: GET /api/admin/users/{id}
+     */
+    @GetMapping("/users/{id}")
+    @PreAuthorize("hasAnyAuthority('DIRETOR', 'MONITOR')")
+    @Transactional
+    public ResponseEntity<User> getUserById(@PathVariable Long id) {
+        Optional<User> user = userService.getUserById(id);
+        
+        user.ifPresent(u -> {
+            Hibernate.initialize(u.getGroup());
+            Hibernate.initialize(u.getAchievements());
+        });
+
+        return user.map(ResponseEntity::ok)
+                   .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    /**
+     * Atualiza as informações de um desbravador (Edição In-Place).
+     * URL: PUT /api/admin/users/{id}
+     */
+    @PutMapping("/users/{id}")
+    @PreAuthorize("hasAuthority('DIRETOR')")
+    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User updateData) {
+        try {
+            User updatedUser = userService.updateUser(id, updateData);
+            return ResponseEntity.ok(updatedUser);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 }

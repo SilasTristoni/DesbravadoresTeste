@@ -15,7 +15,11 @@ const USER_LIST_PAGE_SIZE = 5;
 function renderPaginationControls(paginationContainer, listContainer, userPage, role) {
     paginationContainer.innerHTML = ''; // Limpa controlos antigos
 
-    const { number, totalPages, first, last } = userPage; 
+    // --- CORREÇÃO: Lê os dados do Spring Boot antigo E do novo ---
+    const totalPages = userPage.totalPages ?? userPage.page?.totalPages ?? 1;
+    const number = userPage.number ?? userPage.page?.number ?? 0;
+    const first = userPage.first ?? (number === 0);
+    const last = userPage.last ?? (number === totalPages - 1);
 
     // Botão "Anterior"
     const prevBtn = document.createElement('button');
@@ -95,25 +99,17 @@ async function loadList(container, role, page = 0) {
           </thead>
           <tbody>
             ${users.map(user => {
-                // Lógica de exibição da coluna de grupo/cargo
-                let groupDisplay = 'Sem grupo'; // Valor padrão
+                let groupDisplay = 'Sem grupo'; 
                 
-                // Verifica o cargo do usuário atual da linha
-                // (Nota: mudei de 'role' para 'user.role' para garantir que pega o cargo do usuário da linha)
                 if (user.role === 'DIRETOR') {
-                    // Badge visual para Diretores
                     groupDisplay = '<span class="badge-admin" style="background-color: #e74c3c; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.8em;">Admin Geral</span>';
                 } 
-                // --- AQUI ESTÁ A CORREÇÃO ---
-                // 1. Tenta ler o groupName (que o novo AdminController envia)
                 else if (user.groupName) {
                     groupDisplay = user.groupName;
                 } 
-                // 2. Fallback: Se não tiver groupName, tenta ler o objeto antigo (segurança)
                 else if (user.group && user.group.name) {
                     groupDisplay = user.group.name;
                 }
-                // -----------------------------
 
                 return `
                   <tr>
@@ -133,7 +129,6 @@ async function loadList(container, role, page = 0) {
       `;
     }
 
-    // Renderiza a tabela E o container da paginação
     container.innerHTML = `
         <div id="user-list-table-wrapper">
             ${tableHtml}
@@ -142,9 +137,11 @@ async function loadList(container, role, page = 0) {
             </div>
     `;
 
-    // Renderiza os controlos de paginação SE houver mais de 1 página
+    // --- CORREÇÃO: Verifica totalPages com suporte para Spring Boot 3+ ---
     const paginationContainer = container.querySelector("#user-list-pagination");
-    if (userPage.totalPages > 1) {
+    const totalPagesSafe = userPage.totalPages ?? userPage.page?.totalPages ?? 1;
+    
+    if (totalPagesSafe > 1) {
         renderPaginationControls(paginationContainer, container, userPage, role);
     } else {
         paginationContainer.remove(); 
@@ -159,11 +156,9 @@ async function loadList(container, role, page = 0) {
 
 export async function renderManageUsersView(viewElement) {
 
-  // Exibe uma mensagem de carregamento inicial
   viewElement.innerHTML = `<div class="admin-widget"><p>A carregar formulário...</p></div>`;
 
   try {
-    // 1. Busca a lista de grupos disponíveis na API
     const groupPage = await fetchApi('/api/groups?page=0&size=999');
     const groupDetails = groupPage.content;
     const groups = groupDetails
@@ -173,8 +168,6 @@ export async function renderManageUsersView(viewElement) {
       `<option value="${group.id}">${group.name}</option>`
     ).join('');
 
-    // 2. Renderiza o HTML da view
-    // CORREÇÃO: Removida a tag <small> para corrigir o alinhamento visual
     viewElement.innerHTML = `
           <div class="admin-widget">
               <h2>Adicionar Novo Utilizador</h2>
@@ -231,23 +224,20 @@ export async function renderManageUsersView(viewElement) {
           </div>
       `;
 
-    // 3. Adiciona listeners
     const userForm = viewElement.querySelector("#admin-user-form");
     const userListContainer = viewElement.querySelector("#user-list-container");
     const roleSelect = viewElement.querySelector("#user-role");
     const groupSelect = viewElement.querySelector("#user-group");
     
-    // NOVO: Listener para desabilitar o select de Grupo se for Diretor
     roleSelect.addEventListener('change', () => {
         if (roleSelect.value === 'DIRETOR') {
-            groupSelect.value = ""; // Limpa a seleção
-            groupSelect.disabled = true; // Bloqueia o campo
+            groupSelect.value = ""; 
+            groupSelect.disabled = true; 
         } else {
-            groupSelect.disabled = false; // Desbloqueia para outros cargos
+            groupSelect.disabled = false; 
         }
     });
 
-    // Referências e listeners para os botões das abas
     const desbravadoresBtn = viewElement.querySelector("#view-desbravadores-btn");
     const monitoresBtn = viewElement.querySelector("#view-monitores-btn");
     const diretoresBtn = viewElement.querySelector("#view-diretores-btn");
@@ -298,7 +288,6 @@ export async function renderManageUsersView(viewElement) {
         showToast(`Utilizador ${createdUser.name} adicionado com sucesso!`, 'success'); 
         userForm.reset();
         
-        // Reseta o estado do select de grupo também
         groupSelect.disabled = false;
 
         if (createdUser.role === 'DESBRAVADOR') {
@@ -318,7 +307,6 @@ export async function renderManageUsersView(viewElement) {
       }
     });
 
-    // 4. Carrega a lista inicial
     await loadList(userListContainer, 'DESBRAVADOR', 0);
 
   } catch (error) {

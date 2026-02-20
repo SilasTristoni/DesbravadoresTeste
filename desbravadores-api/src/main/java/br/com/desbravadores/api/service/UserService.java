@@ -1,16 +1,18 @@
 package br.com.desbravadores.api.service;
 
+import br.com.desbravadores.api.dto.PasswordChangeDTO;
+import br.com.desbravadores.api.model.Group;
+import br.com.desbravadores.api.model.User;
+import br.com.desbravadores.api.repository.GroupRepository;
+import br.com.desbravadores.api.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import br.com.desbravadores.api.dto.PasswordChangeDTO; // NOVO IMPORT
-import br.com.desbravadores.api.model.Group;
-import br.com.desbravadores.api.model.Role;
-import br.com.desbravadores.api.model.User;
-import br.com.desbravadores.api.repository.GroupRepository;
-import br.com.desbravadores.api.repository.UserRepository;
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -24,47 +26,66 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public User registerUser(User newUser) {
-        newUser.setRole(Role.DESBRAVADOR);
-        return createUser(newUser);
+    public Page<User> getAllUsers(Pageable pageable) {
+        return userRepository.findAll(pageable);
     }
 
-    @Transactional
+    public Optional<User> getUserById(Long id) {
+        return userRepository.findById(id);
+    }
+
     public User createUser(User user) {
-        String hashedPassword = passwordEncoder.encode(user.getPassword());
-        user.setPassword(hashedPassword);
-
-        User savedUser = userRepository.save(user);
-
-        if (savedUser.getRole() == Role.MONITOR && savedUser.getGroup() != null) {
-            Group groupToUpdate = groupRepository.findById(savedUser.getGroup().getId()).orElse(null);
-            if (groupToUpdate != null) {
-                groupToUpdate.setLeader(savedUser);
-                groupRepository.save(groupToUpdate);
-            }
+        if (user.getPassword() != null) {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
         }
-
-        return savedUser;
+        return userRepository.save(user);
     }
 
-    // NOVO MÉTODO PARA ALTERAR SENHA
+    public void deleteUser(Long id) {
+        userRepository.deleteById(id);
+    }
+
+    // --- MÉTODO RESTAURADO PARA O PROFILE CONTROLLER ---
     @Transactional
-    public void changeUserPassword(String userEmail, PasswordChangeDTO passwordChangeDTO) {
-        User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
+    public void changeUserPassword(String email, PasswordChangeDTO dto) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Utilizador não encontrado"));
 
-        // 1. Verifica se a senha atual está correta
-        if (!passwordEncoder.matches(passwordChangeDTO.getCurrentPassword(), user.getPassword())) {
-            throw new RuntimeException("A senha atual está incorreta.");
+        if (!passwordEncoder.matches(dto.getCurrentPassword(), user.getPassword())) {
+            throw new RuntimeException("Senha atual incorreta");
         }
 
-        // 2. Verifica se a nova senha não está em branco
-        if (passwordChangeDTO.getNewPassword() == null || passwordChangeDTO.getNewPassword().isBlank()) {
-            throw new RuntimeException("A nova senha não pode estar em branco.");
-        }
-
-        // 3. Codifica e salva a nova senha
-        user.setPassword(passwordEncoder.encode(passwordChangeDTO.getNewPassword()));
+        user.setPassword(passwordEncoder.encode(dto.getNewPassword()));
         userRepository.save(user);
+    }
+
+    // --- MÉTODO DE ATUALIZAÇÃO CORRIGIDO ---
+    @Transactional
+    public User updateUser(Long id, User updateData) {
+        User existingUser = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Utilizador não encontrado com o ID: " + id));
+
+        if (updateData.getName() != null) existingUser.setName(updateData.getName());
+        if (updateData.getSurname() != null) existingUser.setSurname(updateData.getSurname());
+        if (updateData.getEmail() != null) existingUser.setEmail(updateData.getEmail());
+        
+        // CORREÇÃO: Removida a comparação '!= null' para int primitivo
+        // Se no seu Model 'level' for 'int', ele sempre terá um valor (0 por padrão).
+        // Se for 'Integer', o erro não aconteceria. Ajustado para garantir compatibilidade:
+        existingUser.setLevel(updateData.getLevel());
+        
+        if (updateData.getRole() != null) {
+            existingUser.setRole(updateData.getRole());
+        }
+
+        if (updateData.getGroup() != null && updateData.getGroup().getId() != null) {
+            Group group = groupRepository.findById(updateData.getGroup().getId())
+                    .orElseThrow(() -> new RuntimeException("Grupo não encontrado"));
+            existingUser.setGroup(group);
+        } else if (updateData.getRole() != null && updateData.getRole().toString().equals("DIRETOR")) {
+            existingUser.setGroup(null);
+        }
+
+        return userRepository.save(existingUser);
     }
 }
