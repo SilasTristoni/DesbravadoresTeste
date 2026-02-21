@@ -1,6 +1,5 @@
 // js/views/admin/manage-tasks.js
 
-// A função fetchApi está disponível globalmente
 // Importa showModal e showToast com os caminhos corretos
 import { showModal } from '../../components/modal.js';
 import { showToast as toastFunc} from '../../ui/toast.js';
@@ -12,10 +11,8 @@ if (typeof window.showToast === 'undefined') {
 
 // --- NOVO ESTADO E CONSTANTES ---
 let editingTaskId = null;
-let currentTaskPage = 0; // Rastreia a página atual
-const TASK_PAGE_SIZE = 10; // Define o tamanho da página
-// --- FIM NOVO ESTADO ---
-
+let currentTaskPage = 0; 
+const TASK_PAGE_SIZE = 10; 
 
 // Função auxiliar para criar corpo do modal de confirmação
 function createConfirmationModalBody(message, confirmCallback) {
@@ -23,27 +20,25 @@ function createConfirmationModalBody(message, confirmCallback) {
     container.innerHTML = `<p>${message}</p>`;
     const confirmButton = document.createElement('button');
     confirmButton.textContent = 'Confirmar';
-    confirmButton.className = 'action-btn'; // Use uma classe de botão apropriada
+    confirmButton.className = 'action-btn save'; 
     confirmButton.style.marginTop = '1rem';
     confirmButton.onclick = () => {
         confirmCallback();
-        document.getElementById('closeModalBtn').click(); // Fecha o modal após confirmar
+        document.getElementById('closeModalBtn').click(); 
     };
     container.appendChild(confirmButton);
     return container;
 }
 
 /**
- * NOVO: Função para renderizar os controlos de paginação
- * (Baseada em manage-users.js)
+ * Função para renderizar os controlos de paginação
  */
 function renderPaginationControls(paginationContainer, viewElement, taskPage, loadFunction) {
-    paginationContainer.innerHTML = ''; // Limpa controlos antigos
+    paginationContainer.innerHTML = ''; 
 
     const { number, totalPages, first, last } = taskPage;
-    currentTaskPage = number; // Atualiza o estado global
+    currentTaskPage = number; 
 
-    // Botão "Anterior"
     const prevBtn = document.createElement('button');
     prevBtn.className = 'pagination-btn';
     prevBtn.innerHTML = '<i class="fa-solid fa-arrow-left"></i> Anterior';
@@ -52,12 +47,10 @@ function renderPaginationControls(paginationContainer, viewElement, taskPage, lo
         loadFunction(viewElement, number - 1);
     });
 
-    // Informação da Página
     const info = document.createElement('span');
     info.className = 'pagination-info';
     info.textContent = `Página ${number + 1} de ${totalPages}`;
 
-    // Botão "Próxima"
     const nextBtn = document.createElement('button');
     nextBtn.className = 'pagination-btn';
     nextBtn.innerHTML = 'Próxima <i class="fa-solid fa-arrow-right"></i>';
@@ -73,30 +66,25 @@ function renderPaginationControls(paginationContainer, viewElement, taskPage, lo
 
 
 /**
- * FUNÇÃO ATUALIZADA: Renomeada e modificada para paginação
- * @param {HTMLElement} viewElement 
- * @param {number} page - O número da página a carregar
+ * Função para carregar a tabela
  */
 async function loadAndRenderTasks(viewElement, page = 0) {
     const now = new Date();
     const currentYear = now.getFullYear();
-    const currentMonth = now.getMonth() + 1; // API espera 1-12
+    const currentMonth = now.getMonth() + 1; 
 
     const taskListContainer = viewElement.querySelector('#task-list-data');
     taskListContainer.innerHTML = '<p>A carregar tarefas...</p>';
 
     try {
-        // ATUALIZADO: Fetch com parâmetros de paginação e ordenação
         const endpoint = `/api/tasks?year=${currentYear}&month=${currentMonth}&page=${page}&size=${TASK_PAGE_SIZE}&sort=date,asc&sort=time,asc`;
         const taskPage = await fetchApi(endpoint);
-        const tasks = taskPage.content; // Tarefas estão dentro de 'content'
+        const tasks = taskPage.content; 
 
         if (taskPage.totalElements === 0) {
             taskListContainer.innerHTML = `<p>Nenhuma tarefa agendada para este mês (${currentMonth}/${currentYear}).</p>`;
             return;
         }
-        
-        // A ordenação agora é feita pela API (sort=date,asc&sort=time,asc)
 
         taskListContainer.innerHTML = `
             <table class="user-table">
@@ -111,12 +99,10 @@ async function loadAndRenderTasks(viewElement, page = 0) {
                 </thead>
                 <tbody>
                     ${tasks.map(task => {
-                        // ... (renderização da linha <TR> permanece a mesma) ...
-                        const dateObj = new Date(task.date + 'T00:00:00'); // Evita problemas de fuso horário
+                        const dateObj = new Date(task.date + 'T00:00:00'); 
                         const dateFormatted = dateObj.toLocaleDateString('pt-BR');
                         const timeFormatted = task.time.substring(0, 5);
 
-                        // Se esta for a tarefa em edição, renderiza o formulário
                         if (editingTaskId === task.id) {
                             return `
                                 <tr data-task-id="${task.id}" class="editing-row">
@@ -131,12 +117,12 @@ async function loadAndRenderTasks(viewElement, page = 0) {
                                                 <label>Descrição</label>
                                                 <textarea name="description">${task.description || ''}</textarea>
                                             </div>
-                                            <div class="form-actions">
+                                            <div class="form-actions" style="display: flex; gap: 10px;">
+                                                <button type="button" class="btn-action cancel cancel-edit-btn" style="background-color: var(--border-color); color: var(--text-primary);">
+                                                    <i class="fa-solid fa-times"></i> Cancelar
+                                                </button>
                                                 <button type="submit" class="btn-action save">
                                                     <i class="fa-solid fa-check"></i> Salvar
-                                                </button>
-                                                <button type="button" class="btn-action cancel cancel-edit-btn">
-                                                    <i class="fa-solid fa-times"></i> Cancelar
                                                 </button>
                                             </div>
                                         </form>
@@ -145,7 +131,6 @@ async function loadAndRenderTasks(viewElement, page = 0) {
                             `;
                         }
 
-                        // Modo de visualização padrão
                         return `
                             <tr data-task-id="${task.id}">
                                 <td>${dateFormatted}</td>
@@ -168,15 +153,12 @@ async function loadAndRenderTasks(viewElement, page = 0) {
             <div id="task-list-pagination" class="pagination-controls" style="margin-top: 1rem;"></div>
         `;
 
-        // --- NOVO: Renderiza controles de paginação ---
         const paginationContainer = viewElement.querySelector("#task-list-pagination");
         if (taskPage.totalPages > 1) {
             renderPaginationControls(paginationContainer, viewElement, taskPage, loadAndRenderTasks);
         } else {
-            paginationContainer.remove();
+            if(paginationContainer) paginationContainer.remove();
         }
-
-        // --- LISTENERS DE AÇÃO (ATUALIZADOS) ---
 
         // 1. Apagar tarefa
         taskListContainer.querySelectorAll('.delete-task-btn').forEach(btn => {
@@ -187,16 +169,21 @@ async function loadAndRenderTasks(viewElement, page = 0) {
 
                 const modalBody = createConfirmationModalBody(`Tem a certeza que deseja APAGAR a tarefa: "${taskTitle}"?`, async () => {
                      btn.disabled = true;
-                     btn.textContent = 'Apagando...';
+                     btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
                     try {
                         await fetchApi(`/api/tasks/${taskId}`, { method: 'DELETE' });
-                        showToast(`Tarefa "${taskTitle}" apagada com sucesso!`, 'success');
+                        window.showToast(`Tarefa "${taskTitle}" apagada com sucesso!`, 'success');
                         editingTaskId = null;
-                        loadAndRenderTasks(viewElement, currentTaskPage); // ATUALIZADO
+                        loadAndRenderTasks(viewElement, currentTaskPage); 
                     } catch (error) {
-                        showToast(`Erro ao apagar tarefa: ${error.message}`, 'error');
+                        let finalErrorMsg = `Erro ao apagar tarefa: ${error.message}`;
+                        try {
+                            const parsedError = JSON.parse(error.message);
+                            if (parsedError && parsedError.message) finalErrorMsg = parsedError.message;
+                        } catch (e) {}
+                        window.showToast(finalErrorMsg, 'error');
                         btn.disabled = false;
-                        btn.textContent = 'Apagar';
+                        btn.innerHTML = '<i class="fa-solid fa-trash-can"></i>';
                     }
                 });
                 showModal('Confirmar Exclusão', modalBody);
@@ -207,7 +194,7 @@ async function loadAndRenderTasks(viewElement, page = 0) {
         taskListContainer.querySelectorAll('.edit-task-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 editingTaskId = parseInt(e.currentTarget.dataset.taskId, 10);
-                loadAndRenderTasks(viewElement, currentTaskPage); // ATUALIZADO
+                loadAndRenderTasks(viewElement, currentTaskPage); 
             });
         });
 
@@ -215,7 +202,7 @@ async function loadAndRenderTasks(viewElement, page = 0) {
         taskListContainer.querySelectorAll('.cancel-edit-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 editingTaskId = null;
-                loadAndRenderTasks(viewElement, currentTaskPage); // ATUALIZADO
+                loadAndRenderTasks(viewElement, currentTaskPage); 
             });
         });
 
@@ -226,15 +213,24 @@ async function loadAndRenderTasks(viewElement, page = 0) {
                 e.preventDefault();
                 const taskId = editForm.dataset.taskId;
                 const saveButton = editForm.querySelector('button[type="submit"]');
+                
+                // Validação de edição
+                const title = editForm.elements.title.value.trim();
+                const date = editForm.elements.date.value;
+                const time = editForm.elements.time.value;
+                
+                if (!title || !date || !time) {
+                    return window.showToast('Data, Hora e Título são obrigatórios!', 'error');
+                }
 
                 const payload = {
-                    title: editForm.elements.title.value,
+                    title: title,
                     description: editForm.elements.description.value,
-                    date: editForm.elements.date.value,
-                    time: editForm.elements.time.value,
+                    date: date,
+                    time: time,
                 };
 
-                saveButton.textContent = 'Salvando...';
+                saveButton.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Salvando...';
                 saveButton.disabled = true;
 
                 try {
@@ -243,13 +239,20 @@ async function loadAndRenderTasks(viewElement, page = 0) {
                         body: JSON.stringify(payload)
                     });
 
-                    showToast('Tarefa atualizada com sucesso!', 'success');
+                    window.showToast('Tarefa atualizada com sucesso!', 'success');
                     editingTaskId = null;
-                    loadAndRenderTasks(viewElement, currentTaskPage); // ATUALIZADO
+                    loadAndRenderTasks(viewElement, currentTaskPage); 
 
                 } catch (error) {
-                    showToast(`Erro ao salvar tarefa: ${error.message}`, 'error');
-                    saveButton.textContent = 'Salvar';
+                    let finalErrorMsg = "Erro ao salvar tarefa.";
+                    try {
+                        const parsedError = JSON.parse(error.message);
+                        if (parsedError && parsedError.message) finalErrorMsg = parsedError.message;
+                    } catch (ex) {
+                        finalErrorMsg = error.message || finalErrorMsg;
+                    }
+                    window.showToast(finalErrorMsg, 'error');
+                    saveButton.innerHTML = '<i class="fa-solid fa-check"></i> Salvar';
                     saveButton.disabled = false;
                 }
             });
@@ -265,7 +268,7 @@ export function renderManageTasksView(viewElement) {
   viewElement.innerHTML = `
         <div class="admin-widget">
             <h2>Adicionar Nova Tarefa na Agenda</h2>
-            <form id="task-form" class="task-form">
+            <form id="task-form" class="task-form" novalidate>
                 <div class="form-row">
                     <div class="form-group">
                         <label for="task-date">Data</label>
@@ -298,17 +301,28 @@ export function renderManageTasksView(viewElement) {
   const taskForm = viewElement.querySelector("#task-form");
   taskForm.addEventListener("submit", async (e) => {
     e.preventDefault();
+
+    // CORREÇÃO: Validação manual para ativar o Toast
+    const date = viewElement.querySelector("#task-date").value;
+    const time = viewElement.querySelector("#task-time").value;
+    const title = viewElement.querySelector("#task-title").value.trim();
+    
+    if (!date || !time || !title) {
+        return window.showToast('Por favor, preencha todos os campos obrigatórios (marcados com *).', 'error');
+    }
+
     const submitButton = taskForm.querySelector('button[type="submit"]');
+    const originalText = submitButton.innerHTML;
 
     const newTask = {
-      date: viewElement.querySelector("#task-date").value,
-      time: viewElement.querySelector("#task-time").value,
-      title: viewElement.querySelector("#task-title").value,
-      description: viewElement.querySelector("#task-description").value,
+      date: date,
+      time: time,
+      title: title,
+      description: viewElement.querySelector("#task-description").value.trim(),
     };
 
     submitButton.disabled = true;
-    submitButton.textContent = 'Adicionando...';
+    submitButton.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Adicionando...';
 
     try {
         await fetchApi('/api/tasks', {
@@ -316,19 +330,28 @@ export function renderManageTasksView(viewElement) {
             body: JSON.stringify(newTask)
         });
 
-        showToast(`Tarefa "${newTask.title}" adicionada com sucesso!`, 'success');
+        window.showToast(`Tarefa "${newTask.title}" adicionada com sucesso!`, 'success');
         taskForm.reset();
-        loadAndRenderTasks(viewElement, 0); // ATUALIZADO: Recarrega na página 0
+        loadAndRenderTasks(viewElement, 0); 
 
     } catch (error) {
-        console.error("Falha ao criar tarefa:", error);
-        showToast(`Erro ao criar tarefa: ${error.message}`, 'error');
+        // CORREÇÃO: Extrator de erros do Java
+        let finalErrorMsg = "Falha ao criar a tarefa.";
+        try {
+            const parsedError = JSON.parse(error.message);
+            if (parsedError && parsedError.message) {
+                finalErrorMsg = parsedError.message;
+            }
+        } catch (parseEx) {
+            finalErrorMsg = error.message || finalErrorMsg;
+        }
+
+        window.showToast(finalErrorMsg, 'error');
     } finally {
         submitButton.disabled = false;
-        submitButton.textContent = 'Adicionar Tarefa';
+        submitButton.innerHTML = originalText;
     }
   });
 
-  // ATUALIZADO: Renderiza a lista de tarefas (página 0) ao carregar a vista
   loadAndRenderTasks(viewElement, 0);
 }

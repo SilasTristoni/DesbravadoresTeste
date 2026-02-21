@@ -26,6 +26,14 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    // MÉTODO DE VALIDAÇÃO DE SENHA FORTE
+    private void validatePasswordStrength(String password) {
+        String regex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!._-]).{8,}$";
+        if (password == null || !password.matches(regex)) {
+            throw new RuntimeException("A senha deve ter no mínimo 8 caracteres, uma letra maiúscula, um número e um caractere especial.");
+        }
+    }
+
     public Page<User> getAllUsers(Pageable pageable) {
         return userRepository.findAll(pageable);
     }
@@ -35,7 +43,8 @@ public class UserService {
     }
 
     public User createUser(User user) {
-        if (user.getPassword() != null) {
+        if (user.getPassword() != null && !user.getPassword().isEmpty()) {
+            validatePasswordStrength(user.getPassword()); // Valida antes de encriptar
             user.setPassword(passwordEncoder.encode(user.getPassword()));
         }
         return userRepository.save(user);
@@ -45,7 +54,6 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
-    // --- MÉTODO RESTAURADO PARA O PROFILE CONTROLLER ---
     @Transactional
     public void changeUserPassword(String email, PasswordChangeDTO dto) {
         User user = userRepository.findByEmail(email)
@@ -55,29 +63,28 @@ public class UserService {
             throw new RuntimeException("Senha atual incorreta");
         }
 
+        validatePasswordStrength(dto.getNewPassword()); // Valida a nova senha
         user.setPassword(passwordEncoder.encode(dto.getNewPassword()));
         userRepository.save(user);
     }
 
-    // --- MÉTODO DE ATUALIZAÇÃO CORRIGIDO ---
     @Transactional
     public User updateUser(Long id, User updateData) {
-        User existingUser = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Utilizador não encontrado com o ID: " + id));
+        User existingUser = userRepository.findById(id).orElseThrow(() -> new RuntimeException("Utilizador não encontrado com o ID: " + id));
 
         if (updateData.getName() != null) existingUser.setName(updateData.getName());
         if (updateData.getSurname() != null) existingUser.setSurname(updateData.getSurname());
         if (updateData.getEmail() != null) existingUser.setEmail(updateData.getEmail());
         
-        // CORREÇÃO: Removida a comparação '!= null' para int primitivo
-        // Se no seu Model 'level' for 'int', ele sempre terá um valor (0 por padrão).
-        // Se for 'Integer', o erro não aconteceria. Ajustado para garantir compatibilidade:
         existingUser.setLevel(updateData.getLevel());
         
         if (updateData.getRole() != null) {
             existingUser.setRole(updateData.getRole());
         }
-
+        if (updateData.getPassword() != null && !updateData.getPassword().isEmpty()) {
+            validatePasswordStrength(updateData.getPassword());
+            existingUser.setPassword(passwordEncoder.encode(updateData.getPassword())); 
+        }
         if (updateData.getGroup() != null && updateData.getGroup().getId() != null) {
             Group group = groupRepository.findById(updateData.getGroup().getId())
                     .orElseThrow(() -> new RuntimeException("Grupo não encontrado"));

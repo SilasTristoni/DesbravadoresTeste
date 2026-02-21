@@ -1,27 +1,20 @@
-// js/views/admin/manage-users.js
+// js/features/admin/manage-users.js
 
-// A função fetchApi e showToast estão disponíveis globalmente
 import { showToast as toastFunc } from '../../ui/toast.js';
 if (typeof window.showToast === 'undefined') {
     window.showToast = toastFunc;
 }
 
-// Define o tamanho da página
 const USER_LIST_PAGE_SIZE = 5; 
 
-/**
- * Função para renderizar os controlos de paginação
- */
 function renderPaginationControls(paginationContainer, listContainer, userPage, role) {
-    paginationContainer.innerHTML = ''; // Limpa controlos antigos
+    paginationContainer.innerHTML = ''; 
 
-    // --- CORREÇÃO: Lê os dados do Spring Boot antigo E do novo ---
     const totalPages = userPage.totalPages ?? userPage.page?.totalPages ?? 1;
     const number = userPage.number ?? userPage.page?.number ?? 0;
     const first = userPage.first ?? (number === 0);
     const last = userPage.last ?? (number === totalPages - 1);
 
-    // Botão "Anterior"
     const prevBtn = document.createElement('button');
     prevBtn.className = 'pagination-btn';
     prevBtn.innerHTML = '<i class="fa-solid fa-arrow-left"></i> Anterior';
@@ -30,12 +23,10 @@ function renderPaginationControls(paginationContainer, listContainer, userPage, 
         loadList(listContainer, role, number - 1); 
     });
 
-    // Informação da Página
     const info = document.createElement('span');
     info.className = 'pagination-info';
     info.textContent = `Página ${number + 1} de ${totalPages}`;
 
-    // Botão "Próxima"
     const nextBtn = document.createElement('button');
     nextBtn.className = 'pagination-btn';
     nextBtn.innerHTML = 'Próxima <i class="fa-solid fa-arrow-right"></i>';
@@ -49,16 +40,9 @@ function renderPaginationControls(paginationContainer, listContainer, userPage, 
     paginationContainer.appendChild(nextBtn);
 }
 
-
-/**
- * Função ÚNICA para carregar listas (Desbravador, Monitor ou Diretor)
- */
 async function loadList(container, role, page = 0) {
   try {
-    if (!container) {
-        console.error("Container da lista de utilizadores não foi encontrado.");
-        return;
-    }
+    if (!container) return;
 
     let roleLabel = '';
     if (role === 'DESBRAVADOR') roleLabel = 'desbravadores';
@@ -67,7 +51,6 @@ async function loadList(container, role, page = 0) {
 
     container.innerHTML = `<p>A carregar ${roleLabel}...</p>`;
 
-    // Define o endpoint e os cabeçalhos da tabela com base no cargo
     let endpoint = '';
     let groupColumnHeader = '';
 
@@ -77,7 +60,7 @@ async function loadList(container, role, page = 0) {
     } else if (role === 'MONITOR') {
         endpoint = `/api/admin/users/monitors?page=${page}&size=${USER_LIST_PAGE_SIZE}&sort=name,asc`;
         groupColumnHeader = 'Grupo (Liderado)';
-    } else { // 'DIRETOR'
+    } else { 
         endpoint = `/api/admin/users/directors?page=${page}&size=${USER_LIST_PAGE_SIZE}&sort=name,asc`;
         groupColumnHeader = 'Cargo Administrativo';
     }
@@ -134,10 +117,9 @@ async function loadList(container, role, page = 0) {
             ${tableHtml}
         </div>
         <div id="user-list-pagination" class="pagination-controls">
-            </div>
+        </div>
     `;
 
-    // --- CORREÇÃO: Verifica totalPages com suporte para Spring Boot 3+ ---
     const paginationContainer = container.querySelector("#user-list-pagination");
     const totalPagesSafe = userPage.totalPages ?? userPage.page?.totalPages ?? 1;
     
@@ -153,7 +135,6 @@ async function loadList(container, role, page = 0) {
   }
 }
 
-
 export async function renderManageUsersView(viewElement) {
 
   viewElement.innerHTML = `<div class="admin-widget"><p>A carregar formulário...</p></div>`;
@@ -161,17 +142,13 @@ export async function renderManageUsersView(viewElement) {
   try {
     const groupPage = await fetchApi('/api/groups?page=0&size=999');
     const groupDetails = groupPage.content;
-    const groups = groupDetails
-        .map(detail => detail.group)
-        .filter(group => group && group.id && group.name);
-    const groupOptions = groups.map(group =>
-      `<option value="${group.id}">${group.name}</option>`
-    ).join('');
+    const groups = groupDetails.map(detail => detail.group).filter(group => group && group.id && group.name);
+    const groupOptions = groups.map(group => `<option value="${group.id}">${group.name}</option>`).join('');
 
     viewElement.innerHTML = `
           <div class="admin-widget">
               <h2>Adicionar Novo Utilizador</h2>
-              <form id="admin-user-form" class="user-form">
+              <form id="admin-user-form" class="user-form" novalidate>
                    <div class="form-row">
                       <div class="form-group">
                           <label for="user-name">Nome</label>
@@ -186,10 +163,19 @@ export async function renderManageUsersView(viewElement) {
                       <label for="user-email">Email</label>
                       <input type="email" id="user-email" required>
                   </div>
+                  
                   <div class="form-group">
                       <label for="user-password">Senha</label>
                       <input type="password" id="user-password" required>
+                      
+                      <div class="password-requirements" id="pass-reqs">
+                          <div class="req-item invalid" id="req-length"><i class="fa-solid fa-circle-xmark"></i> Mínimo de 8 caracteres</div>
+                          <div class="req-item invalid" id="req-upper"><i class="fa-solid fa-circle-xmark"></i> Pelo menos uma letra maiúscula</div>
+                          <div class="req-item invalid" id="req-number"><i class="fa-solid fa-circle-xmark"></i> Pelo menos um número</div>
+                          <div class="req-item invalid" id="req-special"><i class="fa-solid fa-circle-xmark"></i> Um caractere especial (@#$%^&+=!._-)</div>
+                      </div>
                   </div>
+
                   <div class="form-row">
                       <div class="form-group">
                           <label for="user-group">Grupo</label>
@@ -224,6 +210,27 @@ export async function renderManageUsersView(viewElement) {
           </div>
       `;
 
+    const passInput = viewElement.querySelector('#user-password');
+    passInput.addEventListener('input', (e) => {
+        const val = e.target.value;
+        
+        const updateReq = (id, isValid) => {
+            const el = document.getElementById(id);
+            if (isValid) {
+                el.className = 'req-item valid';
+                el.innerHTML = '<i class="fa-solid fa-circle-check"></i> ' + el.innerText.trim();
+            } else {
+                el.className = 'req-item invalid';
+                el.innerHTML = '<i class="fa-solid fa-circle-xmark"></i> ' + el.innerText.trim();
+            }
+        };
+
+        updateReq('req-length', val.length >= 8);
+        updateReq('req-upper', /[A-Z]/.test(val));
+        updateReq('req-number', /[0-9]/.test(val));
+        updateReq('req-special', /[@#$%^&+=!._-]/.test(val));
+    });
+
     const userForm = viewElement.querySelector("#admin-user-form");
     const userListContainer = viewElement.querySelector("#user-list-container");
     const roleSelect = viewElement.querySelector("#user-role");
@@ -254,11 +261,21 @@ export async function renderManageUsersView(viewElement) {
 
     userForm.addEventListener("submit", async (e) => {
       e.preventDefault();
-      const submitButton = userForm.querySelector('button[type="submit"]');
-      
+
+      // CORREÇÃO 2: Validação manual para ativar o Toast se algum campo obrigatório estiver vazio
+      const name = viewElement.querySelector("#user-name").value.trim();
+      const surname = viewElement.querySelector("#user-surname").value.trim();
+      const email = viewElement.querySelector("#user-email").value.trim();
+      const password = passInput.value;
       const role = roleSelect.value;
+
+      if (!name || !surname || !email || !password || !role) {
+          window.showToast('Por favor, preencha todos os campos obrigatórios (marcados com *).', 'error');
+          return; // Trava o envio para o servidor
+      }
+
+      const submitButton = userForm.querySelector('button[type="submit"]');
       const groupIdValue = groupSelect.value;
-      
       const groupId = (role !== 'DIRETOR' && groupIdValue && !isNaN(parseInt(groupIdValue, 10))) 
           ? parseInt(groupIdValue, 10) 
           : null;
@@ -266,10 +283,10 @@ export async function renderManageUsersView(viewElement) {
       const groupPayload = groupId !== null ? { id: groupId } : null;
 
       const newUser = {
-        name: viewElement.querySelector("#user-name").value,
-        surname: viewElement.querySelector("#user-surname").value,
-        email: viewElement.querySelector("#user-email").value,
-        password: viewElement.querySelector("#user-password").value,
+        name: name,
+        surname: surname,
+        email: email,
+        password: password,
         role: role,
         group: groupPayload,
         avatar: 'assets/images/escoteiro1.png',
@@ -285,22 +302,31 @@ export async function renderManageUsersView(viewElement) {
           method: 'POST',
           body: JSON.stringify(newUser),
         });
-        showToast(`Utilizador ${createdUser.name} adicionado com sucesso!`, 'success'); 
+        window.showToast(`Utilizador ${createdUser.name} adicionado com sucesso!`, 'success'); 
         userForm.reset();
-        
+        passInput.dispatchEvent(new Event('input'));
         groupSelect.disabled = false;
 
-        if (createdUser.role === 'DESBRAVADOR') {
-            setActiveTab(desbravadoresBtn, 'DESBRAVADOR');
-        } else if (createdUser.role === 'MONITOR') {
-            setActiveTab(monitoresBtn, 'MONITOR');
-        } else if (createdUser.role === 'DIRETOR') {
-            setActiveTab(diretoresBtn, 'DIRETOR');
-        }
+        if (createdUser.role === 'DESBRAVADOR') setActiveTab(desbravadoresBtn, 'DESBRAVADOR');
+        else if (createdUser.role === 'MONITOR') setActiveTab(monitoresBtn, 'MONITOR');
+        else if (createdUser.role === 'DIRETOR') setActiveTab(diretoresBtn, 'DIRETOR');
 
       } catch (error) {
         console.error("Falha ao criar utilizador:", error);
-        showToast(`Erro ao criar utilizador: ${error.message}`, 'error'); 
+        
+        // CORREÇÃO 3: Desempacotar a string JSON do erro para mostrar apenas o texto bonitinho
+        let finalErrorMsg = "Falha ao criar o utilizador.";
+        try {
+            const parsedError = JSON.parse(error.message);
+            if (parsedError && parsedError.message) {
+                finalErrorMsg = parsedError.message;
+            }
+        } catch (parseEx) {
+            // Se não for um JSON, mostra a mensagem normal
+            finalErrorMsg = error.message || finalErrorMsg;
+        }
+
+        window.showToast(finalErrorMsg, 'error'); 
       } finally {
           submitButton.disabled = false;
           submitButton.textContent = 'Adicionar Utilizador';

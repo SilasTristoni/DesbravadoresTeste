@@ -12,15 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import br.com.desbravadores.api.model.Role;
 import br.com.desbravadores.api.model.User;
@@ -43,9 +35,13 @@ public class AdminController {
 
     @PreAuthorize("hasAuthority('DIRETOR')")
     @PostMapping("/users")
-    public ResponseEntity<User> createUserByAdmin(@RequestBody User newUser) {
-        User savedUser = userService.createUser(newUser);
-        return ResponseEntity.status(201).body(savedUser);
+    public ResponseEntity<?> createUserByAdmin(@RequestBody User newUser) {
+        try {
+            User savedUser = userService.createUser(newUser);
+            return ResponseEntity.status(201).body(savedUser);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        }
     }
     
     @PutMapping("/users/{userId}/remove-group")
@@ -101,7 +97,6 @@ public class AdminController {
             if (user.getGroup() != null) {
                 dto.put("groupName", user.getGroup().getName());
                 dto.put("groupId", user.getGroup().getId());
-                
                 Map<String, Object> simpleGroup = new HashMap<>();
                 simpleGroup.put("id", user.getGroup().getId());
                 simpleGroup.put("name", user.getGroup().getName());
@@ -111,7 +106,6 @@ public class AdminController {
                 dto.put("groupId", null);
                 dto.put("group", null);
             }
-
             return dto;
         });
         
@@ -123,14 +117,12 @@ public class AdminController {
     @Transactional
     public ResponseEntity<Page<User>> getAllMonitors(Pageable pageable) {
         Page<User> monitorsPage = userRepository.findByRole(Role.MONITOR, pageable); 
-        
         monitorsPage.getContent().forEach(user -> {
              Hibernate.initialize(user.getSelectedBackground());
              Hibernate.initialize(user.getGroup());
              Hibernate.initialize(user.getAchievements());
              Hibernate.initialize(user.getUnlockedBackgrounds());
         });
-        
         return ResponseEntity.ok(monitorsPage); 
     }
 
@@ -139,14 +131,12 @@ public class AdminController {
     @Transactional
     public ResponseEntity<Page<User>> getAllDirectors(Pageable pageable) {
         Page<User> directorsPage = userRepository.findByRole(Role.DIRETOR, pageable); 
-        
         directorsPage.getContent().forEach(user -> {
              Hibernate.initialize(user.getSelectedBackground());
              Hibernate.initialize(user.getGroup());
              Hibernate.initialize(user.getAchievements());
              Hibernate.initialize(user.getUnlockedBackgrounds());
         });
-        
         return ResponseEntity.ok(directorsPage); 
     }
 
@@ -164,39 +154,27 @@ public class AdminController {
         return ResponseEntity.ok().body(Map.of("message", "Conquista revogada com sucesso."));
     }
 
-    // --- NOVOS MÉTODOS ADICIONADOS ABAIXO ---
-
-    /**
-     * Busca um utilizador específico pelo ID para a página de perfil.
-     * URL: GET /api/admin/users/{id}
-     */
     @GetMapping("/users/{id}")
     @PreAuthorize("hasAnyAuthority('DIRETOR', 'MONITOR')")
     @Transactional
     public ResponseEntity<User> getUserById(@PathVariable Long id) {
         Optional<User> user = userService.getUserById(id);
-        
         user.ifPresent(u -> {
             Hibernate.initialize(u.getGroup());
             Hibernate.initialize(u.getAchievements());
         });
-
-        return user.map(ResponseEntity::ok)
-                   .orElseGet(() -> ResponseEntity.notFound().build());
+        return user.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    /**
-     * Atualiza as informações de um desbravador (Edição In-Place).
-     * URL: PUT /api/admin/users/{id}
-     */
+    // CORREÇÃO: Agora devolve um JSON com a mensagem de erro para o Frontend ler!
     @PutMapping("/users/{id}")
     @PreAuthorize("hasAuthority('DIRETOR')")
-    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User updateData) {
+    public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody User updateData) {
         try {
             User updatedUser = userService.updateUser(id, updateData);
             return ResponseEntity.ok(updatedUser);
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
         }
     }
 }
