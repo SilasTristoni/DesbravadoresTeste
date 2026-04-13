@@ -1,7 +1,8 @@
 // js/views/admin/create-item.js
 
 // NOVO: Importa modal para confirmação de exclusão
-import { showModal } from '../../../components/modal.js';
+import { showModal } from '../../components/modal.js';
+import { resolveAssetUrl } from '../../core/url.js';
 
 // --- NOVO ESTADO ---
 const ITEM_PAGE_SIZE = 5; 
@@ -108,7 +109,7 @@ async function loadAndRenderAchievements(container, page = 0) {
                 // Renderização Padrão
                 return `
                 <div class="list-item-preview">
-                    <img src="http://localhost:8080${ach.icon.replace('/uploads/', '/file/')}" alt="${ach.name}" class="preview-icon">
+                    <img src="${resolveAssetUrl(ach.icon)}" alt="${ach.name}" class="preview-icon">
                     <span style="flex: 1;"><strong>${ach.name}</strong><br><small>${ach.description.substring(0, 50)}...</small></span>
                     <div class="item-actions">
                          <button class="btn-action-icon edit edit-ach-btn" title="Editar Conquista" data-id="${ach.id}">
@@ -242,7 +243,7 @@ async function loadAndRenderBackgrounds(container, page = 0) {
         if (backgroundPage.totalElements > 0) {
             container.innerHTML = backgrounds.map(bg => {
                 const style = bg.imageUrl 
-                    ? `background: url(http://localhost:8080${bg.imageUrl.replace('/uploads/', '/file/')}) center/cover no-repeat; color: ${bg.textColor};`
+                    ? `background: url(${resolveAssetUrl(bg.imageUrl)}) center/cover no-repeat; color: ${bg.textColor};`
                     : `background: ${bg.gradient}; color: ${bg.textColor};`;
                 
                 // NOVO: Renderiza formulário de edição

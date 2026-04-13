@@ -1,6 +1,6 @@
 package br.com.desbravadores.api.service;
 
-import java.io.IOException; // NOVO IMPORT
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -8,6 +8,8 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -17,11 +19,12 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 public class FileStorageService {
 
+    private static final Logger log = LoggerFactory.getLogger(FileStorageService.class);
+
     private final Path fileStorageLocation;
 
     @Autowired
     public FileStorageService() {
-        // O caminho "file" na raiz do projeto
         this.fileStorageLocation = Paths.get("file")
                 .toAbsolutePath().normalize();
 
@@ -70,9 +73,6 @@ public class FileStorageService {
         }
     }
 
-    /**
-     * NOVO MÉTODO: Para apagar um arquivo
-     */
     public void delete(String filename) {
         if (filename == null || filename.isEmpty()) {
             return;
@@ -82,8 +82,7 @@ public class FileStorageService {
             Path filePath = this.fileStorageLocation.resolve(filename).normalize();
             Files.deleteIfExists(filePath);
         } catch (IOException ex) {
-            // Loga o erro, mas não para a execução (ex: se o arquivo já foi apagado)
-            System.err.println("Não foi possível apagar o arquivo " + filename + ". Erro: " + ex.getMessage());
+            log.warn("Failed to delete file={} reason={}", filename, ex.getMessage());
         }
     }
 }

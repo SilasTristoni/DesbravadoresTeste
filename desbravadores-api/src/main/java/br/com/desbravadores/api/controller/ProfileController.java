@@ -41,13 +41,12 @@ public class ProfileController {
     @GetMapping("/me")
     @Transactional
     public ResponseEntity<User> getMyProfile(Authentication authentication) {
-        String userEmail = authentication.getName();
-        User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado com o email: " + userEmail));
+        String username = authentication.getName();
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado com o identificador: " + username));
         
         Hibernate.initialize(user.getSelectedBackground());
         Hibernate.initialize(user.getGroup());
-        // CORREÇÃO MVP:
         Hibernate.initialize(user.getAchievements());
         Hibernate.initialize(user.getUnlockedBackgrounds());
         
@@ -62,9 +61,9 @@ public class ProfileController {
             @RequestParam(value = "avatarFile", required = false) MultipartFile avatarFile,
             Authentication authentication) {
         
-        String userEmail = authentication.getName();
+        String username = authentication.getName();
         
-        return userRepository.findByEmail(userEmail).map(user -> {
+        return userRepository.findByUsername(username).map(user -> {
             
             if (name != null && !name.trim().isEmpty()) {
                 user.setName(name.trim());
@@ -91,7 +90,6 @@ public class ProfileController {
             
             Hibernate.initialize(updatedUser.getSelectedBackground());
             Hibernate.initialize(updatedUser.getGroup());
-            // CORREÇÃO MVP:
             Hibernate.initialize(updatedUser.getAchievements());
             Hibernate.initialize(updatedUser.getUnlockedBackgrounds());
             

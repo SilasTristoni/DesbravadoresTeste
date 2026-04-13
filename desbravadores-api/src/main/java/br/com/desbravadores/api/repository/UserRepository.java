@@ -14,7 +14,8 @@ import br.com.desbravadores.api.model.User;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    Optional<User> findByEmail(String email);
+    Optional<User> findByUsername(String username);
+    boolean existsByUsername(String username);
     
     // Paginação por Role
     Page<User> findByRole(Role role, Pageable pageable);

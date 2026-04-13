@@ -1,6 +1,3 @@
-// js/features/admin/manage-profile.js
-
-// Função para ler o cargo do utilizador logado pelo Token JWT
 function getLoggedUserRole() {
     const token = localStorage.getItem('jwtToken');
     if (!token) return null;
@@ -24,7 +21,7 @@ export async function renderManageProfileView(viewElement, user) {
     }
 
     const myRole = getLoggedUserRole();
-    const isDirector = myRole === 'DIRETOR'; // Verifica se quem está logado é Diretor
+    const isDirector = myRole === 'DIRETOR';
 
     viewElement.innerHTML = `<p>A carregar perfil de ${user.name}...</p>`;
 
@@ -41,7 +38,6 @@ export async function renderManageProfileView(viewElement, user) {
             groupOptionsHTML += `<option value="${g.id}" ${selected}>${g.name}</option>`;
         });
 
-        // Só gera o botão do Lápis se for Diretor
         const editButtonHtml = isDirector 
             ? `<button id="full-edit-user-btn" class="btn-action-icon edit" title="Editar Desbravador" style="margin: 0; flex-shrink: 0; width: 40px; height: 40px; font-size: 1.1rem;"><i class="fa-solid fa-pencil"></i></button>` 
             : '';
@@ -65,7 +61,7 @@ export async function renderManageProfileView(viewElement, user) {
                             <div>
                                 <h3 style="margin: 0 0 5px 0; font-size: 1.5rem; color: var(--text-primary);">${user.name} ${user.surname}</h3>
                                 <p style="margin: 0 0 15px 0; color: var(--text-secondary); font-size: 1rem;">
-                                    <i class="fa-solid fa-envelope" style="width: 16px;"></i> ${user.email || 'Não possui email'}
+                                    <i class="fa-solid fa-user-tag" style="width: 16px;"></i> ${user.username || 'Não possui identificador'}
                                 </p>
                             </div>
                             ${editButtonHtml}
@@ -86,7 +82,7 @@ export async function renderManageProfileView(viewElement, user) {
                             <div class="form-group" style="margin: 0;"><input type="text" id="edit-surname" value="${user.surname}" placeholder="Sobrenome *" required></div>
                         </div>
                         <div class="form-group" style="margin: 0;">
-                            <input type="email" id="edit-email" value="${user.email || ''}" placeholder="Email *" required>
+                            <input type="text" id="edit-username" value="${user.username || ''}" placeholder="Identificador *" required>
                         </div>
                         
                         <div class="form-group" style="margin: 0;">
@@ -144,12 +140,10 @@ export async function renderManageProfileView(viewElement, user) {
         const passInput = viewElement.querySelector('#edit-password');
         const passReqsBox = viewElement.querySelector('#edit-pass-reqs');
 
-        // Lógica do validador de senha
         if (passInput) {
             passInput.addEventListener('input', (e) => {
                 const val = e.target.value;
                 
-                // Mostra a caixa de requisitos apenas se começar a digitar
                 if (val.length > 0) {
                     passReqsBox.style.display = 'flex';
                 } else {
@@ -174,37 +168,34 @@ export async function renderManageProfileView(viewElement, user) {
             });
         }
 
-        // Adiciona os eventos do form APENAS se o botão de editar existir (se for Diretor)
         if (editBtn) {
             editBtn.addEventListener('click', () => { viewMode.style.display = 'none'; editMode.style.display = 'flex'; });
             cancelBtn.addEventListener('click', () => { 
                 editMode.style.display = 'none'; 
                 viewMode.style.display = 'block'; 
-                passInput.value = ''; // Limpa a senha se cancelar
+                passInput.value = '';
                 passReqsBox.style.display = 'none';
             });
 
             saveBtn.addEventListener('click', async () => {
                 const nameInput = document.getElementById('edit-name').value.trim();
                 const surnameInput = document.getElementById('edit-surname').value.trim();
-                const emailInput = document.getElementById('edit-email').value.trim();
+                const usernameInput = document.getElementById('edit-username').value.trim();
                 const newPassword = document.getElementById('edit-password').value;
                 
-                if (!nameInput || !surnameInput || !emailInput) {
-                    return window.showToast('Nome, Sobrenome e Email são obrigatórios!', 'error');
+                if (!nameInput || !surnameInput || !usernameInput) {
+                    return window.showToast('Nome, Sobrenome e Identificador são obrigatórios!', 'error');
                 }
 
-                // Cria o payload
                 const payload = {
                     name: nameInput,
                     surname: surnameInput,
-                    email: emailInput,
+                    username: usernameInput,
                     level: parseInt(document.getElementById('edit-level').value, 10),
                     role: user.role,
                     group: document.getElementById('edit-group').value ? { id: parseInt(document.getElementById('edit-group').value, 10) } : null
                 };
 
-                // Adiciona a senha ao envio APENAS se foi digitada
                 if (newPassword && newPassword.trim() !== '') {
                     payload.password = newPassword;
                 }

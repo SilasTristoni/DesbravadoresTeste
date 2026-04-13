@@ -1,5 +1,7 @@
 // js/views/admin/chamada.js
 
+import { buildApiUrl, resolveAssetUrl } from '../../core/url.js';
+
 // --- MODAL CUSTOMIZADO PADRONIZADO ---
 function showConfirmModal(message) {
     return new Promise((resolve) => {
@@ -139,7 +141,7 @@ export async function renderChamadaView(viewElement) {
             <div class="student-wrapper" style="margin-bottom: 12px;">
                 <div class="student-card present" data-student-id="${student.id}" style="cursor: pointer; display: flex; align-items: center; justify-content: space-between; padding: 12px 15px; border-radius: 8px; background-color: var(--bg-primary); transition: all 0.2s;">
                     <div style="display: flex; align-items: center; gap: 12px;">
-                        <img src="${student.avatar || 'assets/images/escoteiro1.png'}" alt="${student.name}" class="student-photo">
+                        <img src="${student.avatar ? resolveAssetUrl(student.avatar) : 'assets/images/escoteiro1.png'}" alt="${student.name}" class="student-photo">
                         <div class="student-name" style="font-weight: 600; color: var(--text-primary); font-size: 1.1rem;">${student.name} ${student.surname}</div>
                     </div>
                     <span class="check-icon" style="font-size: 1.5rem; color: var(--toast-success-bg); transition: color 0.2s;">
@@ -246,7 +248,7 @@ export async function renderChamadaView(viewElement) {
              const date = dateInput.value;
              if (!date) return showToast('Selecione uma data.', 'error');
              const token = localStorage.getItem('jwtToken');
-             fetch(`http://localhost:8080/api/chamada/export-csv?date=${date}`, {
+             fetch(buildApiUrl(`/api/chamada/export-csv?date=${date}`), {
                  headers: { 'Authorization': `Bearer ${token}` }
              })
              .then(res => { if(!res.ok) throw new Error(); return res.blob(); })

@@ -28,14 +28,14 @@ public class NotificationController {
 
     @GetMapping
     public ResponseEntity<List<Notification>> getMyNotifications(Authentication authentication) {
-        User currentUser = userRepository.findByEmail(authentication.getName()).orElseThrow();
+        User currentUser = userRepository.findByUsername(authentication.getName()).orElseThrow();
         List<Notification> notifications = notificationRepository.findByUserIdOrderByCreatedAtDesc(currentUser.getId());
         return ResponseEntity.ok(notifications);
     }
 
     @PutMapping("/{id}/read")
     public ResponseEntity<Void> markAsRead(@PathVariable Long id, Authentication authentication) {
-        User currentUser = userRepository.findByEmail(authentication.getName()).orElseThrow();
+        User currentUser = userRepository.findByUsername(authentication.getName()).orElseThrow();
         Notification notification = notificationRepository.findById(id).orElseThrow();
 
         if (!notification.getUser().getId().equals(currentUser.getId())) {

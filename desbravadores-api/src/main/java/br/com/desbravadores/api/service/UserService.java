@@ -26,7 +26,6 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    // MÉTODO DE VALIDAÇÃO DE SENHA FORTE
     private void validatePasswordStrength(String password) {
         String regex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!._-]).{8,}$";
         if (password == null || !password.matches(regex)) {
@@ -43,8 +42,18 @@ public class UserService {
     }
 
     public User createUser(User user) {
+        String username = normalizeUsername(user.getUsername());
+        if (username == null || username.isBlank()) {
+            throw new RuntimeException("O identificador do utilizador é obrigatório.");
+        }
+        if (userRepository.existsByUsername(username)) {
+            throw new RuntimeException("Já existe um utilizador com esse identificador.");
+        }
+
+        user.setUsername(username);
+
         if (user.getPassword() != null && !user.getPassword().isEmpty()) {
-            validatePasswordStrength(user.getPassword()); // Valida antes de encriptar
+            validatePasswordStrength(user.getPassword());
             user.setPassword(passwordEncoder.encode(user.getPassword()));
         }
         return userRepository.save(user);
@@ -55,15 +64,15 @@ public class UserService {
     }
 
     @Transactional
-    public void changeUserPassword(String email, PasswordChangeDTO dto) {
-        User user = userRepository.findByEmail(email)
+    public void changeUserPassword(String username, PasswordChangeDTO dto) {
+        User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Utilizador não encontrado"));
 
         if (!passwordEncoder.matches(dto.getCurrentPassword(), user.getPassword())) {
             throw new RuntimeException("Senha atual incorreta");
         }
 
-        validatePasswordStrength(dto.getNewPassword()); // Valida a nova senha
+        validatePasswordStrength(dto.getNewPassword());
         user.setPassword(passwordEncoder.encode(dto.getNewPassword()));
         userRepository.save(user);
     }
@@ -74,7 +83,18 @@ public class UserService {
 
         if (updateData.getName() != null) existingUser.setName(updateData.getName());
         if (updateData.getSurname() != null) existingUser.setSurname(updateData.getSurname());
-        if (updateData.getEmail() != null) existingUser.setEmail(updateData.getEmail());
+        if (updateData.getUsername() != null) {
+            String username = normalizeUsername(updateData.getUsername());
+            if (username == null || username.isBlank()) {
+                throw new RuntimeException("O identificador do utilizador é obrigatório.");
+            }
+            boolean usernameInUse = userRepository.existsByUsername(username)
+                    && !username.equals(existingUser.getUsername());
+            if (usernameInUse) {
+                throw new RuntimeException("Já existe um utilizador com esse identificador.");
+            }
+            existingUser.setUsername(username);
+        }
         
         existingUser.setLevel(updateData.getLevel());
         
@@ -94,5 +114,9 @@ public class UserService {
         }
 
         return userRepository.save(existingUser);
+    }
+
+    private String normalizeUsername(String username) {
+        return username == null ? null : username.trim();
     }
 }

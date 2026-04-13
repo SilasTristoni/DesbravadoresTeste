@@ -1,7 +1,9 @@
 package br.com.desbravadores.api.controller;
 
-import java.util.Optional; // NOVO IMPORT
+import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,19 +25,19 @@ import br.com.desbravadores.api.service.FileStorageService;
 @RestController
 public class BackgroundController {
 
+    private static final Logger log = LoggerFactory.getLogger(BackgroundController.class);
+
     @Autowired
     private BackgroundRepository backgroundRepository;
 
     @Autowired
     private FileStorageService fileStorageService;
 
-    // Endpoint PÚBLICO para listar fundos
     @GetMapping("/api/backgrounds")
     public ResponseEntity<Page<Background>> getAllBackgrounds(Pageable pageable) {
         return ResponseEntity.ok(backgroundRepository.findAll(pageable));
     }
 
-    // Endpoint de ADMIN para criar fundos
     @PostMapping("/api/admin/backgrounds")
     @PreAuthorize("hasAuthority('DIRETOR')")
     public ResponseEntity<Background> createBackground(
@@ -44,7 +46,7 @@ public class BackgroundController {
             @RequestParam("imageFile") MultipartFile imageFile) {
 
         String filename = fileStorageService.store(imageFile);
-        String imageUrl = "/file/" + filename; // CORREÇÃO
+        String imageUrl = "/file/" + filename;
 
         Background newBackground = new Background();
         newBackground.setName(name);
@@ -68,18 +70,17 @@ public class BackgroundController {
             background.setTextColor(textColor);
 
             if (imageFile != null && !imageFile.isEmpty()) {
-                // Tenta apagar a imagem antiga
                 try {
                     if (background.getImageUrl() != null && !background.getImageUrl().isEmpty()) {
-                        String oldFilename = background.getImageUrl().replace("/file/", ""); // CORREÇÃO
-                        fileStorageService.delete(oldFilename); // CORRIGIDO
+                        String oldFilename = background.getImageUrl().replace("/file/", "");
+                        fileStorageService.delete(oldFilename);
                     }
                 } catch (Exception e) {
-                    System.err.println("Não foi possível apagar a imagem antiga: " + e.getMessage());
+                    log.warn("Failed to delete previous background image id={} reason={}", id, e.getMessage());
                 }
 
                 String filename = fileStorageService.store(imageFile);
-                background.setImageUrl("/file/" + filename); // CORREÇÃO
+                background.setImageUrl("/file/" + filename);
             }
 
             Background updatedBackground = backgroundRepository.save(background);
@@ -87,9 +88,6 @@ public class BackgroundController {
         }).orElse(ResponseEntity.notFound().build());
     }
 
-    /**
-     * ENDPOINT ATUALIZADO: Corrigido o 'type mismatch'
-     */
     @DeleteMapping("/api/admin/backgrounds/{id}")
     @PreAuthorize("hasAuthority('DIRETOR')")
     public ResponseEntity<Void> deleteBackground(@PathVariable Long id) {
@@ -102,17 +100,14 @@ public class BackgroundController {
 
         Background background = optionalBackground.get();
 
-        // Apaga o arquivo de imagem associado
         try {
             if (background.getImageUrl() != null && !background.getImageUrl().isEmpty()) {
-                String filename = background.getImageUrl().replace("/file/", ""); // CORREÇÃO
-                fileStorageService.delete(filename); // CORRIGIDO
+                String filename = background.getImageUrl().replace("/file/", "");
+                fileStorageService.delete(filename);
             }
         } catch (Exception e) {
-            System.err.println("Não foi possível apagar o arquivo de imagem: " + e.getMessage());
+            log.warn("Failed to delete background image id={} reason={}", id, e.getMessage());
         }
-
-        // TODO: Desassociar o fundo de usuários que o utilizam.
         
         backgroundRepository.delete(background);
         return ResponseEntity.noContent().build();

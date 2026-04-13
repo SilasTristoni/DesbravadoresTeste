@@ -1,5 +1,7 @@
 // js/views/admin/manage-achievements.js
 
+import { resolveAssetUrl } from '../../core/url.js';
+
 export async function renderManageAchievementsView(viewElement, userId) {
     if (!userId) {
         viewElement.innerHTML = `<p>Erro: Nenhum utilizador selecionado.</p>`;
@@ -26,7 +28,7 @@ export async function renderManageAchievementsView(viewElement, userId) {
                         const isUnlocked = userUnlockedAchievementNames.has(achievement.name);
                         return `
                         <div class="achievement-manage-item">
-                            <img src="http://localhost:8080${achievement.icon}" alt="${achievement.name}" class="preview-icon">
+                            <img src="${resolveAssetUrl(achievement.icon)}" alt="${achievement.name}" class="preview-icon">
                             <div class="achievement-info">
                                 <h4>${achievement.name} (+${achievement.xpReward} XP)</h4>
                                 <p>${achievement.description}</p>

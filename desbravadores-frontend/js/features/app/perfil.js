@@ -2,6 +2,7 @@
 
 // Importa showToast se ainda não estiver global
 import  { showToast as toastFunc} from '../../ui/toast.js';
+import { resolveAssetUrl } from '../../core/url.js';
 // Ajuste o caminho se necessário
 if (typeof window.showToast === 'undefined') {
     window.showToast = toastFunc;
@@ -201,7 +202,7 @@ async function renderAttendanceHistoryTab(viewElement, user) {
 async function renderBackgroundsTab(viewElement, user, allBackgrounds) {
     const isOwnProfile = !user.isOtherUser;
     const backgroundsGrid = allBackgrounds.map(bg => {
-        const imageUrl = bg.imageUrl ? `http://localhost:8080${bg.imageUrl}` : null;
+        const imageUrl = bg.imageUrl ? resolveAssetUrl(bg.imageUrl) : null;
         const style = imageUrl
             ? `background: url(${imageUrl}) center/cover no-repeat; color: ${bg.textColor || '#FFFFFF'};` 
             : `background: ${bg.gradient || 'var(--scout-green)'}; color: ${bg.textColor || '#FFFFFF'};`; 
@@ -253,7 +254,7 @@ async function renderBackgroundsTab(viewElement, user, allBackgrounds) {
                         const selectedBgData = allBackgrounds.find(bg => bg.id == bgId);
                          if (selectedBgData) {
                             const identityBlock = viewElement.querySelector('#identityBlock');
-                            const newImageUrl = selectedBgData.imageUrl ? `http://localhost:8080${selectedBgData.imageUrl}` : null;
+                            const newImageUrl = selectedBgData.imageUrl ? resolveAssetUrl(selectedBgData.imageUrl) : null;
                             const newStyle = newImageUrl
                                 ? `background: url(${newImageUrl}) center/cover no-repeat; color: ${selectedBgData.textColor || '#FFFFFF'};`
                                 : `background: ${selectedBgData.gradient || 'var(--scout-green)'}; color: ${selectedBgData.textColor || '#FFFFFF'};`;
@@ -319,12 +320,12 @@ export async function renderProfileView(viewElement, userId = null) {
         
         let avatarUrl;
         if (user.avatar && user.avatar.startsWith('/file/')) {
-            avatarUrl = `http://localhost:8080${user.avatar}?${new Date().getTime()}`;
+            avatarUrl = `${resolveAssetUrl(user.avatar)}?${new Date().getTime()}`;
         } else {
             avatarUrl = (user.avatar || 'img/escoteiro1.png');
         }
         
-        const bgImageUrl = bg?.imageUrl ? `http://localhost:8080${bg.imageUrl}` : null;
+        const bgImageUrl = bg?.imageUrl ? resolveAssetUrl(bg.imageUrl) : null;
         const backgroundStyle = bgImageUrl
             ? `background: url(${bgImageUrl}) center/cover no-repeat; color: ${bg.textColor || '#FFFFFF'};`
             : `background: ${bg?.gradient || 'var(--scout-green)'}; color: ${bg?.textColor || '#FFFFFF'};`;
@@ -375,7 +376,7 @@ export async function renderProfileView(viewElement, userId = null) {
                             <div class="badges-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 1rem; justify-items: center;">
                                 ${user.badges && user.badges.length > 0 ? user.badges.map(badge => `
                                     <div class="badge-item" title="${badge.name}: ${badge.description}">
-                                        <img src="http://localhost:8080${badge.icon}" alt="${badge.name}" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 3px solid var(--scout-gold);">
+                                        <img src="${resolveAssetUrl(badge.icon)}" alt="${badge.name}" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 3px solid var(--scout-gold);">
                                         <div class="badge-name" style="font-size: 0.8rem; margin-top: 5px; color: var(--text-secondary);">${badge.name}</div>
                                     </div>
                                 `).join('') : '<p style="grid-column: 1 / -1;">Nenhum emblema conquistado ainda.</p>'}

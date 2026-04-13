@@ -68,7 +68,7 @@ public class ChamadaController {
     @GetMapping("/my-group-members")
     @PreAuthorize("hasAnyAuthority('MONITOR', 'DIRETOR')")
     public ResponseEntity<List<User>> getMyGroupMembers(Authentication authentication) {
-        User currentUser = userRepository.findByEmail(authentication.getName()).orElseThrow();
+        User currentUser = userRepository.findByUsername(authentication.getName()).orElseThrow();
         if (currentUser.getGroup() == null) return ResponseEntity.ok(List.of());
         return ResponseEntity.ok(userRepository.findByGroupIdAndRole(currentUser.getGroup().getId(), Role.DESBRAVADOR));
     }
@@ -77,7 +77,7 @@ public class ChamadaController {
     @PreAuthorize("hasAuthority('MONITOR')")
     @Transactional
     public ResponseEntity<?> submitAttendance(@RequestBody AttendancePayload payload, Authentication authentication) {
-        User monitor = userRepository.findByEmail(authentication.getName()).orElseThrow();
+        User monitor = userRepository.findByUsername(authentication.getName()).orElseThrow();
         Group monitorGroup = monitor.getGroup();
         
         if (monitorGroup == null) return ResponseEntity.status(403).body(Map.of("message", "Erro: Monitor sem grupo."));
@@ -121,7 +121,7 @@ public class ChamadaController {
     @PreAuthorize("hasAuthority('MONITOR')")
     @Transactional
     public ResponseEntity<?> requestCorrection(@RequestBody AttendancePayload payload, Authentication authentication) {
-        User monitor = userRepository.findByEmail(authentication.getName()).orElseThrow();
+        User monitor = userRepository.findByUsername(authentication.getName()).orElseThrow();
         Group group = monitor.getGroup();
 
         if (group == null) return ResponseEntity.status(403).build();
@@ -244,7 +244,7 @@ public class ChamadaController {
     @GetMapping("/my-stats")
     @PreAuthorize("hasAuthority('DESBRAVADOR')")
     public ResponseEntity<?> getMyStats(Authentication authentication) {
-        User user = userRepository.findByEmail(authentication.getName()).orElseThrow();
+        User user = userRepository.findByUsername(authentication.getName()).orElseThrow();
         if (user.getGroup() == null) return ResponseEntity.ok(Map.of("percentage", 0));
 
         long totalClasses = attendanceRepository.countByGroupId(user.getGroup().getId());
@@ -258,7 +258,7 @@ public class ChamadaController {
     @GetMapping("/check-existence")
     @PreAuthorize("hasAnyAuthority('MONITOR', 'DIRETOR')")
     public ResponseEntity<Map<String, Object>> checkAttendanceExistence(@RequestParam("date") String dateString, Authentication auth) {
-        User user = userRepository.findByEmail(auth.getName()).orElseThrow();
+        User user = userRepository.findByUsername(auth.getName()).orElseThrow();
         Group group = user.getGroup();
         if (group == null) return ResponseEntity.ok(Map.of("exists", false, "pending", false));
         
@@ -288,7 +288,7 @@ public class ChamadaController {
     public ResponseEntity<byte[]> exportAttendanceCsv(@RequestParam("date") String dateString, @RequestParam(value = "groupId", required = false) Long groupId, Authentication auth) {
         try {
             LocalDate date = LocalDate.parse(dateString);
-            User currentUser = userRepository.findByEmail(auth.getName()).orElseThrow();
+        User currentUser = userRepository.findByUsername(auth.getName()).orElseThrow();
             Long targetGroupId = (currentUser.getRole() == Role.DIRETOR && groupId != null) ? groupId : (currentUser.getGroup() != null ? currentUser.getGroup().getId() : null);
 
             if (targetGroupId == null) return ResponseEntity.badRequest().build();
@@ -334,7 +334,7 @@ public class ChamadaController {
     public ResponseEntity<List<AttendanceReportDTO>> getAttendanceReport(@RequestParam("date") String dateString, @RequestParam(value = "groupId", required = false) Long groupId, Authentication auth) {
         try {
             LocalDate date = LocalDate.parse(dateString);
-            User currentUser = userRepository.findByEmail(auth.getName()).orElseThrow();
+        User currentUser = userRepository.findByUsername(auth.getName()).orElseThrow();
             Long targetGroupId = (currentUser.getRole() == Role.DIRETOR && groupId != null) ? groupId : (currentUser.getGroup() != null ? currentUser.getGroup().getId() : null);
 
             if (targetGroupId == null) return ResponseEntity.badRequest().body(List.of());

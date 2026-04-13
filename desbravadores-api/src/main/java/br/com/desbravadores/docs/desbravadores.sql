@@ -29,7 +29,7 @@ CREATE TABLE `users` (
   `id` bigint PRIMARY KEY AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
   `surname` varchar(255),
-  `email` varchar(255) NOT NULL UNIQUE,
+  `username` varchar(255) NOT NULL UNIQUE,
   `password` varchar(255) NOT NULL,
   `avatar` varchar(255),
   `level` int NOT NULL DEFAULT 1,

@@ -3,6 +3,7 @@ package br.com.desbravadores.api.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -30,14 +31,21 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> {})
                 .authorizeHttpRequests(auth -> auth
-                        // Endpoints públicos
+                        .requestMatchers(
+                                "/",
+                                "/login",
+                                "/app",
+                                "/admin",
+                                "/login.html",
+                                "/app.html",
+                                "/admin.html",
+                                "/css/**",
+                                "/js/**",
+                                "/assets/**",
+                                "/favicon.ico"
+                        ).permitAll()
+                        .requestMatchers(HttpMethod.GET, "/file/**").permitAll()
                         .requestMatchers("/auth/login").permitAll()
-                        
-                        // ---- NOVA REGRA DE EXCEÇÃO ADICIONADA AQUI ----
-                        // Permite acesso público a todos os ficheiros dentro da pasta /file
-                        .requestMatchers("/file/**").permitAll()
-                        
-                        // O resto das regras permanece o mesmo
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

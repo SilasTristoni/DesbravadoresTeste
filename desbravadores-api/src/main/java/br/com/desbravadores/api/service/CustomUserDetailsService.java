@@ -22,16 +22,12 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = repository.findByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + username));
+        User user = repository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
         
-        // ---- CORREÇÃO CRÍTICA AQUI ----
-        // Removemos o prefixo "ROLE_". Agora a permissão será exatamente
-        // o nome do Enum (ex: "DIRETOR", "MONITOR").
         GrantedAuthority authority = new SimpleGrantedAuthority(user.getRole().name());
         Collection<GrantedAuthority> authorities = Collections.singletonList(authority);
 
-        // Retornamos o objeto User do Spring Security com a permissão explícita.
-        return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), authorities);
+        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), authorities);
     }
 }

@@ -1,5 +1,7 @@
 package br.com.desbravadores.api.config;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -12,6 +14,8 @@ import br.com.desbravadores.api.repository.UserRepository;
 @Component
 public class DataInitializer implements CommandLineRunner {
 
+    private static final Logger log = LoggerFactory.getLogger(DataInitializer.class);
+
     @Autowired
     private UserRepository userRepository;
 
@@ -20,29 +24,24 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        // Define o email do administrador padrão
-        String adminEmail = "adm@gmail.com";
+        String adminUsername = "adm";
 
-        // Verifica se o utilizador administrador já existe no banco de dados
-        if (userRepository.findByEmail(adminEmail).isEmpty()) {
-            
-            System.out.println("--- CRIANDO UTILIZADOR ADMINISTRADOR PADRÃO ---");
-
+        if (userRepository.findByUsername(adminUsername).isEmpty()) {
             User adminUser = new User();
             adminUser.setName("Admin");
             adminUser.setSurname("do Sistema");
-            adminUser.setEmail(adminEmail);
-            // Codifica a senha padrão antes de salvar
+            adminUser.setUsername(adminUsername);
             adminUser.setPassword(passwordEncoder.encode("adm123")); 
             adminUser.setRole(Role.DIRETOR);
             adminUser.setAvatar("img/escoteiro.png");
             adminUser.setLevel(99);
             adminUser.setXp(0);
-            adminUser.setGroup(null); // O admin não pertence a um grupo
+            adminUser.setGroup(null);
 
             userRepository.save(adminUser);
-
-            System.out.println("--- UTILIZADOR ADMINISTRADOR CRIADO COM SUCESSO ---");
+            log.info("Default administrator created with username={}", adminUsername);
+        } else {
+            log.info("Default administrator already exists with username={}", adminUsername);
         }
     }
 }

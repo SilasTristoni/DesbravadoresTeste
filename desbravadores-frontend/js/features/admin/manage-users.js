@@ -5,10 +5,10 @@ if (typeof window.showToast === 'undefined') {
     window.showToast = toastFunc;
 }
 
-const USER_LIST_PAGE_SIZE = 5; 
+const USER_LIST_PAGE_SIZE = 5;
 
 function renderPaginationControls(paginationContainer, listContainer, userPage, role) {
-    paginationContainer.innerHTML = ''; 
+    paginationContainer.innerHTML = '';
 
     const totalPages = userPage.totalPages ?? userPage.page?.totalPages ?? 1;
     const number = userPage.number ?? userPage.page?.number ?? 0;
@@ -18,9 +18,9 @@ function renderPaginationControls(paginationContainer, listContainer, userPage, 
     const prevBtn = document.createElement('button');
     prevBtn.className = 'pagination-btn';
     prevBtn.innerHTML = '<i class="fa-solid fa-arrow-left"></i> Anterior';
-    prevBtn.disabled = first; 
+    prevBtn.disabled = first;
     prevBtn.addEventListener('click', () => {
-        loadList(listContainer, role, number - 1); 
+        loadList(listContainer, role, number - 1);
     });
 
     const info = document.createElement('span');
@@ -30,9 +30,9 @@ function renderPaginationControls(paginationContainer, listContainer, userPage, 
     const nextBtn = document.createElement('button');
     nextBtn.className = 'pagination-btn';
     nextBtn.innerHTML = 'Próxima <i class="fa-solid fa-arrow-right"></i>';
-    nextBtn.disabled = last; 
+    nextBtn.disabled = last;
     nextBtn.addEventListener('click', () => {
-        loadList(listContainer, role, number + 1); 
+        loadList(listContainer, role, number + 1);
     });
 
     paginationContainer.appendChild(prevBtn);
@@ -76,13 +76,13 @@ async function loadList(container, role, page = 0) {
           <thead>
             <tr>
               <th>Utilizador</th>
-              <th>Email</th>
+              <th>Identificador</th>
               <th>${groupColumnHeader}</th>
             </tr>
           </thead>
           <tbody>
             ${users.map(user => {
-                let groupDisplay = 'Sem grupo'; 
+                let groupDisplay = 'Sem grupo';
                 
                 if (user.role === 'DIRETOR') {
                     groupDisplay = '<span class="badge-admin" style="background-color: #e74c3c; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.8em;">Admin Geral</span>';
@@ -102,7 +102,7 @@ async function loadList(container, role, page = 0) {
                         <span>${user.name} ${user.surname}</span>
                       </div>
                     </td>
-                    <td>${user.email}</td>
+                    <td>${user.username}</td>
                     <td>${groupDisplay}</td>
                   </tr>
                 `;
@@ -126,7 +126,7 @@ async function loadList(container, role, page = 0) {
     if (totalPagesSafe > 1) {
         renderPaginationControls(paginationContainer, container, userPage, role);
     } else {
-        paginationContainer.remove(); 
+        paginationContainer.remove();
     }
 
   } catch (error) {
@@ -160,8 +160,8 @@ export async function renderManageUsersView(viewElement) {
                       </div>
                   </div>
                   <div class="form-group">
-                      <label for="user-email">Email</label>
-                      <input type="email" id="user-email" required>
+                      <label for="user-username">Identificador</label>
+                      <input type="text" id="user-username" required>
                   </div>
                   
                   <div class="form-group">
@@ -238,10 +238,10 @@ export async function renderManageUsersView(viewElement) {
     
     roleSelect.addEventListener('change', () => {
         if (roleSelect.value === 'DIRETOR') {
-            groupSelect.value = ""; 
-            groupSelect.disabled = true; 
+            groupSelect.value = "";
+            groupSelect.disabled = true;
         } else {
-            groupSelect.disabled = false; 
+            groupSelect.disabled = false;
         }
     });
 
@@ -262,16 +262,15 @@ export async function renderManageUsersView(viewElement) {
     userForm.addEventListener("submit", async (e) => {
       e.preventDefault();
 
-      // CORREÇÃO 2: Validação manual para ativar o Toast se algum campo obrigatório estiver vazio
       const name = viewElement.querySelector("#user-name").value.trim();
       const surname = viewElement.querySelector("#user-surname").value.trim();
-      const email = viewElement.querySelector("#user-email").value.trim();
+      const username = viewElement.querySelector("#user-username").value.trim();
       const password = passInput.value;
       const role = roleSelect.value;
 
-      if (!name || !surname || !email || !password || !role) {
+      if (!name || !surname || !username || !password || !role) {
           window.showToast('Por favor, preencha todos os campos obrigatórios (marcados com *).', 'error');
-          return; // Trava o envio para o servidor
+          return;
       }
 
       const submitButton = userForm.querySelector('button[type="submit"]');
@@ -285,7 +284,7 @@ export async function renderManageUsersView(viewElement) {
       const newUser = {
         name: name,
         surname: surname,
-        email: email,
+        username: username,
         password: password,
         role: role,
         group: groupPayload,
@@ -302,7 +301,7 @@ export async function renderManageUsersView(viewElement) {
           method: 'POST',
           body: JSON.stringify(newUser),
         });
-        window.showToast(`Utilizador ${createdUser.name} adicionado com sucesso!`, 'success'); 
+        window.showToast(`Utilizador ${createdUser.name} adicionado com sucesso!`, 'success');
         userForm.reset();
         passInput.dispatchEvent(new Event('input'));
         groupSelect.disabled = false;
@@ -313,8 +312,6 @@ export async function renderManageUsersView(viewElement) {
 
       } catch (error) {
         console.error("Falha ao criar utilizador:", error);
-        
-        // CORREÇÃO 3: Desempacotar a string JSON do erro para mostrar apenas o texto bonitinho
         let finalErrorMsg = "Falha ao criar o utilizador.";
         try {
             const parsedError = JSON.parse(error.message);
@@ -322,11 +319,10 @@ export async function renderManageUsersView(viewElement) {
                 finalErrorMsg = parsedError.message;
             }
         } catch (parseEx) {
-            // Se não for um JSON, mostra a mensagem normal
             finalErrorMsg = error.message || finalErrorMsg;
         }
 
-        window.showToast(finalErrorMsg, 'error'); 
+        window.showToast(finalErrorMsg, 'error');
       } finally {
           submitButton.disabled = false;
           submitButton.textContent = 'Adicionar Utilizador';

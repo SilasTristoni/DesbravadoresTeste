@@ -1,6 +1,6 @@
 // js/apiClient.js
 
-const API_BASE_URL = 'http://localhost:8080';
+import { buildApiUrl } from './url.js';
 
 /**
  * Função global para fazer requisições autenticadas à API.
@@ -35,7 +35,7 @@ export async function fetchApi(endpoint, options = {}) {
         mode: options.mode || 'cors', 
     };
 
-    const url = `${API_BASE_URL}${endpoint}`;
+    const url = buildApiUrl(endpoint);
 
     try {
         const response = await fetch(url, config);

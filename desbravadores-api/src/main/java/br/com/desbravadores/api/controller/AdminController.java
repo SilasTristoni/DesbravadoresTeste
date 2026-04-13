@@ -62,7 +62,7 @@ public class AdminController {
         Pageable pageable,
         Authentication authentication) {
         
-        User currentUser = userRepository.findByEmail(authentication.getName()).orElseThrow();
+        User currentUser = userRepository.findByUsername(authentication.getName()).orElseThrow();
         boolean isDirector = authentication.getAuthorities().stream()
                 .anyMatch(role -> role.getAuthority().equals("DIRETOR"));
         
@@ -86,7 +86,7 @@ public class AdminController {
             dto.put("id", user.getId());
             dto.put("name", user.getName());
             dto.put("surname", user.getSurname());
-            dto.put("email", user.getEmail());
+            dto.put("username", user.getUsername());
             dto.put("role", user.getRole());
             dto.put("level", user.getLevel());
             dto.put("xp", user.getXp());
@@ -166,7 +166,6 @@ public class AdminController {
         return user.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    // CORREÇÃO: Agora devolve um JSON com a mensagem de erro para o Frontend ler!
     @PutMapping("/users/{id}")
     @PreAuthorize("hasAuthority('DIRETOR')")
     public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody User updateData) {

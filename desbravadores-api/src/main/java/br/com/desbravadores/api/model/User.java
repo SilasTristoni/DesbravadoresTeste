@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -34,7 +35,8 @@ public class User {
 
     private String name;
     private String surname;
-    private String email;
+    @Column(name = "username", nullable = false, unique = true)
+    private String username;
     private String password;
     private String avatar;
     private int level;
@@ -47,7 +49,6 @@ public class User {
     @JoinColumn(name = "group_id")
     private Group group;
 
-    // ALTERAÇÃO MVP: Ligação direta com Achievements (sem tabela Badge)
     @ManyToMany(fetch = FetchType.LAZY) 
     @JoinTable(
         name = "user_achievements",
@@ -69,16 +70,14 @@ public class User {
     private Background selectedBackground;
 
     public User() {}
-    
-    // Getters e Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
     public String getSurname() { return surname; }
     public void setSurname(String surname) { this.surname = surname; }
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
+    public String getUsername() { return username; }
+    public void setUsername(String username) { this.username = username; }
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }
     public String getAvatar() { return avatar; }
@@ -91,8 +90,6 @@ public class User {
     public void setRole(Role role) { this.role = role; }
     public Group getGroup() { return group; }
     public void setGroup(Group group) { this.group = group; }
-    
-    // Getter/Setter atualizado para Achievements
     public Set<Achievement> getAchievements() { return achievements; }
     public void setAchievements(Set<Achievement> achievements) { this.achievements = achievements; }
     
