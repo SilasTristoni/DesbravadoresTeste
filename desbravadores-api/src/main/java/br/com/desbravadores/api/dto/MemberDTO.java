@@ -9,12 +9,14 @@ public class MemberDTO {
     private String name;
     private String surname;
     private Role role;
+    private String unitRole;
 
     public MemberDTO(User user) {
         this.id = user.getId();
         this.name = user.getName();
         this.surname = user.getSurname();
         this.role = user.getRole();
+        this.unitRole = user.getUnitRole();
     }
 
     // Getters e Setters
@@ -26,4 +28,6 @@ public class MemberDTO {
     public void setSurname(String surname) { this.surname = surname; }
     public Role getRole() { return role; }
     public void setRole(Role role) { this.role = role; }
+    public String getUnitRole() { return unitRole; }
+    public void setUnitRole(String unitRole) { this.unitRole = unitRole; }
 }

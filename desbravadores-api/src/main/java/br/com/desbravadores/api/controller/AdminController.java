@@ -87,6 +87,7 @@ public class AdminController {
             dto.put("name", user.getName());
             dto.put("surname", user.getSurname());
             dto.put("username", user.getUsername());
+            dto.put("unitRole", user.getUnitRole());
             dto.put("role", user.getRole());
             dto.put("level", user.getLevel());
             dto.put("xp", user.getXp());

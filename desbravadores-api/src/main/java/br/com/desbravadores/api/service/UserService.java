@@ -51,6 +51,7 @@ public class UserService {
         }
 
         user.setUsername(username);
+        user.setUnitRole(normalizeOptional(user.getUnitRole()));
 
         if (user.getPassword() != null && !user.getPassword().isEmpty()) {
             validatePasswordStrength(user.getPassword());
@@ -95,6 +96,10 @@ public class UserService {
             }
             existingUser.setUsername(username);
         }
+
+        if (updateData.getUnitRole() != null) {
+            existingUser.setUnitRole(normalizeOptional(updateData.getUnitRole()));
+        }
         
         existingUser.setLevel(updateData.getLevel());
         
@@ -118,5 +123,14 @@ public class UserService {
 
     private String normalizeUsername(String username) {
         return username == null ? null : username.trim();
+    }
+
+    private String normalizeOptional(String value) {
+        if (value == null) {
+            return null;
+        }
+
+        String normalized = value.trim();
+        return normalized.isBlank() ? null : normalized;
     }
 }

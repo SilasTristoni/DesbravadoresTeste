@@ -18,7 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import br.com.desbravadores.api.dto.PasswordChangeDTO;
+import br.com.desbravadores.api.model.Background;
 import br.com.desbravadores.api.model.User;
+import br.com.desbravadores.api.repository.BackgroundRepository;
 import br.com.desbravadores.api.repository.UserRepository;
 import br.com.desbravadores.api.service.FileStorageService;
 import br.com.desbravadores.api.service.UserService;
@@ -31,6 +33,9 @@ public class ProfileController {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private BackgroundRepository backgroundRepository;
 
     @Autowired
     private UserService userService;
@@ -106,5 +111,33 @@ public class ProfileController {
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+
+    @PutMapping("/me/background")
+    @Transactional
+    public ResponseEntity<?> updateSelectedBackground(@RequestBody java.util.Map<String, Long> payload, Authentication authentication) {
+        String username = authentication.getName();
+        Long backgroundId = payload.get("backgroundId");
+
+        if (backgroundId == null) {
+            return ResponseEntity.badRequest().body(java.util.Map.of("message", "O backgroundId e obrigatorio."));
+        }
+
+        return userRepository.findByUsername(username).map(user -> {
+            java.util.Optional<Background> optionalBackground = backgroundRepository.findById(backgroundId);
+            if (optionalBackground.isEmpty()) {
+                return ResponseEntity.badRequest().body(java.util.Map.of("message", "Fundo nao encontrado."));
+            }
+
+            user.setSelectedBackground(optionalBackground.get());
+            User updatedUser = userRepository.save(user);
+
+            Hibernate.initialize(updatedUser.getSelectedBackground());
+            Hibernate.initialize(updatedUser.getGroup());
+            Hibernate.initialize(updatedUser.getAchievements());
+            Hibernate.initialize(updatedUser.getUnlockedBackgrounds());
+
+            return ResponseEntity.ok(updatedUser);
+        }).orElse(ResponseEntity.notFound().build());
     }
 }

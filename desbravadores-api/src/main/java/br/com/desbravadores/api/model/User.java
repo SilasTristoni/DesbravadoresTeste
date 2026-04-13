@@ -39,6 +39,7 @@ public class User {
     private String username;
     private String password;
     private String avatar;
+    private String unitRole;
     private int level;
     private int xp;
     
@@ -82,6 +83,8 @@ public class User {
     public void setPassword(String password) { this.password = password; }
     public String getAvatar() { return avatar; }
     public void setAvatar(String avatar) { this.avatar = avatar; }
+    public String getUnitRole() { return unitRole; }
+    public void setUnitRole(String unitRole) { this.unitRole = unitRole; }
     public int getLevel() { return level; }
     public void setLevel(int level) { this.level = level; }
     public int getXp() { return xp; }
