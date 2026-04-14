@@ -1,88 +1,110 @@
-// js/views/admin/manage-achievements.js
+import { fetchApi } from "../../core/apiClient.js";
+import { resolveAssetUrl } from "../../core/url.js";
+import { showToast } from "../../ui/toast.js";
 
-import { resolveAssetUrl } from '../../core/url.js';
+function getAchievementIcon(achievement) {
+    return achievement.icon ? resolveAssetUrl(achievement.icon) : "img/escoteiro1.png";
+}
+
+function getUserName(user) {
+    return `${user.name || ""} ${user.surname || ""}`.trim() || user.username || "Utilizador";
+}
+
+function getAchievementTypeLabel(achievement) {
+    return achievement.rewardType === "SEAL" ? "Selo" : "Emblema";
+}
 
 export async function renderManageAchievementsView(viewElement, userId) {
     if (!userId) {
-        viewElement.innerHTML = `<p>Erro: Nenhum utilizador selecionado.</p>`;
+        viewElement.innerHTML = '<div class="admin-widget"><p>Nenhum utilizador foi selecionado.</p></div>';
         return;
     }
 
-    viewElement.innerHTML = `<p>A carregar dados de conquistas...</p>`;
+    viewElement.innerHTML = '<div class="admin-widget"><p>A carregar conquistas do utilizador...</p></div>';
 
     try {
         const [user, allAchievements] = await Promise.all([
             fetchApi(`/api/users/${userId}`),
-            fetchApi('/api/gamification/achievements')
+            fetchApi("/api/gamification/achievements")
         ]);
 
-        const userUnlockedAchievementNames = new Set(user.badges.map(b => b.name));
+        const unlockedAchievementIds = new Set((user.achievements || []).map((achievement) => achievement.id));
 
         viewElement.innerHTML = `
-            <div class="admin-widget">
-                <h2>Gerir Conquistas para: ${user.name} ${user.surname}</h2>
-                <p>Clique em "Conceder" para desbloquear uma conquista para este usuário ou "Revogar" para removê-la.</p>
-                
-                <div class="achievements-management-list">
-                    ${allAchievements.length > 0 ? allAchievements.map(achievement => {
-                        const isUnlocked = userUnlockedAchievementNames.has(achievement.name);
+            <div class="admin-widget achievements-admin-shell">
+                <div class="admin-section-header">
+                    <div>
+                        <p class="section-kicker">Gestao de conquistas</p>
+                        <h2>Conquistas de ${getUserName(user)}</h2>
+                        <p class="section-subtitle">Conceda ou revogue emblemas e selos que o aluno podera visualizar no perfil.</p>
+                    </div>
+                    <button id="back-to-managed-profile" class="btn-action cancel">
+                        <i class="fa-solid fa-arrow-left"></i>
+                        Voltar
+                    </button>
+                </div>
+                <div class="achievement-admin-grid">
+                    ${allAchievements.length > 0 ? allAchievements.map((achievement) => {
+                        const unlocked = unlockedAchievementIds.has(achievement.id);
                         return `
-                        <div class="achievement-manage-item">
-                            <img src="${resolveAssetUrl(achievement.icon)}" alt="${achievement.name}" class="preview-icon">
-                            <div class="achievement-info">
-                                <h4>${achievement.name} (+${achievement.xpReward} XP)</h4>
-                                <p>${achievement.description}</p>
-                            </div>
-                            <button class="action-btn-small ${isUnlocked ? 'revoke-btn' : 'grant-btn'}" 
-                                    data-user-id="${userId}" 
-                                    data-achievement-id="${achievement.id}">
-                                ${isUnlocked ? 'Revogar' : 'Conceder'}
-                            </button>
-                        </div>
-                    `}).join('') : '<p>Nenhuma conquista foi criada ainda. Crie uma na tela "Criar Item".</p>'}
+                            <article class="achievement-admin-card ${unlocked ? "is-unlocked" : ""}">
+                                <img src="${getAchievementIcon(achievement)}" alt="${achievement.name}" class="achievement-admin-icon">
+                                <div class="achievement-admin-copy">
+                                    <span class="achievement-admin-type">${getAchievementTypeLabel(achievement)}</span>
+                                    <h3>${achievement.name}</h3>
+                                    <p>${achievement.description || "Sem descricao."}</p>
+                                </div>
+                                <div class="achievement-admin-meta">
+                                    <span class="achievement-admin-xp">+${achievement.xpReward || 0} XP</span>
+                                    <button
+                                        class="action-btn-small ${unlocked ? "revoke-btn" : "grant-btn"}"
+                                        data-user-id="${userId}"
+                                        data-achievement-id="${achievement.id}"
+                                        data-action="${unlocked ? "revoke" : "grant"}">
+                                        ${unlocked ? "Revogar" : "Conceder"}
+                                    </button>
+                                </div>
+                            </article>
+                        `;
+                    }).join("") : '<p>Nenhuma conquista foi criada ainda. Cadastre uma em "Criar Item".</p>'}
                 </div>
             </div>
-            <style>
-                .achievements-management-list { display: flex; flex-direction: column; gap: 1rem; }
-                .achievement-manage-item { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 1rem; background: var(--bg-primary); padding: 1rem; border-radius: 8px; }
-                .preview-icon { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; }
-                .grant-btn { background-color: var(--scout-green); color: white; }
-                .revoke-btn { background-color: #c62828; color: white; }
-            </style>
         `;
 
-        viewElement.querySelectorAll('.grant-btn, .revoke-btn').forEach(button => {
-            button.addEventListener('click', async (e) => {
-                const btn = e.currentTarget;
-                const uId = btn.dataset.userId;
-                const achId = btn.dataset.achievementId;
-                const isGranting = btn.classList.contains('grant-btn');
-                
-                btn.disabled = true;
-                btn.textContent = 'Aguarde...';
-
-                try {
-                    const endpoint = `/api/admin/users/${uId}/achievements/${achId}`;
-                    const method = isGranting ? 'POST' : 'DELETE';
-
-                    const response = await fetchApi(endpoint, { method: method });
-                    showToast(response.message, 'success');
-
-                    // A magia acontece aqui: a função abaixo redesenha a tela,
-                    // criando um novo botão já no estado correto.
-                    renderManageAchievementsView(viewElement, userId);
-
-                } catch (error) {
-                    showToast(`Erro: ${error.message}`, 'error');
-                    // Se der erro, reativamos o botão para que o utilizador possa tentar novamente
-                    btn.disabled = false;
-                    btn.textContent = isGranting ? 'Conceder' : 'Revogar';
-                }
-                // O bloco "finally" foi removido pois era a causa do problema.
-            });
+        viewElement.querySelector("#back-to-managed-profile")?.addEventListener("click", async () => {
+            try {
+                const refreshedUser = await fetchApi(`/api/admin/users/${userId}`);
+                window.dispatchEvent(new CustomEvent("navigate", {
+                    detail: { view: "manage-profile", data: refreshedUser }
+                }));
+            } catch (error) {
+                showToast("Nao foi possivel reabrir o perfil gerido.", "error");
+            }
         });
 
+        viewElement.querySelectorAll("[data-action]").forEach((button) => {
+            button.addEventListener("click", async (event) => {
+                const currentButton = event.currentTarget;
+                const targetUserId = currentButton.dataset.userId;
+                const achievementId = currentButton.dataset.achievementId;
+                const action = currentButton.dataset.action;
+
+                currentButton.disabled = true;
+                currentButton.textContent = "Aguarde...";
+
+                try {
+                    const method = action === "grant" ? "POST" : "DELETE";
+                    const response = await fetchApi(`/api/admin/users/${targetUserId}/achievements/${achievementId}`, { method });
+                    showToast(response.message || "Conquista atualizada.", "success");
+                    await renderManageAchievementsView(viewElement, userId);
+                } catch (error) {
+                    showToast(error.message || "Nao foi possivel atualizar a conquista.", "error");
+                    currentButton.disabled = false;
+                    currentButton.textContent = action === "grant" ? "Conceder" : "Revogar";
+                }
+            });
+        });
     } catch (error) {
-        viewElement.innerHTML = `<p style="color: red;">Erro ao carregar a página de gestão: ${error.message}</p>`;
+        viewElement.innerHTML = `<div class="admin-widget"><p style="color: #c62828;">Nao foi possivel carregar a gestao de conquistas: ${error.message}</p></div>`;
     }
 }

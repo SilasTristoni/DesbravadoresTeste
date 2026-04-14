@@ -1,68 +1,128 @@
-// js/views/perfil.js
+import { fetchApi } from "../../core/apiClient.js";
+import { resolveAssetUrl } from "../../core/url.js";
+import { showToast } from "../../ui/toast.js";
 
-// Importa showToast se ainda não estiver global
-import  { showToast as toastFunc} from '../../ui/toast.js';
-import { resolveAssetUrl } from '../../core/url.js';
-// Ajuste o caminho se necessário
-if (typeof window.showToast === 'undefined') {
-    window.showToast = toastFunc;
-}
-
-// --- FUNÇÕES AUXILIARES ---
-
-function getUserPayload() {
-     const token = localStorage.getItem('jwtToken');
-    if (!token) return null;
-    try {
-        const base64Url = token.split('.')[1];
-        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-        }).join(''));
-        return JSON.parse(jsonPayload);
-    } catch (error) {
-        console.error("Erro ao decodificar token:", error);
-        return null;
-    }
-}
+let currentUserData = null;
+let isEditing = false;
 
 function calculateXpForNextLevel(currentLevel) {
     return 100 + (currentLevel * 50);
 }
 
-let currentUserData = null;
-let isEditing = false;
+function getTokenPayload() {
+    const token = localStorage.getItem("jwtToken");
+    if (!token) {
+        return null;
+    }
 
-// Renderiza o bloco de identidade no modo de visualização
-function renderInfoDisplay(user) {
+    try {
+        const payload = token.split(".")[1]
+            .replace(/-/g, "+")
+            .replace(/_/g, "/");
+        return JSON.parse(atob(payload));
+    } catch {
+        return null;
+    }
+}
+
+function isAdminRole(role) {
+    return role === "MONITOR" || role === "DIRETOR";
+}
+
+function getUserName(user) {
+    return `${user.name || ""} ${user.surname || ""}`.trim() || user.username || "Utilizador";
+}
+
+function getUserSubtitle(user) {
+    const groupName = user.group?.name || "Sem unidade";
+    const unitRole = user.unitRole ? ` • ${user.unitRole}` : "";
+    return `${groupName}${unitRole}`;
+}
+
+function getAvatarUrl(user) {
+    if (user.avatar && user.avatar.startsWith("/file/")) {
+        return `${resolveAssetUrl(user.avatar)}?v=${Date.now()}`;
+    }
+
+    return user.avatar || "img/escoteiro1.png";
+}
+
+function getBackgroundStyle(background) {
+    const imageUrl = background?.imageUrl ? resolveAssetUrl(background.imageUrl) : null;
+    const textColor = background?.textColor || "#FFFFFF";
+
+    if (imageUrl) {
+        return `background: linear-gradient(135deg, rgba(8, 25, 17, 0.18), rgba(8, 25, 17, 0.42)), url(${imageUrl}) center/cover no-repeat; color: ${textColor};`;
+    }
+
+    return `background: ${background?.gradient || "linear-gradient(135deg, #1f4b2d, #386641)"}; color: ${textColor};`;
+}
+
+function getPageItems(payload) {
+    if (Array.isArray(payload)) {
+        return payload;
+    }
+
+    if (Array.isArray(payload?.content)) {
+        return payload.content;
+    }
+
+    return [];
+}
+
+function formatDateTime(value) {
+    if (!value) {
+        return "Nao concluido";
+    }
+
+    return new Date(value).toLocaleDateString("pt-BR", {
+        year: "numeric",
+        month: "short",
+        day: "numeric"
+    });
+}
+
+function translateSpecialtyStatus(status) {
+    const labels = {
+        NOT_STARTED: "Nao iniciada",
+        IN_PROGRESS: "Em andamento",
+        COMPLETED: "Concluida"
+    };
+
+    return labels[status] || status || "Nao iniciada";
+}
+
+function renderIdentityDisplay(user, canEdit) {
     return `
-        <div class="info-display" id="profileInfoDisplay">
-            <h2>${user.name} ${user.surname}</h2>
-            <p>${user.group ? user.group.name : 'Sem Grupo'} • Nível ${user.level}</p>
+        <div class="profile-identity-copy">
+            <p class="profile-overline">${user.username || "perfil"}</p>
+            <h2>${getUserName(user)}</h2>
+            <p>${getUserSubtitle(user)}</p>
         </div>
+        ${canEdit ? `
+            <button id="editProfileBtn" class="edit-btn" type="button" aria-label="Editar perfil">
+                <i class="fa-solid fa-pen"></i>
+            </button>
+        ` : ""}
     `;
 }
 
-// Renderiza o bloco de identidade no modo de edição
-function renderEditForm(user) {
+function renderIdentityEditForm(user) {
     return `
-        <form id="edit-profile-form" class="edit-form" style="display: block;">
+        <form id="edit-profile-form" class="edit-form edit-form-visible">
             <div class="form-row">
                 <div class="form-group">
                     <label for="edit-name">Nome</label>
-                    <input type="text" id="edit-name" value="${user.name}" required>
+                    <input type="text" id="edit-name" value="${user.name || ""}" required>
                 </div>
                 <div class="form-group">
                     <label for="edit-surname">Sobrenome</label>
-                    <input type="text" id="edit-surname" value="${user.surname}" required>
+                    <input type="text" id="edit-surname" value="${user.surname || ""}" required>
                 </div>
             </div>
             <div class="form-group">
-                <label for="edit-avatar">Alterar Avatar (Upload)</label>
+                <label for="edit-avatar">Avatar</label>
                 <input type="file" id="edit-avatar" accept="image/*">
-                <small style="color: white; opacity: 0.8; margin-top: 5px; display: block;">
-                    Deixe em branco para manter o avatar atual.
-                </small>
             </div>
             <div class="form-actions">
                 <button type="submit" class="btn-save-sidebar">Salvar</button>
@@ -72,336 +132,451 @@ function renderEditForm(user) {
     `;
 }
 
-// Alterna entre o modo de visualização e edição
-function toggleEditMode(viewElement, user) {
-    isEditing = !isEditing;
-    renderIdentityBlock(viewElement, user);
-}
+function renderAchievementsTab(user) {
+    const achievements = user.achievements || [];
 
-// Renderiza o bloco de identidade (cabeçalho do perfil)
-function renderIdentityBlock(viewElement, user) {
-    const infoContainer = viewElement.querySelector('#info-and-edit-wrapper');
-    const editBtn = viewElement.querySelector('#editProfileBtn');
-
-    if (!infoContainer) return;
-
-    infoContainer.innerHTML = isEditing ? renderEditForm(user) : renderInfoDisplay(user);
-
-    if (editBtn) {
-        // Mostra o botão Editar apenas no perfil próprio E quando não está editando
-        editBtn.style.display = user.isOtherUser || isEditing ? 'none' : 'flex';
+    if (achievements.length === 0) {
+        return '<p class="empty-state">Nenhum emblema desbloqueado ainda.</p>';
     }
 
-    if (isEditing) {
-        viewElement.querySelector('#cancelEditBtn').addEventListener('click', () => {
-            toggleEditMode(viewElement, user); // Passa o 'user' original
-        });
-
-        const editForm = viewElement.querySelector('#edit-profile-form');
-        editForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const saveButton = editForm.querySelector('.btn-save-sidebar');
-
-            const formData = new FormData();
-            formData.append('name', viewElement.querySelector('#edit-name').value);
-            formData.append('surname', viewElement.querySelector('#edit-surname').value);
-            
-            const avatarFile = viewElement.querySelector('#edit-avatar').files[0];
-            if (avatarFile) {
-                formData.append('avatarFile', avatarFile);
-            }
-
-            saveButton.textContent = 'Salvando...';
-            saveButton.disabled = true;
-
-            try {
-                const updatedUser = await fetchApi('/api/profile/me', {
-                    method: 'PUT',
-                    body: formData 
-                });
-                
-                currentUserData = {...currentUserData, ...updatedUser};
-                
-                toggleEditMode(viewElement, currentUserData);
-                showToast('Perfil atualizado com sucesso!', 'success');
-                
-                // Recarrega a view se necessário (para Admin visualizar, por exemplo)
-                if (updatedUser.id) {
-                     renderProfileView(viewElement, updatedUser.id);
-                }
-
-            } catch (error) {
-                showToast(`Erro ao salvar perfil: ${error.message}`, 'error');
-                saveButton.textContent = 'Salvar';
-                saveButton.disabled = false;
-            }
-        });
-    }
+    return `
+        <div class="profile-achievement-grid">
+            ${achievements.map((achievement) => `
+                <article class="profile-achievement-card">
+                    <img
+                        src="${achievement.icon ? resolveAssetUrl(achievement.icon) : "img/escoteiro1.png"}"
+                        alt="${achievement.name}"
+                        class="profile-achievement-icon">
+                    <div>
+                        <span class="profile-achievement-type">${achievement.rewardType === "SEAL" ? "Selo" : "Emblema"}</span>
+                        <h4>${achievement.name}</h4>
+                        <p>${achievement.description || "Sem descricao."}</p>
+                    </div>
+                </article>
+            `).join("")}
+        </div>
+    `;
 }
 
-// --- FUNÇÃO DE RENDERIZAÇÃO DO HISTÓRICO DE CHAMADAS ---
-async function renderAttendanceHistoryTab(viewElement, user) {
-    const tabContent = viewElement.querySelector('#attendance-tab-content');
-    if (!tabContent) return;
+function renderBackgroundsTab(user, backgrounds, canEditBackground) {
+    if (backgrounds.length === 0) {
+        return '<p class="empty-state">Nenhum fundo disponivel.</p>';
+    }
 
-    tabContent.innerHTML = '<p>A carregar histórico de chamadas...</p>';
+    return `
+        <div class="backgrounds-grid">
+            ${backgrounds.map((background) => {
+                const selected = user.selectedBackground?.id === background.id;
+                return `
+                    <article
+                        class="background-card ${selected ? "selected" : ""} ${canEditBackground ? "" : "locked"}"
+                        data-bg-id="${background.id}">
+                        <div class="background-preview" style="${getBackgroundStyle(background)}"></div>
+                        <div class="background-info">
+                            <strong>${background.name}</strong>
+                            <span>${selected ? "Selecionado" : canEditBackground ? "Disponivel" : "Visualizacao"}</span>
+                        </div>
+                    </article>
+                `;
+            }).join("")}
+        </div>
+    `;
+}
+
+function renderRequirementProgressTab(progress) {
+    const items = progress?.items || [];
+
+    return `
+        <div class="progress-summary-grid">
+            <article class="progress-summary-card">
+                <span>Total</span>
+                <strong>${progress?.totalRequirements || 0}</strong>
+            </article>
+            <article class="progress-summary-card">
+                <span>Concluidos</span>
+                <strong>${progress?.completedRequirements || 0}</strong>
+            </article>
+            <article class="progress-summary-card">
+                <span>Pendentes</span>
+                <strong>${progress?.remainingRequirements || 0}</strong>
+            </article>
+            <article class="progress-summary-card">
+                <span>Conclusao</span>
+                <strong>${progress?.completionPercentage || 0}%</strong>
+            </article>
+        </div>
+        <div class="progress-rail">
+            <div class="progress-rail-fill" style="width: ${progress?.completionPercentage || 0}%"></div>
+        </div>
+        <div class="profile-list">
+            ${items.length > 0 ? items.map((item) => `
+                <article class="profile-list-card ${item.completed ? "is-complete" : ""}">
+                    <div class="profile-list-head">
+                        <div>
+                            <span class="profile-list-tag">${item.category || "Requisito"}</span>
+                            <h4>${item.title}</h4>
+                        </div>
+                        <span class="profile-list-status ${item.completed ? "success" : "pending"}">
+                            ${item.completed ? "Concluido" : "Pendente"}
+                        </span>
+                    </div>
+                    <p>${item.description || "Sem descricao."}</p>
+                    <div class="profile-list-foot">
+                        <span>Classe: ${item.classLevel || progress?.classLevel || "Geral"}</span>
+                        <span>${item.completed ? `Atualizado em ${formatDateTime(item.completedAt)}` : "Aguardando validacao"}</span>
+                    </div>
+                </article>
+            `).join("") : '<p class="empty-state">Nenhum requisito cadastrado.</p>'}
+        </div>
+    `;
+}
+
+function renderSpecialtyProgressTab(progress) {
+    const items = progress?.items || [];
+
+    return `
+        <div class="progress-summary-grid">
+            <article class="progress-summary-card">
+                <span>Total</span>
+                <strong>${progress?.totalSpecialties || 0}</strong>
+            </article>
+            <article class="progress-summary-card">
+                <span>Concluidas</span>
+                <strong>${progress?.completedSpecialties || 0}</strong>
+            </article>
+            <article class="progress-summary-card">
+                <span>Em andamento</span>
+                <strong>${progress?.inProgressSpecialties || 0}</strong>
+            </article>
+            <article class="progress-summary-card">
+                <span>Nao iniciadas</span>
+                <strong>${progress?.notStartedSpecialties || 0}</strong>
+            </article>
+        </div>
+        <div class="profile-list specialty-list">
+            ${items.length > 0 ? items.map((item) => `
+                <article class="profile-list-card specialty-card">
+                    <div class="specialty-accent" style="background: ${item.accentColor || "#386641"};"></div>
+                    <div class="specialty-body">
+                        <div class="profile-list-head">
+                            <div>
+                                <span class="profile-list-tag">${item.area || "Especialidade"}</span>
+                                <h4>${item.name}</h4>
+                            </div>
+                            <span class="profile-list-status status-${(item.status || "NOT_STARTED").toLowerCase()}">
+                                ${translateSpecialtyStatus(item.status)}
+                            </span>
+                        </div>
+                        <p>${item.description || "Sem descricao."}</p>
+                        <div class="profile-list-foot">
+                            <span>${item.iconName || "Catalogo oficial"}</span>
+                            <span>${item.updatedAt ? `Atualizado em ${formatDateTime(item.updatedAt)}` : "Sem progresso registrado"}</span>
+                        </div>
+                    </div>
+                </article>
+            `).join("") : '<p class="empty-state">Nenhuma especialidade cadastrada.</p>'}
+        </div>
+    `;
+}
+
+function renderGroupTab(group) {
+    if (!group) {
+        return '<p class="empty-state">Este utilizador ainda nao foi vinculado a uma unidade.</p>';
+    }
+
+    const details = group.group || group;
+    const members = group.members || [];
+
+    return `
+        <section class="unit-profile-card" style="border-top-color: ${details.accentColor || "#386641"};">
+            <div class="unit-profile-head">
+                <div>
+                    <p class="profile-overline">Minha unidade</p>
+                    <h3>${details.name}</h3>
+                    <p>${details.description || "Sem descricao cadastrada."}</p>
+                </div>
+                <div class="unit-profile-metrics">
+                    <span><strong>${group.totalXp || 0}</strong> XP</span>
+                    <span><strong>${members.length}</strong> membros</span>
+                </div>
+            </div>
+            <div class="unit-member-list">
+                ${members.length > 0 ? members.map((member) => `
+                    <article class="unit-member-card">
+                        <div>
+                            <strong>${getUserName(member)}</strong>
+                            <p>${member.unitRole || member.role || "Membro"}</p>
+                        </div>
+                        <span>Nivel ${member.level || 1} • ${member.xp || 0} XP</span>
+                    </article>
+                `).join("") : '<p class="empty-state">Nenhum membro encontrado nesta unidade.</p>'}
+            </div>
+        </section>
+    `;
+}
+
+function renderAttendanceTab(history) {
+    if (!history.length) {
+        return '<p class="empty-state">Nenhum registro de frequencia encontrado.</p>';
+    }
+
+    return `
+        <div class="attendance-history-list">
+            ${history.map((record) => `
+                <article class="attendance-record ${record.present ? "present" : "absent"}">
+                    <span class="date">${new Date(record.date).toLocaleDateString("pt-BR", { year: "numeric", month: "long", day: "numeric" })}</span>
+                    <span class="status">${record.present ? "PRESENTE" : "AUSENTE"}</span>
+                    <span class="group">${record.groupName || "Sem unidade"}</span>
+                </article>
+            `).join("")}
+        </div>
+    `;
+}
+
+function bindTabNavigation(viewElement) {
+    const buttons = viewElement.querySelectorAll(".tab-btn");
+    const panels = viewElement.querySelectorAll(".tab-content");
+
+    buttons.forEach((button) => {
+        button.addEventListener("click", () => {
+            const targetTab = button.dataset.tab;
+            buttons.forEach((item) => item.classList.toggle("active", item === button));
+            panels.forEach((panel) => panel.classList.toggle("active", panel.id === `${targetTab}-tab-content`));
+        });
+    });
+}
+
+async function saveMyProfile(viewElement) {
+    const form = viewElement.querySelector("#edit-profile-form");
+    const submitButton = form.querySelector(".btn-save-sidebar");
+    const formData = new FormData();
+    const avatarFile = viewElement.querySelector("#edit-avatar")?.files?.[0];
+
+    formData.append("name", viewElement.querySelector("#edit-name").value.trim());
+    formData.append("surname", viewElement.querySelector("#edit-surname").value.trim());
+
+    if (avatarFile) {
+        formData.append("avatarFile", avatarFile);
+    }
+
+    submitButton.disabled = true;
+    submitButton.textContent = "Salvando...";
 
     try {
-        const history = await fetchApi('/api/chamada/history');
-
-        if (history.length === 0) {
-            tabContent.innerHTML = '<p>Nenhum registro de chamada encontrado.</p>';
-            return;
-        }
-
-        const historyHtml = history.map(record => {
-            const statusClass = record.present ? 'present' : 'absent';
-            const statusText = record.present ? 'PRESENTE' : 'AUSENTE';
-            const dateFormatted = new Date(record.date).toLocaleDateString('pt-BR', { year: 'numeric', month: 'long', day: 'numeric' });
-
-            return `
-                <div class="attendance-record ${statusClass}">
-                    <span class="date">${dateFormatted}</span>
-                    <span class="status">${statusText}</span>
-                    <span class="group">${record.groupName}</span>
-                </div>
-            `;
-        }).join('');
-
-        tabContent.innerHTML = `
-            <style>
-                .attendance-record {
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    padding: 10px;
-                    margin-bottom: 5px;
-                    border-radius: 5px;
-                    background-color: var(--bg-light);
-                    border-left: 5px solid;
-                }
-                .attendance-record.present { border-left-color: var(--scout-green); }
-                .attendance-record.absent { border-left-color: var(--scout-red); }
-                .attendance-record .date { font-weight: bold; }
-                .attendance-record .status { font-size: 0.9em; padding: 3px 8px; border-radius: 3px; }
-                .attendance-record.present .status { background-color: var(--scout-green); color: white; }
-                .attendance-record.absent .status { background-color: var(--scout-red); color: white; }
-                .attendance-record .group { font-size: 0.8em; color: var(--text-secondary); }
-            </style>
-            <div class="attendance-history-list">
-                ${historyHtml}
-            </div>
-        `;
-
+        await fetchApi("/api/profile/me", {
+            method: "PUT",
+            body: formData
+        });
+        isEditing = false;
+        showToast("Perfil atualizado com sucesso.", "success");
+        await renderProfileView(viewElement, null);
     } catch (error) {
-        tabContent.innerHTML = `<p style="color: red;">Erro ao carregar histórico: ${error.message}</p>`;
+        showToast(error.message || "Nao foi possivel atualizar o perfil.", "error");
+        submitButton.disabled = false;
+        submitButton.textContent = "Salvar";
     }
 }
 
-// Renderiza a lista de fundos e adiciona interatividade
-async function renderBackgroundsTab(viewElement, user, allBackgrounds) {
-    const isOwnProfile = !user.isOtherUser;
-    const backgroundsGrid = allBackgrounds.map(bg => {
-        const imageUrl = bg.imageUrl ? resolveAssetUrl(bg.imageUrl) : null;
-        const style = imageUrl
-            ? `background: url(${imageUrl}) center/cover no-repeat; color: ${bg.textColor || '#FFFFFF'};` 
-            : `background: ${bg.gradient || 'var(--scout-green)'}; color: ${bg.textColor || '#FFFFFF'};`; 
-
-        const isSelected = user.selectedBackground && user.selectedBackground.id === bg.id;
-
-        return `
-            <div class="background-card ${isSelected ? 'selected' : ''} ${isOwnProfile ? '' : 'locked'}"
-                 data-bg-id="${bg.id}"
-                 title="${isOwnProfile ? 'Clique para selecionar' : 'Visível apenas para perfil próprio'}">
-                <div class="background-preview" style="${style}"></div>
-                <div class="background-info">
-                    <strong>${bg.name}</strong>
-                    ${isSelected ? ' (Selecionado)' : ''}
-                </div>
-            </div>
-        `;
-    }).join('');
-
-    const tabContent = viewElement.querySelector('#backgrounds-tab-content');
-    if (tabContent) {
-        tabContent.innerHTML = `<div class="backgrounds-grid">${backgroundsGrid || '<p>Nenhum fundo disponível.</p>'}</div>`; 
-
-        if (isOwnProfile) {
-            tabContent.querySelectorAll('.background-card:not(.locked)').forEach(card => { 
-                card.addEventListener('click', async function() {
-                    const bgId = this.dataset.bgId;
-                    const previouslySelected = tabContent.querySelector('.background-card.selected');
-                    const thisCard = this; 
-
-                    thisCard.style.pointerEvents = 'none';
-                    thisCard.style.opacity = '0.7';
-
-                    try {
-                        await fetchApi('/api/profile/me/background', {
-                            method: 'PUT',
-                            body: JSON.stringify({ backgroundId: parseInt(bgId, 10) })
-                        });
-
-                        if (previouslySelected) {
-                            previouslySelected.classList.remove('selected');
-                             previouslySelected.querySelector('.background-info').textContent = previouslySelected.querySelector('strong').textContent; 
-                        }
-                        thisCard.classList.add('selected');
-                         thisCard.querySelector('.background-info').innerHTML = `<strong>${thisCard.querySelector('strong').textContent}</strong> (Selecionado)`;
-
-                        showToast('Fundo do perfil atualizado!', 'success');
-
-                        const selectedBgData = allBackgrounds.find(bg => bg.id == bgId);
-                         if (selectedBgData) {
-                            const identityBlock = viewElement.querySelector('#identityBlock');
-                            const newImageUrl = selectedBgData.imageUrl ? resolveAssetUrl(selectedBgData.imageUrl) : null;
-                            const newStyle = newImageUrl
-                                ? `background: url(${newImageUrl}) center/cover no-repeat; color: ${selectedBgData.textColor || '#FFFFFF'};`
-                                : `background: ${selectedBgData.gradient || 'var(--scout-green)'}; color: ${selectedBgData.textColor || '#FFFFFF'};`;
-                            identityBlock.style.cssText = newStyle;
-
-                            currentUserData.selectedBackground = selectedBgData;
-                         }
-
-                    } catch (error) {
-                        showToast(`Erro ao selecionar fundo: ${error.message}`, 'error');
-                    } finally {
-                        thisCard.style.pointerEvents = 'auto';
-                        thisCard.style.opacity = '1';
-                    }
-                });
-            });
-        }
-    }
-}
-
-
-// --- FUNÇÃO PRINCIPAL DE RENDERIZAÇÃO DA VIEW ---
-
-export async function renderProfileView(viewElement, userId = null) {
-
-    // --- CORREÇÃO: TRATATIVA PARA FUNCIONALIDADE EM DESENVOLVIMENTO ---
-    // Se userId for null, significa que é a aba "Perfil" (meu perfil).
-    // Evitamos chamar a API aqui para não causar logout/erro e exibimos o toast.
-    if (!userId) {
-        viewElement.innerHTML = `
-            <div class="profile-container">
-                <div class="admin-widget" style="text-align: center; padding: 3rem;">
-                    <i class="fa-solid fa-person-digging" style="font-size: 3rem; color: var(--scout-green); margin-bottom: 1rem;"></i>
-                    <h2>Perfil</h2>
-                    <p>Esta funcionalidade será implementada no futuro.</p>
-                </div>
-            </div>
-        `;
-        showToast('Funcionalidade será implementada no futuro.', 'info');
+function bindIdentityActions(viewElement, user, canEdit) {
+    const wrapper = viewElement.querySelector("#identity-actions");
+    if (!wrapper) {
         return;
     }
-    // ------------------------------------------------------------------
 
-    // Mantemos a lógica abaixo apenas para quando o ADMIN visualiza o perfil de OUTRO utilizador (userId existe)
-    viewElement.innerHTML = `<p>A carregar perfil...</p>`;
+    wrapper.innerHTML = isEditing && canEdit ? renderIdentityEditForm(user) : renderIdentityDisplay(user, canEdit);
+
+    if (!isEditing && canEdit) {
+        wrapper.querySelector("#editProfileBtn")?.addEventListener("click", () => {
+            isEditing = true;
+            bindIdentityActions(viewElement, user, canEdit);
+        });
+        return;
+    }
+
+    wrapper.querySelector("#cancelEditBtn")?.addEventListener("click", () => {
+        isEditing = false;
+        bindIdentityActions(viewElement, currentUserData || user, canEdit);
+    });
+
+    wrapper.querySelector("#edit-profile-form")?.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        await saveMyProfile(viewElement);
+    });
+}
+
+function bindBackgroundSelection(viewElement, backgrounds) {
+    viewElement.querySelectorAll(".background-card:not(.locked)").forEach((card) => {
+        card.addEventListener("click", async () => {
+            const backgroundId = Number(card.dataset.bgId);
+            card.style.pointerEvents = "none";
+            card.style.opacity = "0.7";
+
+            try {
+                currentUserData = await fetchApi("/api/profile/me/background", {
+                    method: "PUT",
+                    body: JSON.stringify({ backgroundId })
+                });
+                showToast("Fundo do perfil atualizado.", "success");
+                renderProfileView(viewElement, null);
+            } catch (error) {
+                showToast(error.message || "Nao foi possivel atualizar o fundo.", "error");
+                card.style.pointerEvents = "auto";
+                card.style.opacity = "1";
+            }
+        });
+    });
+}
+
+async function renderMyProfile(viewElement) {
+    viewElement.innerHTML = '<div class="profile-container"><p>A carregar o seu perfil...</p></div>';
+
+    const tokenPayload = getTokenPayload();
+    const adminProfile = isAdminRole(tokenPayload?.role);
+    const groupPromise = adminProfile ? Promise.resolve(null) : fetchApi("/api/groups/me").catch(() => null);
+    const attendancePromise = adminProfile ? Promise.resolve([]) : fetchApi("/api/chamada/history").catch(() => []);
 
     try {
-        const endpoint = `/api/users/${userId}`;
-        const user = await fetchApi(endpoint);
-        // Adiciona flag para saber se é o perfil de outra pessoa (neste caso sempre será true pois userId != null)
-        user.isOtherUser = true;
+        const [user, backgroundsResponse, requirementsProgress, specialtiesProgress, group, attendanceHistory] = await Promise.all([
+            fetchApi("/api/profile/me"),
+            fetchApi("/api/backgrounds?size=100"),
+            fetchApi("/api/profile/me/requirements-progress").catch(() => null),
+            fetchApi("/api/profile/me/specialties-progress").catch(() => null),
+            groupPromise,
+            attendancePromise
+        ]);
 
-        currentUserData = user; 
-        isEditing = false; 
+        currentUserData = user;
 
-        const allBackgrounds = await fetchApi('/api/backgrounds'); 
-
-        const currentUserPayload = getUserPayload();
-        const isAdminViewingOther = (currentUserPayload?.role === 'DIRETOR' || currentUserPayload?.role === 'MONITOR') && user.isOtherUser;
-        const isOwnProfile = false; // Como userId != null, nunca é o próprio perfil aqui
-
-        const bg = user.selectedBackground;
-        
-        let avatarUrl;
-        if (user.avatar && user.avatar.startsWith('/file/')) {
-            avatarUrl = `${resolveAssetUrl(user.avatar)}?${new Date().getTime()}`;
-        } else {
-            avatarUrl = (user.avatar || 'img/escoteiro1.png');
-        }
-        
-        const bgImageUrl = bg?.imageUrl ? resolveAssetUrl(bg.imageUrl) : null;
-        const backgroundStyle = bgImageUrl
-            ? `background: url(${bgImageUrl}) center/cover no-repeat; color: ${bg.textColor || '#FFFFFF'};`
-            : `background: ${bg?.gradient || 'var(--scout-green)'}; color: ${bg?.textColor || '#FFFFFF'};`;
-
-
-        const xpNeeded = calculateXpForNextLevel(user.level);
-        const xpProgressPercentage = xpNeeded > 0 ? Math.min((user.xp / xpNeeded) * 100, 100) : 0; 
+        const backgrounds = getPageItems(backgroundsResponse);
+        const xpNeeded = calculateXpForNextLevel(user.level || 1);
+        const xpPercentage = xpNeeded > 0 ? Math.min(((user.xp || 0) / xpNeeded) * 100, 100) : 0;
 
         viewElement.innerHTML = `
             <div class="profile-container">
-                <div class="profile-identity-block" id="identityBlock" style="${backgroundStyle}">
-                    <div class="profile-identity-header" style="display: flex; align-items: flex-start; width: 100%;">
-                        <img src="${avatarUrl}" alt="Avatar" class="avatar-img">
-                        <div style="flex-grow: 1; display: flex; justify-content: space-between; align-items: flex-start; margin-left: 1.5rem;">
-                            <div class="info-and-edit-wrapper" id="info-and-edit-wrapper">
-                                ${renderInfoDisplay(user)}
-                            </div>
-                        </div>
+                <section class="profile-identity-block" id="identityBlock" style="${getBackgroundStyle(user.selectedBackground)}">
+                    <div class="profile-identity-header">
+                        <img src="${getAvatarUrl(user)}" alt="${getUserName(user)}" class="avatar-img">
+                        <div class="info-and-edit-wrapper" id="identity-actions"></div>
                     </div>
-                </div>
+                </section>
 
-                <div class="profile-progress-block">
+                <section class="profile-progress-block">
                     <div class="level-display">
-                        <div class="level-badge">Nível ${user.level}</div>
-                        <div class="xp-text">${user.xp} / ${xpNeeded} XP</div>
+                        <div class="level-badge">Nivel ${user.level || 1}</div>
+                        <div class="xp-text">${user.xp || 0} / ${xpNeeded} XP</div>
                     </div>
                     <div class="progress-bar-container">
-                        <div class="progress-bar-fill" style="width: ${xpProgressPercentage}%">
-                            ${xpProgressPercentage > 15 ? `${Math.round(xpProgressPercentage)}%` : ''}
-                        </div>
+                        <div class="progress-bar-fill" style="width: ${xpPercentage}%">${Math.round(xpPercentage)}%</div>
                     </div>
-                </div>
+                </section>
 
-                ${isAdminViewingOther ? `
-                    <div class="admin-widget" style="background-color: var(--scout-tan); border-left: 5px solid var(--scout-brown);">
-                         <h3 style="color: var(--scout-brown);">Ações de Administrador</h3>
-                        <button id="manage-achievements-btn" class="action-btn" data-user-id="${user.id}" style="background-color: var(--scout-brown); width: auto; padding: 10px 15px;">Gerir Conquistas</button>
-                    </div>
-                ` : ''}
-
-                <div class="profile-achievements-block">
+                <section class="profile-achievements-block">
                     <div class="tabs">
                         <nav class="tab-nav">
-                            <button class="tab-btn active" data-tab="badges">Emblemas</button>
+                            <button class="tab-btn active" data-tab="achievements">Emblemas</button>
+                            <button class="tab-btn" data-tab="backgrounds">Fundos</button>
+                            <button class="tab-btn" data-tab="requirements">Requisitos</button>
+                            <button class="tab-btn" data-tab="specialties">Especialidades</button>
+                            ${adminProfile ? "" : '<button class="tab-btn" data-tab="group">Minha Unidade</button>'}
+                            ${adminProfile ? "" : '<button class="tab-btn" data-tab="attendance">Frequencia</button>'}
                         </nav>
-
-                        <div id="badges-tab-content" class="tab-content active">
-                            <div class="badges-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 1rem; justify-items: center;">
-                                ${user.badges && user.badges.length > 0 ? user.badges.map(badge => `
-                                    <div class="badge-item" title="${badge.name}: ${badge.description}">
-                                        <img src="${resolveAssetUrl(badge.icon)}" alt="${badge.name}" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 3px solid var(--scout-gold);">
-                                        <div class="badge-name" style="font-size: 0.8rem; margin-top: 5px; color: var(--text-secondary);">${badge.name}</div>
-                                    </div>
-                                `).join('') : '<p style="grid-column: 1 / -1;">Nenhum emblema conquistado ainda.</p>'}
-                            </div>
-                        </div>
+                        <div id="achievements-tab-content" class="tab-content active">${renderAchievementsTab(user)}</div>
+                        <div id="backgrounds-tab-content" class="tab-content">${renderBackgroundsTab(user, backgrounds, true)}</div>
+                        <div id="requirements-tab-content" class="tab-content">${requirementsProgress ? renderRequirementProgressTab(requirementsProgress) : '<p class="empty-state">Sem dados de requisitos.</p>'}</div>
+                        <div id="specialties-tab-content" class="tab-content">${specialtiesProgress ? renderSpecialtyProgressTab(specialtiesProgress) : '<p class="empty-state">Sem dados de especialidades.</p>'}</div>
+                        ${adminProfile ? "" : `<div id="group-tab-content" class="tab-content">${renderGroupTab(group)}</div>`}
+                        ${adminProfile ? "" : `<div id="attendance-tab-content" class="tab-content">${renderAttendanceTab(attendanceHistory)}</div>`}
                     </div>
-                </div>
+                </section>
             </div>
         `;
 
-        const manageBtn = viewElement.querySelector('#manage-achievements-btn');
-        if (manageBtn) {
-            manageBtn.addEventListener('click', (e) => {
-                const targetUserId = e.currentTarget.dataset.userId;
-                window.dispatchEvent(new CustomEvent('navigate', {
-                    detail: { view: 'manage-achievements', data: targetUserId }
-                }));
-            });
-        }
-
+        bindIdentityActions(viewElement, user, true);
+        bindTabNavigation(viewElement);
+        bindBackgroundSelection(viewElement, backgrounds);
     } catch (error) {
-        console.error("Erro ao carregar perfil:", error);
-        viewElement.innerHTML = `<p style="color: red;">Não foi possível carregar os dados do perfil. ${error.message}</p>`;
-         if(userId) {
-             viewElement.innerHTML += `<br><button onclick="window.dispatchEvent(new CustomEvent('navigate', { detail: { view: 'dashboard' } }))">Voltar ao Dashboard</button>`;
-        }
+        viewElement.innerHTML = `<div class="profile-container"><p style="color: #c62828;">Nao foi possivel carregar o perfil: ${error.message}</p></div>`;
     }
+}
+
+async function renderExternalProfile(viewElement, userId) {
+    viewElement.innerHTML = '<div class="profile-container"><p>A carregar perfil...</p></div>';
+
+    try {
+        const [user, requirementsProgress, specialtiesProgress] = await Promise.all([
+            fetchApi(`/api/users/${userId}`),
+            fetchApi(`/api/admin/users/${userId}/requirements-progress`).catch(() => null),
+            fetchApi(`/api/admin/users/${userId}/specialties-progress`).catch(() => null)
+        ]);
+
+        const tokenPayload = getTokenPayload();
+        const canManageAchievements = tokenPayload?.role === "DIRETOR" || tokenPayload?.role === "MONITOR";
+        const xpNeeded = calculateXpForNextLevel(user.level || 1);
+        const xpPercentage = xpNeeded > 0 ? Math.min(((user.xp || 0) / xpNeeded) * 100, 100) : 0;
+
+        viewElement.innerHTML = `
+            <div class="profile-container">
+                <section class="profile-identity-block" id="identityBlock" style="${getBackgroundStyle(user.selectedBackground)}">
+                    <div class="profile-identity-header">
+                        <img src="${getAvatarUrl(user)}" alt="${getUserName(user)}" class="avatar-img">
+                        <div class="info-and-edit-wrapper" id="identity-actions">
+                            ${renderIdentityDisplay(user, false)}
+                        </div>
+                    </div>
+                </section>
+
+                <section class="profile-progress-block">
+                    <div class="level-display">
+                        <div class="level-badge">Nivel ${user.level || 1}</div>
+                        <div class="xp-text">${user.xp || 0} / ${xpNeeded} XP</div>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" style="width: ${xpPercentage}%">${Math.round(xpPercentage)}%</div>
+                    </div>
+                </section>
+
+                ${canManageAchievements ? `
+                    <section class="profile-admin-actions">
+                        <button id="manage-achievements-btn" class="action-btn" data-user-id="${user.id}">
+                            Gerir emblemas e selos
+                        </button>
+                    </section>
+                ` : ""}
+
+                <section class="profile-achievements-block">
+                    <div class="tabs">
+                        <nav class="tab-nav">
+                            <button class="tab-btn active" data-tab="achievements">Emblemas</button>
+                            <button class="tab-btn" data-tab="requirements">Requisitos</button>
+                            <button class="tab-btn" data-tab="specialties">Especialidades</button>
+                        </nav>
+                        <div id="achievements-tab-content" class="tab-content active">${renderAchievementsTab(user)}</div>
+                        <div id="requirements-tab-content" class="tab-content">${requirementsProgress ? renderRequirementProgressTab(requirementsProgress) : '<p class="empty-state">Sem dados de requisitos.</p>'}</div>
+                        <div id="specialties-tab-content" class="tab-content">${specialtiesProgress ? renderSpecialtyProgressTab(specialtiesProgress) : '<p class="empty-state">Sem dados de especialidades.</p>'}</div>
+                    </div>
+                </section>
+            </div>
+        `;
+
+        bindTabNavigation(viewElement);
+
+        viewElement.querySelector("#manage-achievements-btn")?.addEventListener("click", () => {
+            window.dispatchEvent(new CustomEvent("navigate", {
+                detail: { view: "manage-achievements", data: user.id }
+            }));
+        });
+    } catch (error) {
+        viewElement.innerHTML = `<div class="profile-container"><p style="color: #c62828;">Nao foi possivel carregar o perfil: ${error.message}</p></div>`;
+    }
+}
+
+export async function renderProfileView(viewElement, userId = null) {
+    isEditing = false;
+
+    if (userId == null) {
+        await renderMyProfile(viewElement);
+        return;
+    }
+
+    await renderExternalProfile(viewElement, userId);
 }

@@ -6,6 +6,8 @@ import { renderManageTasksView } from "../js/features/admin/manage-tasks.js";
 import { renderManageUsersView } from "../js/features/admin/manage-users.js";
 import { renderAdminSettingsView } from "../js/features/admin/settings.js";
 import { renderManageGroupsView } from "../js/features/admin/manage-groups.js";
+import { renderCreateItemView } from "../js/features/admin/create-item.js";
+import { renderManageAchievementsView } from "../js/features/admin/manage-achievements.js";
 import { renderProfileView } from '../js/features/app/perfil.js';
 import { renderNotificationsView } from '../js/features/app/notifications.js';
 import { renderManageProfileView } from '../js/features/admin/manage-profile.js'; 
@@ -46,6 +48,8 @@ const views = {
   "manage-groups": document.getElementById("view-manage-groups"),
   "manage-tasks": document.getElementById("view-manage-tasks"),
   "manage-users": document.getElementById("view-manage-users"),
+  "create-item": document.getElementById("view-create-item"),
+  "manage-achievements": document.getElementById("view-manage-achievements"),
   perfil: document.getElementById("view-perfil"),
   settings: document.getElementById("view-admin-settings"),
   notifications: document.getElementById("view-notifications"),
@@ -59,6 +63,8 @@ const viewRenderers = {
   "manage-groups": renderManageGroupsView,
   "manage-tasks": renderManageTasksView,
   "manage-users": renderManageUsersView,
+  "create-item": renderCreateItemView,
+  "manage-achievements": renderManageAchievementsView,
   perfil: renderProfileView,
   "my-profile": renderProfileView,
   settings: renderAdminSettingsView,
@@ -96,13 +102,12 @@ function adjustUiForRole() {
     const manageUsersBtn = document.querySelector('.nav-btn[data-view="manage-users"]');
     const createItemBtn = document.querySelector('.nav-btn[data-view="create-item"]');
 
-    if (createItemBtn) createItemBtn.style.display = 'none';
-
     if (userRole === 'DIRETOR') {
         if (chamadaBtn) chamadaBtn.style.display = 'none';
     } else if (userRole === 'MONITOR') {
         if (manageUsersBtn) manageUsersBtn.style.display = 'none';
         if (manageGroupsBtn) manageGroupsBtn.style.display = 'none';
+        if (createItemBtn) createItemBtn.style.display = 'none';
     }
 }
 

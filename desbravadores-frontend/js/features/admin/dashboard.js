@@ -127,11 +127,14 @@ async function renderUserList(viewElement, groupId = null) {
         userListContainer.querySelectorAll('.manage-user-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const userId = parseInt(e.currentTarget.dataset.userId, 10);
-                const userToManage = scouts.find(s => s.id === userId);
-                if (userToManage) {
-                    const event = new CustomEvent('navigate', { detail: { view: 'manage-profile', data: userToManage } });
-                    window.dispatchEvent(event);
-                }
+                fetchApi(`/api/admin/users/${userId}`)
+                    .then((userToManage) => {
+                        const event = new CustomEvent('navigate', { detail: { view: 'manage-profile', data: userToManage } });
+                        window.dispatchEvent(event);
+                    })
+                    .catch(() => {
+                        showToast('Nao foi possivel carregar o perfil completo do utilizador.', 'error');
+                    });
             });
         });
         

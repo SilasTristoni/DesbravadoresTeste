@@ -56,10 +56,10 @@ async function loadList(container, role, page = 0) {
 
     if (role === 'DESBRAVADOR') {
         endpoint = `/api/admin/users?page=${page}&size=${USER_LIST_PAGE_SIZE}&sort=name,asc`;
-        groupColumnHeader = 'Grupo';
+        groupColumnHeader = 'Unidade / Funcao';
     } else if (role === 'MONITOR') {
         endpoint = `/api/admin/users/monitors?page=${page}&size=${USER_LIST_PAGE_SIZE}&sort=name,asc`;
-        groupColumnHeader = 'Grupo (Liderado)';
+        groupColumnHeader = 'Unidade / Funcao';
     } else { 
         endpoint = `/api/admin/users/directors?page=${page}&size=${USER_LIST_PAGE_SIZE}&sort=name,asc`;
         groupColumnHeader = 'Cargo Administrativo';
@@ -83,15 +83,18 @@ async function loadList(container, role, page = 0) {
           <tbody>
             ${users.map(user => {
                 let groupDisplay = 'Sem grupo';
+                const unitRole = user.unitRole ? ` <small style="display:block; color: var(--text-secondary); margin-top: 4px;">${user.unitRole}</small>` : '';
                 
                 if (user.role === 'DIRETOR') {
                     groupDisplay = '<span class="badge-admin" style="background-color: #e74c3c; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.8em;">Admin Geral</span>';
                 } 
                 else if (user.groupName) {
-                    groupDisplay = user.groupName;
+                    groupDisplay = `${user.groupName}${unitRole}`;
                 } 
                 else if (user.group && user.group.name) {
-                    groupDisplay = user.group.name;
+                    groupDisplay = `${user.group.name}${unitRole}`;
+                } else if (user.unitRole) {
+                    groupDisplay = user.unitRole;
                 }
 
                 return `
@@ -194,6 +197,10 @@ export async function renderManageUsersView(viewElement) {
                           </select>
                       </div>
                   </div>
+                  <div class="form-group">
+                      <label for="user-unit-role">Funcao na unidade</label>
+                      <input type="text" id="user-unit-role" placeholder="Ex: Capitao, Secretario, Tesoureiro">
+                  </div>
                   <button type="submit" class="action-btn">Adicionar Utilizador</button>
               </form>
           </div>
@@ -267,6 +274,7 @@ export async function renderManageUsersView(viewElement) {
       const username = viewElement.querySelector("#user-username").value.trim();
       const password = passInput.value;
       const role = roleSelect.value;
+      const unitRole = viewElement.querySelector("#user-unit-role").value.trim();
 
       if (!name || !surname || !username || !password || !role) {
           window.showToast('Por favor, preencha todos os campos obrigatórios (marcados com *).', 'error');
@@ -287,6 +295,7 @@ export async function renderManageUsersView(viewElement) {
         username: username,
         password: password,
         role: role,
+        unitRole: unitRole || null,
         group: groupPayload,
         avatar: 'assets/images/escoteiro1.png',
         level: 1,

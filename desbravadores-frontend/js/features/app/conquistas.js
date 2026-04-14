@@ -1,20 +1,33 @@
-// js/views/conquistas.js
-
+import { fetchApi } from '../../core/apiClient.js';
 import { resolveAssetUrl } from '../../core/url.js';
 
+function getUnlockedAchievements(user) {
+    if (Array.isArray(user?.achievements)) {
+        return user.achievements;
+    }
+
+    if (Array.isArray(user?.badges)) {
+        return user.badges;
+    }
+
+    return [];
+}
+
 export async function renderConquistasView(viewElement) {
-    viewElement.innerHTML = `<p>A carregar suas conquistas...</p>`;
+    viewElement.innerHTML = '<p>A carregar suas conquistas...</p>';
 
     try {
         const [allAchievements, user] = await Promise.all([
             fetchApi('/api/gamification/achievements'),
             fetchApi('/api/profile/me')
         ]);
-        
-        const unlockedAchievementNames = new Set(user.badges.map(b => b.name));
+
+        const unlockedAchievementNames = new Set(
+            getUnlockedAchievements(user).map((achievement) => achievement.name)
+        );
 
         if (!allAchievements || allAchievements.length === 0) {
-            viewElement.innerHTML = '<p>Nenhuma conquista disponível no momento.</p>';
+            viewElement.innerHTML = '<p>Nenhuma conquista disponivel no momento.</p>';
             return;
         }
 
@@ -22,7 +35,7 @@ export async function renderConquistasView(viewElement) {
             <div class="achievements-container">
                 <h2 class="section-title">Quadro de Conquistas</h2>
                 <div class="achievements-grid">
-                    ${allAchievements.map(achievement => {
+                    ${allAchievements.map((achievement) => {
                         const isUnlocked = unlockedAchievementNames.has(achievement.name);
                         return `
                             <div class="achievement-card-full ${isUnlocked ? 'unlocked' : 'locked'}">
@@ -35,7 +48,7 @@ export async function renderConquistasView(viewElement) {
                                 </div>
                                 <div class="progress-section">
                                     <div class="unlocked-status">
-                                        ${isUnlocked ? `⭐ Desbloqueado! (+${achievement.xpReward} XP)` : '🔒 Bloqueado'}
+                                        ${isUnlocked ? `Desbloqueado (+${achievement.xpReward} XP)` : 'Bloqueado'}
                                     </div>
                                 </div>
                             </div>
@@ -44,8 +57,7 @@ export async function renderConquistasView(viewElement) {
                 </div>
             </div>
         `;
-
     } catch (error) {
-        viewElement.innerHTML = `<p style="color: red;">Não foi possível carregar as conquistas: ${error.message}</p>`;
+        viewElement.innerHTML = `<p style="color: red;">Nao foi possivel carregar as conquistas: ${error.message}</p>`;
     }
 }
