@@ -35,6 +35,10 @@ public class UserService {
         }
     }
 
+    public void validatePasswordForReset(String password) {
+        validatePasswordStrength(password);
+    }
+
     public Page<User> getAllUsers(Pageable pageable) {
         return userRepository.findAll(pageable);
     }
@@ -65,6 +69,7 @@ public class UserService {
         user.setRole(requireRole(user.getRole()));
         user.setLevel(normalizeLevel(user.getLevel()));
         user.setXp(Math.max(user.getXp(), 0));
+        user.setTotalXp(XpProgressionPolicy.totalXpForSnapshot(user.getLevel(), user.getXp()));
         user.setGroup(resolveGroup(user.getRole(), user.getGroup()));
 
         validatePasswordStrength(password);
@@ -121,6 +126,7 @@ public class UserService {
 
         if (updateData.getLevel() > 0) {
             existingUser.setLevel(normalizeLevel(updateData.getLevel()));
+            existingUser.setTotalXp(XpProgressionPolicy.totalXpForSnapshot(existingUser.getLevel(), existingUser.getXp()));
         }
 
         if (updateData.getRole() != null) {

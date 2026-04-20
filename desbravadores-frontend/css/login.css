@@ -170,6 +170,10 @@ body, html {
     font-size: 0.9rem;
     color: var(--brand-color-login);
     text-decoration: none;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
 }
 .login-button {
     width: 100%;
@@ -191,4 +195,108 @@ body, html {
     color: var(--brand-color-login);
     font-weight: 700;
     text-decoration: none;
+}
+
+.toggle-password {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.toggle-password i {
+    pointer-events: none;
+}
+
+.auth-notice {
+    display: block;
+    margin-bottom: 1rem;
+    padding: 0.85rem 1rem;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    line-height: 1.4;
+}
+
+.auth-notice.success {
+    background: rgba(46, 125, 50, 0.12);
+    color: #1b5e20;
+}
+
+.auth-notice.error {
+    background: rgba(183, 28, 28, 0.12);
+    color: #8e1c1c;
+}
+
+.auth-notice.info {
+    background: rgba(21, 101, 192, 0.1);
+    color: #0d47a1;
+}
+
+.auth-panel {
+    display: none;
+}
+
+.auth-panel.active {
+    display: block;
+}
+
+.auth-panel-head {
+    text-align: left;
+    margin-bottom: 1rem;
+}
+
+.auth-panel-head h1 {
+    margin-top: 0.75rem;
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: none;
+    border: none;
+    color: var(--brand-color-login);
+    font-weight: 700;
+    cursor: pointer;
+    padding: 0;
+}
+
+.reset-tabs {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.reset-tab {
+    border: 1px solid var(--border-color-login);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--text-secondary-login);
+    padding: 0.8rem 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.reset-tab.active {
+    background: var(--brand-color-login);
+    color: #fff;
+    border-color: var(--brand-color-login);
+}
+
+.reset-form {
+    display: none;
+}
+
+.reset-form.active {
+    display: block;
+}
+
+.inline-helper {
+    font-size: 0.88rem;
+    line-height: 1.45;
+    color: var(--text-secondary-login);
+    text-align: left;
+    margin-top: -0.25rem;
+    margin-bottom: 1rem;
 }

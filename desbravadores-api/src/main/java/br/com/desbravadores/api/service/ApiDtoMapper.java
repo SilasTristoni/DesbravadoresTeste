@@ -79,6 +79,7 @@ public class ApiDtoMapper {
                 user.getUnitRole(),
                 user.getLevel(),
                 user.getXp(),
+                user.getTotalXp(),
                 user.getRole(),
                 group,
                 group != null ? group.id() : null,
@@ -110,6 +111,7 @@ public class ApiDtoMapper {
                 user.getUnitRole(),
                 user.getLevel(),
                 user.getXp(),
+                user.getTotalXp(),
                 user.getRole(),
                 group,
                 group != null ? group.id() : null,
@@ -153,6 +155,7 @@ public class ApiDtoMapper {
                         "#D97706",
                         null,
                         achievement.getIcon(),
+                        48,
                         null,
                         "icon",
                         List.of("xp:" + achievement.getXpReward())
@@ -177,6 +180,7 @@ public class ApiDtoMapper {
                         background.getTextColor(),
                         null,
                         background.getImageUrl(),
+                        null,
                         background.getGradient(),
                         background.getImageUrl() != null ? "image" : "gradient",
                         List.of(background.getImageUrl() != null ? "imagem" : "gradiente")
@@ -191,7 +195,9 @@ public class ApiDtoMapper {
                 specialty.getName(),
                 specialty.getDescription(),
                 specialty.getArea(),
-                specialty.getIconName(),
+                specialty.getIconImageUrl() != null
+                        ? "Imagem • " + normalizeIconSize(specialty.getIconSize()) + "px"
+                        : (specialty.getIconName() + " • " + normalizeIconSize(specialty.getIconSize()) + "px"),
                 specialty.getName(),
                 new CatalogPreviewDTO(
                         specialty.getArea(),
@@ -200,10 +206,11 @@ public class ApiDtoMapper {
                         specialty.getDescription(),
                         specialty.getAccentColor(),
                         specialty.getIconName(),
+                        specialty.getIconImageUrl(),
+                        specialty.getIconSize(),
                         null,
-                        null,
-                        "icon",
-                        List.of("area:" + specialty.getArea())
+                        specialty.getIconImageUrl() != null ? "icon-image" : "icon",
+                        List.of("area:" + specialty.getArea(), "size:" + normalizeIconSize(specialty.getIconSize()))
                 )
         );
     }
@@ -215,7 +222,7 @@ public class ApiDtoMapper {
                 requirement.getTitle(),
                 requirement.getDescription(),
                 requirement.getClassLevel(),
-                requirement.getCategory(),
+                requirement.getCategory() + " • " + normalizeIconSize(requirement.getIconSize()) + "px",
                 requirement.getClassLevel() + ":" + requirement.getDisplayOrder(),
                 new CatalogPreviewDTO(
                         requirement.getClassLevel(),
@@ -224,11 +231,16 @@ public class ApiDtoMapper {
                         requirement.getDescription(),
                         "#27408b",
                         requirement.getIconName(),
+                        requirement.getIconImageUrl(),
+                        requirement.getIconSize(),
                         null,
-                        null,
-                        "icon",
-                        List.of("ordem:" + requirement.getDisplayOrder())
+                        requirement.getIconImageUrl() != null ? "icon-image" : "icon",
+                        List.of("ordem:" + requirement.getDisplayOrder(), "size:" + normalizeIconSize(requirement.getIconSize()))
                 )
         );
+    }
+
+    private int normalizeIconSize(Integer value) {
+        return value == null ? 48 : value;
     }
 }

@@ -11,6 +11,8 @@ public class RequirementProgressItemDTO {
     private String classLevel;
     private String description;
     private String iconName;
+    private String iconImageUrl;
+    private Integer iconSize;
     private int displayOrder;
     private boolean completed;
     private LocalDateTime completedAt;
@@ -22,6 +24,8 @@ public class RequirementProgressItemDTO {
         this.classLevel = requirement.getClassLevel();
         this.description = requirement.getDescription();
         this.iconName = requirement.getIconName();
+        this.iconImageUrl = requirement.getIconImageUrl();
+        this.iconSize = requirement.getIconSize();
         this.displayOrder = requirement.getDisplayOrder();
         this.completed = completed;
         this.completedAt = completedAt;
@@ -33,6 +37,8 @@ public class RequirementProgressItemDTO {
     public String getClassLevel() { return classLevel; }
     public String getDescription() { return description; }
     public String getIconName() { return iconName; }
+    public String getIconImageUrl() { return iconImageUrl; }
+    public Integer getIconSize() { return iconSize; }
     public int getDisplayOrder() { return displayOrder; }
     public boolean isCompleted() { return completed; }
     public LocalDateTime getCompletedAt() { return completedAt; }

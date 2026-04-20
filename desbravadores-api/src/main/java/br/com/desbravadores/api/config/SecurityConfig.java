@@ -45,7 +45,12 @@ public class SecurityConfig {
                                 "/favicon.ico"
                         ).permitAll()
                         .requestMatchers(HttpMethod.GET, "/file/**").permitAll()
-                        .requestMatchers("/auth/login").permitAll()
+                        .requestMatchers(
+                                "/auth/login",
+                                "/auth/password-resets/request",
+                                "/auth/password-resets/confirm",
+                                "/auth/password-resets/status"
+                        ).permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

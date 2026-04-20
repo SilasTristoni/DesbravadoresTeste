@@ -10,6 +10,7 @@ public record CatalogPreviewDTO(
         String accentColor,
         String iconName,
         String imageUrl,
+        Integer iconSize,
         String gradient,
         String previewStyle,
         List<String> tags

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import br.com.desbravadores.api.model.Role;
 import br.com.desbravadores.api.model.User;
 import br.com.desbravadores.api.repository.UserRepository;
+import br.com.desbravadores.api.service.XpProgressionPolicy;
 
 @Component
 public class DataInitializer implements CommandLineRunner {
@@ -36,6 +37,7 @@ public class DataInitializer implements CommandLineRunner {
             adminUser.setAvatar("img/escoteiro.png");
             adminUser.setLevel(99);
             adminUser.setXp(0);
+            adminUser.setTotalXp(XpProgressionPolicy.totalXpForSnapshot(adminUser.getLevel(), adminUser.getXp()));
             adminUser.setGroup(null);
 
             userRepository.save(adminUser);

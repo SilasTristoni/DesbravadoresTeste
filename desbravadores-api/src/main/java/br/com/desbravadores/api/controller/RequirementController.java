@@ -12,12 +12,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import br.com.desbravadores.api.model.Requirement;
 import br.com.desbravadores.api.repository.RequirementRepository;
+import br.com.desbravadores.api.service.FileStorageService;
 
 @RestController
 @RequestMapping("/api")
@@ -26,6 +28,9 @@ public class RequirementController {
     @Autowired
     private RequirementRepository requirementRepository;
 
+    @Autowired
+    private FileStorageService fileStorageService;
+
     @GetMapping("/requirements")
     public ResponseEntity<Page<Requirement>> getAllRequirements(Pageable pageable) {
         return ResponseEntity.ok(requirementRepository.findAll(pageable));
@@ -33,14 +38,25 @@ public class RequirementController {
 
     @PostMapping("/admin/requirements")
     @PreAuthorize("hasAuthority('DIRETOR')")
-    public ResponseEntity<?> createRequirement(@RequestBody Requirement requirement) {
+    public ResponseEntity<?> createRequirement(
+            @RequestParam("title") String title,
+            @RequestParam("category") String category,
+            @RequestParam("classLevel") String classLevel,
+            @RequestParam("description") String description,
+            @RequestParam(value = "iconName", required = false) String iconName,
+            @RequestParam("iconSize") int iconSize,
+            @RequestParam("displayOrder") int displayOrder,
+            @RequestParam(value = "iconImageFile", required = false) MultipartFile iconImageFile) {
         try {
-            requirement.setTitle(normalizeRequired(requirement.getTitle(), "O titulo do requisito e obrigatorio."));
-            requirement.setCategory(normalizeRequired(requirement.getCategory(), "A categoria do requisito e obrigatoria."));
-            requirement.setClassLevel(normalizeRequired(requirement.getClassLevel(), "A classe do requisito e obrigatoria."));
-            requirement.setDescription(normalizeRequired(requirement.getDescription(), "A descricao do requisito e obrigatoria."));
-            requirement.setIconName(normalizeRequired(requirement.getIconName(), "O icone do requisito e obrigatorio."));
-            requirement.setDisplayOrder(normalizeOrder(requirement.getDisplayOrder()));
+            Requirement requirement = new Requirement();
+            requirement.setTitle(normalizeRequired(title, "O titulo do requisito e obrigatorio."));
+            requirement.setCategory(normalizeRequired(category, "A categoria do requisito e obrigatoria."));
+            requirement.setClassLevel(normalizeRequired(classLevel, "A classe do requisito e obrigatoria."));
+            requirement.setDescription(normalizeRequired(description, "A descricao do requisito e obrigatoria."));
+            requirement.setDisplayOrder(normalizeOrder(displayOrder));
+            requirement.setIconSize(normalizeIconSize(iconSize));
+
+            applyIconData(requirement, iconName, iconImageFile, false);
 
             if (isDuplicated(requirement.getTitle(), requirement.getClassLevel(), null)) {
                 return ResponseEntity.badRequest().body(Map.of("message", "Ja existe um requisito com esse titulo nessa classe."));
@@ -54,15 +70,29 @@ public class RequirementController {
 
     @PutMapping("/admin/requirements/{id}")
     @PreAuthorize("hasAuthority('DIRETOR')")
-    public ResponseEntity<?> updateRequirement(@PathVariable Long id, @RequestBody Requirement updateData) {
+    public ResponseEntity<?> updateRequirement(
+            @PathVariable Long id,
+            @RequestParam("title") String title,
+            @RequestParam("category") String category,
+            @RequestParam("classLevel") String classLevel,
+            @RequestParam("description") String description,
+            @RequestParam(value = "iconName", required = false) String iconName,
+            @RequestParam("iconSize") int iconSize,
+            @RequestParam("displayOrder") int displayOrder,
+            @RequestParam(value = "iconImageFile", required = false) MultipartFile iconImageFile) {
         try {
             return requirementRepository.findById(id).map(existing -> {
-                existing.setTitle(normalizeRequired(updateData.getTitle(), "O titulo do requisito e obrigatorio."));
-                existing.setCategory(normalizeRequired(updateData.getCategory(), "A categoria do requisito e obrigatoria."));
-                existing.setClassLevel(normalizeRequired(updateData.getClassLevel(), "A classe do requisito e obrigatoria."));
-                existing.setDescription(normalizeRequired(updateData.getDescription(), "A descricao do requisito e obrigatoria."));
-                existing.setIconName(normalizeRequired(updateData.getIconName(), "O icone do requisito e obrigatorio."));
-                existing.setDisplayOrder(normalizeOrder(updateData.getDisplayOrder()));
+                try {
+                    existing.setTitle(normalizeRequired(title, "O titulo do requisito e obrigatorio."));
+                    existing.setCategory(normalizeRequired(category, "A categoria do requisito e obrigatoria."));
+                    existing.setClassLevel(normalizeRequired(classLevel, "A classe do requisito e obrigatoria."));
+                    existing.setDescription(normalizeRequired(description, "A descricao do requisito e obrigatoria."));
+                    existing.setDisplayOrder(normalizeOrder(displayOrder));
+                    existing.setIconSize(normalizeIconSize(iconSize));
+                    applyIconData(existing, iconName, iconImageFile, true);
+                } catch (IllegalArgumentException e) {
+                    return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+                }
 
                 if (isDuplicated(existing.getTitle(), existing.getClassLevel(), existing.getId())) {
                     return ResponseEntity.badRequest().body(Map.of("message", "Ja existe um requisito com esse titulo nessa classe."));
@@ -78,12 +108,40 @@ public class RequirementController {
     @DeleteMapping("/admin/requirements/{id}")
     @PreAuthorize("hasAuthority('DIRETOR')")
     public ResponseEntity<Void> deleteRequirement(@PathVariable Long id) {
-        if (!requirementRepository.existsById(id)) {
-            return ResponseEntity.notFound().build();
+        return requirementRepository.findById(id).map(requirement -> {
+            deleteIconFileIfNeeded(requirement.getIconImageUrl());
+            requirementRepository.delete(requirement);
+            return ResponseEntity.noContent().<Void>build();
+        }).orElse(ResponseEntity.notFound().build());
+    }
+
+    private void applyIconData(Requirement requirement, String iconName, MultipartFile iconImageFile, boolean allowExistingImage) {
+        String normalizedIconName = normalize(iconName);
+        boolean hasUploadedImage = iconImageFile != null && !iconImageFile.isEmpty();
+        boolean keepExistingImage = allowExistingImage && !hasUploadedImage && requirement.getIconImageUrl() != null
+                && (normalizedIconName == null || normalizedIconName.isBlank());
+
+        if (hasUploadedImage) {
+            deleteIconFileIfNeeded(requirement.getIconImageUrl());
+            requirement.setIconImageUrl("/file/" + fileStorageService.store(iconImageFile));
+            requirement.setIconName(null);
+            return;
         }
 
-        requirementRepository.deleteById(id);
-        return ResponseEntity.noContent().build();
+        if (keepExistingImage) {
+            requirement.setIconName(null);
+            return;
+        }
+
+        requirement.setIconName(normalizeRequired(normalizedIconName, "Selecione um icone ou envie uma imagem para o requisito."));
+        deleteIconFileIfNeeded(requirement.getIconImageUrl());
+        requirement.setIconImageUrl(null);
+    }
+
+    private void deleteIconFileIfNeeded(String iconImageUrl) {
+        if (iconImageUrl != null && !iconImageUrl.isBlank()) {
+            fileStorageService.delete(iconImageUrl.replace("/file/", ""));
+        }
     }
 
     private boolean isDuplicated(String title, String classLevel, Long currentId) {
@@ -92,13 +150,13 @@ public class RequirementController {
                 .orElse(false);
     }
 
-    private String normalizeRequired(String value, String message) {
-        if (value == null) {
-            throw new IllegalArgumentException(message);
-        }
+    private String normalize(String value) {
+        return value == null ? null : value.trim();
+    }
 
-        String normalized = value.trim();
-        if (normalized.isBlank()) {
+    private String normalizeRequired(String value, String message) {
+        String normalized = normalize(value);
+        if (normalized == null || normalized.isBlank()) {
             throw new IllegalArgumentException(message);
         }
 
@@ -110,6 +168,13 @@ public class RequirementController {
             throw new IllegalArgumentException("A ordem do requisito nao pode ser negativa.");
         }
 
+        return value;
+    }
+
+    private Integer normalizeIconSize(int value) {
+        if (value < 16 || value > 160) {
+            throw new IllegalArgumentException("O tamanho do icone deve ficar entre 16 e 160.");
+        }
         return value;
     }
 }

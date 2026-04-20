@@ -10,7 +10,7 @@
 <body>
     <main class="login-page">
         <div class="login-card">
-            <button class="theme-toggle-btn" id="theme-toggle"><i class="fa-solid fa-moon"></i></button>
+            <button class="theme-toggle-btn" id="theme-toggle" type="button"><i class="fa-solid fa-moon"></i></button>
 
             <div class="login-card-image">
                 <img src="./assets/images/freepik__the-style-is-candid-image-photography-with-natural__68762.jpeg" alt="Paisagem de um lago nas montanhas">
@@ -19,28 +19,82 @@
                 </div>
             </div>
             <div class="login-card-form">
-                <h1>Bem-Vindo!</h1>
-                <p>Faça login para continuar</p>
-                <form id="login-form">
-                    <div class="input-field">
-                        <label for="username">Identificador</label>
-                        <input type="text" id="username" autocomplete="username" required>
-                    </div>
-                    <div class="input-field password-field">
-                        <label for="password">Senha</label>
-                        <input type="password" id="password" required>
-                        <button type="button" class="toggle-password">👁️</button>
+                <div id="auth-notice" class="auth-notice" hidden></div>
+
+                <section id="login-panel" class="auth-panel active">
+                    <h1>Bem-vindo</h1>
+                    <p>Faca login para continuar</p>
+                    <form id="login-form">
+                        <div class="input-field">
+                            <label for="username">Identificador</label>
+                            <input type="text" id="username" autocomplete="username" required>
+                        </div>
+                        <div class="input-field password-field">
+                            <label for="password">Senha</label>
+                            <input type="password" id="password" required>
+                            <button type="button" class="toggle-password" data-toggle-password="password" aria-label="Mostrar senha">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
+
+                        <div class="form-options">
+                            <label class="remember-me">
+                                <input type="checkbox" id="rememberMe"> Lembrar-me
+                            </label>
+                            <button type="button" id="forgot-password-trigger" class="forgot-password">Esqueceu sua senha?</button>
+                        </div>
+
+                        <button type="submit" class="login-button">Entrar</button>
+                    </form>
+                </section>
+
+                <section id="reset-panel" class="auth-panel">
+                    <div class="auth-panel-head">
+                        <button type="button" id="back-to-login" class="back-link"><i class="fa-solid fa-arrow-left"></i> Voltar ao login</button>
+                        <h1>Recuperar senha</h1>
+                        <p>Solicite a aprovacao do diretor e redefina com o codigo temporario.</p>
                     </div>
 
-                    <div class="form-options">
-                        <label class="remember-me">
-                            <input type="checkbox" id="rememberMe"> Lembrar-me
-                        </label>
-                        <a href="#" class="forgot-password">Esqueceu sua senha?</a>
+                    <div class="reset-tabs">
+                        <button type="button" class="reset-tab active" data-reset-mode="request">Solicitar codigo</button>
+                        <button type="button" class="reset-tab" data-reset-mode="confirm">Redefinir senha</button>
                     </div>
 
-                    <button type="submit" class="login-button">Entrar</button>
-                </form>
+                    <form id="reset-request-form" class="reset-form active">
+                        <div class="input-field">
+                            <label for="reset-request-username">Identificador</label>
+                            <input type="text" id="reset-request-username" required>
+                        </div>
+                        <p class="inline-helper">A solicitacao fica pendente ate que um diretor gere o codigo temporario.</p>
+                        <button type="submit" class="login-button">Solicitar aprovacao</button>
+                    </form>
+
+                    <form id="reset-confirm-form" class="reset-form">
+                        <div class="input-field">
+                            <label for="reset-confirm-username">Identificador</label>
+                            <input type="text" id="reset-confirm-username" required>
+                        </div>
+                        <div class="input-field">
+                            <label for="reset-code">Codigo temporario</label>
+                            <input type="text" id="reset-code" maxlength="10" autocomplete="one-time-code" required>
+                        </div>
+                        <div class="input-field password-field">
+                            <label for="reset-new-password">Nova senha</label>
+                            <input type="password" id="reset-new-password" required>
+                            <button type="button" class="toggle-password" data-toggle-password="reset-new-password" aria-label="Mostrar senha">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
+                        <div class="input-field password-field">
+                            <label for="reset-confirm-password">Confirmar nova senha</label>
+                            <input type="password" id="reset-confirm-password" required>
+                            <button type="button" class="toggle-password" data-toggle-password="reset-confirm-password" aria-label="Mostrar senha">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
+                        <button type="submit" class="login-button">Salvar nova senha</button>
+                    </form>
+                </section>
             </div>
         </div>
     </main>

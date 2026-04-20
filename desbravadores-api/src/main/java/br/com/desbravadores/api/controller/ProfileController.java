@@ -19,12 +19,14 @@ import org.springframework.web.multipart.MultipartFile;
 
 import br.com.desbravadores.api.dto.PasswordChangeDTO;
 import br.com.desbravadores.api.dto.UserResponseDTO;
+import br.com.desbravadores.api.dto.XpSummaryDTO;
 import br.com.desbravadores.api.model.Background;
 import br.com.desbravadores.api.model.User;
 import br.com.desbravadores.api.repository.BackgroundRepository;
 import br.com.desbravadores.api.repository.UserRepository;
 import br.com.desbravadores.api.service.ApiDtoMapper;
 import br.com.desbravadores.api.service.FileStorageService;
+import br.com.desbravadores.api.service.GamificationService;
 import br.com.desbravadores.api.service.UserService;
 
 @RestController
@@ -48,6 +50,9 @@ public class ProfileController {
     @Autowired
     private ApiDtoMapper apiDtoMapper;
 
+    @Autowired
+    private GamificationService gamificationService;
+
     @GetMapping("/me")
     @Transactional
     public ResponseEntity<UserResponseDTO> getMyProfile(Authentication authentication) {
@@ -61,6 +66,13 @@ public class ProfileController {
         Hibernate.initialize(user.getUnlockedBackgrounds());
 
         return ResponseEntity.ok(apiDtoMapper.toUserResponse(user));
+    }
+
+    @GetMapping("/me/xp")
+    public ResponseEntity<XpSummaryDTO> getMyXpSummary(Authentication authentication) {
+        User user = userRepository.findByUsername(authentication.getName())
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario nao encontrado com o identificador: " + authentication.getName()));
+        return ResponseEntity.ok(gamificationService.getXpSummary(user.getId()));
     }
 
     @PutMapping("/me")

@@ -21,6 +21,131 @@ function parseErrorMessage(error, fallback) {
     return fallback;
 }
 
+function formatXpAmount(amount) {
+    const normalized = Number(amount) || 0;
+    return `${normalized >= 0 ? '+' : ''}${normalized} XP`;
+}
+
+function translateXpSource(sourceType) {
+    const labels = {
+        ACHIEVEMENT_GRANTED: 'Conquista liberada',
+        ACHIEVEMENT_REVOKED: 'Conquista revogada',
+        ADMIN_ADJUSTMENT: 'Ajuste do admin'
+    };
+
+    return labels[sourceType] || 'Movimentacao';
+}
+
+function normalizeProgressIconClass(iconName) {
+    if (!iconName) {
+        return 'fa-solid fa-layer-group';
+    }
+
+    if (iconName.startsWith('fa-')) {
+        return `fa-solid ${iconName}`;
+    }
+
+    return `fa-solid fa-${iconName}`;
+}
+
+function getProgressIconSize(iconSize, fallback = 40) {
+    const parsed = Number.parseInt(iconSize, 10);
+    if (Number.isNaN(parsed)) {
+        return fallback;
+    }
+
+    return Math.min(72, Math.max(24, parsed));
+}
+
+function renderProgressIcon(item, fallbackColor = '#386641', fallbackIcon = 'fa-layer-group') {
+    const size = getProgressIconSize(item.iconSize);
+
+    if (item.iconImageUrl) {
+        return `
+            <div class="specialty-mini-icon" style="width:${size}px; height:${size}px; min-width:${size}px; background:#ffffff; padding:0; overflow:hidden;">
+                <img src="${item.iconImageUrl}" alt="" style="width:100%; height:100%; object-fit:cover;">
+            </div>
+        `;
+    }
+
+    return `
+        <div class="specialty-mini-icon" style="width:${size}px; height:${size}px; min-width:${size}px; background-color:${item.accentColor || fallbackColor};">
+            <i class="${normalizeProgressIconClass(item.iconName || fallbackIcon)}"></i>
+        </div>
+    `;
+}
+
+function renderXpSummaryWidget(summary, isDirector) {
+    const history = summary?.history || [];
+
+    return `
+        <div class="admin-widget xp-admin-widget">
+            <div class="progress-widget-header">
+                <div>
+                    <div class="create-item-kicker">XP</div>
+                    <h3>Controle de progressao</h3>
+                    <p>Conquistas concedem XP automaticamente e todo ajuste fica registrado.</p>
+                </div>
+                <div class="progress-summary-card specialty">
+                    <strong>${summary?.totalXp || 0}</strong>
+                    <span>XP total</span>
+                </div>
+            </div>
+            <div class="xp-admin-grid">
+                <article class="xp-admin-card highlight">
+                    <span>Saldo no nivel</span>
+                    <strong>${summary?.currentXp || 0} / ${summary?.xpForNextLevel || 0}</strong>
+                    <small>${summary?.xpToNextLevel || 0} XP para subir</small>
+                </article>
+                <article class="xp-admin-card">
+                    <span>XP por conquistas</span>
+                    <strong>${summary?.achievementXp || 0}</strong>
+                    <small>Concedido e revogado pelo catalogo</small>
+                </article>
+                <article class="xp-admin-card">
+                    <span>Ajustes manuais</span>
+                    <strong>${summary?.manualXp || 0}</strong>
+                    <small>Correcao administrativa auditavel</small>
+                </article>
+            </div>
+            ${isDirector ? `
+                <form id="xp-adjust-form" class="xp-adjust-form">
+                    <div class="form-row">
+                        <div class="form-group" style="flex: 0 0 180px; margin: 0;">
+                            <label for="xp-adjust-amount">Ajuste de XP</label>
+                            <input type="number" id="xp-adjust-amount" min="-10000" max="10000" step="1" placeholder="Ex: 50 ou -20" required>
+                        </div>
+                        <div class="form-group" style="margin: 0;">
+                            <label for="xp-adjust-reason">Motivo</label>
+                            <input type="text" id="xp-adjust-reason" maxlength="160" placeholder="Ex: bonus por lideranca, correcao de auditoria" required>
+                        </div>
+                        <div class="form-group xp-adjust-action">
+                            <button type="submit" class="btn-action save">Aplicar ajuste</button>
+                        </div>
+                    </div>
+                </form>
+            ` : `
+                <div class="xp-adjust-note">Somente diretores podem ajustar XP manualmente.</div>
+            `}
+            <div class="xp-history-list">
+                ${history.length > 0 ? history.map((item) => `
+                    <article class="xp-history-item ${item.amount >= 0 ? 'positive' : 'negative'}">
+                        <div class="xp-history-value">${formatXpAmount(item.amount)}</div>
+                        <div class="xp-history-copy">
+                            <strong>${item.reason || translateXpSource(item.sourceType)}</strong>
+                            <small>${translateXpSource(item.sourceType)}${item.referenceLabel ? ` • ${item.referenceLabel}` : ''}</small>
+                        </div>
+                        <div class="xp-history-meta">
+                            <span>Saldo: ${item.balanceAfter || 0} XP</span>
+                            <span>${item.performedBy ? `por ${item.performedBy}` : 'sistema'}</span>
+                        </div>
+                    </article>
+                `).join('') : '<p class="empty-state">Nenhum evento de XP registado ainda.</p>'}
+            </div>
+        </div>
+    `;
+}
+
 function renderRequirementProgressWidget(progress, isDirector) {
     return `
         <div class="admin-widget progress-admin-widget">
@@ -44,9 +169,7 @@ function renderRequirementProgressWidget(progress, isDirector) {
                 ${progress.items.map((item) => `
                     <div class="progress-item-row ${item.completed ? 'completed' : ''}">
                         <div class="progress-item-main">
-                            <div class="progress-item-status ${item.completed ? 'done' : 'pending'}">
-                                <i class="fa-solid ${item.completed ? 'fa-check' : 'fa-hourglass-half'}"></i>
-                            </div>
+                            ${renderProgressIcon(item, '#27408b', 'book')}
                             <div>
                                 <strong>${item.displayOrder}. ${item.title}</strong>
                                 <small>${item.category} · ${item.classLevel}</small>
@@ -91,9 +214,7 @@ function renderSpecialtyProgressWidget(progress, isDirector) {
                 ${progress.items.map((item) => `
                     <div class="progress-item-row">
                         <div class="progress-item-main">
-                            <div class="specialty-mini-icon" style="background-color: ${item.accentColor || '#27408b'};">
-                                <span>${item.iconName}</span>
-                            </div>
+                            ${renderProgressIcon(item, item.accentColor || '#27408b', 'fa-compass')}
                             <div>
                                 <strong>${item.name}</strong>
                                 <small>${item.area}</small>
@@ -179,6 +300,55 @@ async function loadLearningProgress(viewElement, userId, isDirector) {
         const message = parseErrorMessage(error, 'Nao foi possivel carregar o progresso.');
         requirementsContainer.innerHTML = `<p style="color: red;">${message}</p>`;
         specialtiesContainer.innerHTML = `<p style="color: red;">${message}</p>`;
+    }
+}
+
+async function loadXpSummary(viewElement, userId, isDirector) {
+    const xpContainer = viewElement.querySelector('#xp-summary-container');
+    if (!xpContainer) return;
+
+    xpContainer.innerHTML = '<div class="admin-widget"><p>A carregar historico de XP...</p></div>';
+
+    try {
+        const summary = await fetchApi(`/api/admin/users/${userId}/xp`);
+        xpContainer.innerHTML = renderXpSummaryWidget(summary, isDirector);
+
+        if (!isDirector) {
+            return;
+        }
+
+        xpContainer.querySelector('#xp-adjust-form')?.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const amountInput = xpContainer.querySelector('#xp-adjust-amount');
+            const reasonInput = xpContainer.querySelector('#xp-adjust-reason');
+            const submitButton = xpContainer.querySelector('button[type="submit"]');
+            const amount = Number.parseInt(amountInput.value, 10);
+            const reason = reasonInput.value.trim();
+
+            if (Number.isNaN(amount) || amount === 0 || !reason) {
+                window.showToast('Informe um valor diferente de zero e um motivo para o ajuste.', 'error');
+                return;
+            }
+
+            submitButton.disabled = true;
+            submitButton.textContent = 'Aplicando...';
+
+            try {
+                await fetchApi(`/api/admin/users/${userId}/xp-adjustments`, {
+                    method: 'POST',
+                    body: JSON.stringify({ amount, reason })
+                });
+                window.showToast('Ajuste de XP aplicado com sucesso.', 'success');
+                await loadXpSummary(viewElement, userId, isDirector);
+            } catch (error) {
+                window.showToast(parseErrorMessage(error, 'Falha ao ajustar XP.'), 'error');
+                submitButton.disabled = false;
+                submitButton.textContent = 'Aplicar ajuste';
+            }
+        });
+    } catch (error) {
+        xpContainer.innerHTML = `<div class="admin-widget"><p style="color: red;">${parseErrorMessage(error, 'Nao foi possivel carregar o historico de XP.')}</p></div>`;
     }
 }
 
@@ -277,10 +447,8 @@ export async function renderManageProfileView(viewElement, user) {
                         </div>
 
                         <div class="form-row">
-                            <div class="form-group" style="flex: 0 0 100px; margin: 0;">
-                                <input type="number" id="edit-level" value="${user.level}" min="1" placeholder="Nivel">
-                            </div>
                             <div class="form-group" style="margin: 0;">
+                                <label style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 5px; display: block;">Grupo</label>
                                 <select id="edit-group">${groupOptionsHTML}</select>
                             </div>
                         </div>
@@ -292,6 +460,7 @@ export async function renderManageProfileView(viewElement, user) {
                 </div>
             </div>
 
+            <div id="xp-summary-container"></div>
             <div id="requirements-progress-container"></div>
             <div id="specialties-progress-container"></div>
         `;
@@ -350,7 +519,6 @@ export async function renderManageProfileView(viewElement, user) {
                     surname: document.getElementById('edit-surname').value.trim(),
                     username: document.getElementById('edit-username').value.trim(),
                     unitRole: document.getElementById('edit-unit-role').value.trim(),
-                    level: parseInt(document.getElementById('edit-level').value, 10),
                     role: user.role,
                     group: document.getElementById('edit-group').value ? { id: parseInt(document.getElementById('edit-group').value, 10) } : null
                 };
@@ -384,6 +552,7 @@ export async function renderManageProfileView(viewElement, user) {
         }
 
         loadLearningProgress(viewElement, user.id, isDirector);
+        loadXpSummary(viewElement, user.id, isDirector);
     } catch (error) {
         viewElement.innerHTML = `<div class="admin-widget"><p style="color: red;">Erro ao carregar perfil: ${error.message}</p></div>`;
     }

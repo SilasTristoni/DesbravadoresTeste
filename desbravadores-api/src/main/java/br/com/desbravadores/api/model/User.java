@@ -42,6 +42,7 @@ public class User {
     private String unitRole;
     private int level;
     private int xp;
+    private int totalXp;
     
     @Enumerated(EnumType.STRING)
     private Role role;
@@ -89,6 +90,8 @@ public class User {
     public void setLevel(int level) { this.level = level; }
     public int getXp() { return xp; }
     public void setXp(int xp) { this.xp = xp; }
+    public int getTotalXp() { return totalXp; }
+    public void setTotalXp(int totalXp) { this.totalXp = totalXp; }
     public Role getRole() { return role; }
     public void setRole(Role role) { this.role = role; }
     public Group getGroup() { return group; }

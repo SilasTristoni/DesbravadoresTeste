@@ -150,7 +150,7 @@ public class GroupController {
 
         int totalXp = allMembersInGroup.stream()
                 .filter(user -> user.getRole() != Role.DIRETOR)
-                .mapToInt(User::getXp)
+                .mapToInt(User::getTotalXp)
                 .sum();
 
         return new GroupDetailsDTO(group, memberDTOs, totalXp);

@@ -70,6 +70,21 @@ function getPageItems(payload) {
     return [];
 }
 
+function formatXpAmount(amount) {
+    const normalized = Number(amount) || 0;
+    return `${normalized >= 0 ? "+" : ""}${normalized} XP`;
+}
+
+function translateXpSource(sourceType) {
+    const labels = {
+        ACHIEVEMENT_GRANTED: "Conquista liberada",
+        ACHIEVEMENT_REVOKED: "Conquista revogada",
+        ADMIN_ADJUSTMENT: "Ajuste do admin"
+    };
+
+    return labels[sourceType] || "Movimentacao";
+}
+
 function formatDateTime(value) {
     if (!value) {
         return "Nao concluido";
@@ -90,6 +105,46 @@ function translateSpecialtyStatus(status) {
     };
 
     return labels[status] || status || "Nao iniciada";
+}
+
+function normalizeProgressIconClass(iconName) {
+    if (!iconName) {
+        return "fa-solid fa-layer-group";
+    }
+
+    if (iconName.startsWith("fa-")) {
+        return `fa-solid ${iconName}`;
+    }
+
+    return `fa-solid fa-${iconName}`;
+}
+
+function getProgressIconSize(iconSize, fallback = 40) {
+    const parsed = Number.parseInt(iconSize, 10);
+    if (Number.isNaN(parsed)) {
+        return fallback;
+    }
+
+    return Math.min(88, Math.max(24, parsed));
+}
+
+function renderItemIcon(item, fallbackColor = "#386641", fallbackIcon = "fa-layer-group") {
+    const size = getProgressIconSize(item.iconSize);
+    const imageUrl = item.iconImageUrl ? resolveAssetUrl(item.iconImageUrl) : null;
+
+    if (imageUrl) {
+        return `
+            <span class="specialty-mini-icon" style="width:${size}px; height:${size}px; min-width:${size}px; background:#ffffff; padding:0; overflow:hidden;">
+                <img src="${imageUrl}" alt="" style="width:100%; height:100%; object-fit:cover;">
+            </span>
+        `;
+    }
+
+    return `
+        <span class="specialty-mini-icon" style="width:${size}px; height:${size}px; min-width:${size}px; background-color:${item.accentColor || fallbackColor};">
+            <i class="${normalizeProgressIconClass(item.iconName || fallbackIcon)}"></i>
+        </span>
+    `;
 }
 
 function renderIdentityDisplay(user, canEdit) {
@@ -151,10 +206,72 @@ function renderAchievementsTab(user) {
                         <span class="profile-achievement-type">${achievement.rewardType === "SEAL" ? "Selo" : "Emblema"}</span>
                         <h4>${achievement.name}</h4>
                         <p>${achievement.description || "Sem descricao."}</p>
+                        <span class="profile-achievement-xp">${formatXpAmount(achievement.xpReward || 0)}</span>
                     </div>
                 </article>
             `).join("")}
         </div>
+    `;
+}
+
+function renderXpSummarySection(summary) {
+    if (!summary) {
+        return "";
+    }
+
+    const history = summary.history || [];
+
+    return `
+        <section class="profile-xp-insights">
+            <div class="profile-xp-cards">
+                <article class="profile-xp-card highlight">
+                    <span>XP total</span>
+                    <strong>${summary.totalXp || 0}</strong>
+                    <small>Base real para nivel e ranking</small>
+                </article>
+                <article class="profile-xp-card">
+                    <span>Para o proximo nivel</span>
+                    <strong>${summary.xpToNextLevel || 0} XP</strong>
+                    <small>${summary.currentXp || 0} / ${summary.xpForNextLevel || 0} no nivel atual</small>
+                </article>
+                <article class="profile-xp-card">
+                    <span>XP por conquistas</span>
+                    <strong>${summary.achievementXp || 0}</strong>
+                    <small>Concessoes e revogacoes registradas</small>
+                </article>
+                <article class="profile-xp-card">
+                    <span>Ajustes administrativos</span>
+                    <strong>${summary.manualXp || 0}</strong>
+                    <small>Correcoes aplicadas pelo clube</small>
+                </article>
+            </div>
+            <div class="profile-xp-history">
+                <div class="profile-section-head">
+                    <div>
+                        <p class="profile-overline">Historico recente</p>
+                        <h3>Ultimas movimentacoes de XP</h3>
+                    </div>
+                    <span>${history.length} evento(s)</span>
+                </div>
+                ${history.length > 0 ? `
+                    <div class="profile-xp-history-list">
+                        ${history.map((item) => `
+                            <article class="profile-xp-history-item ${item.amount >= 0 ? "positive" : "negative"}">
+                                <div class="profile-xp-history-value">${formatXpAmount(item.amount)}</div>
+                                <div class="profile-xp-history-copy">
+                                    <strong>${item.reason || translateXpSource(item.sourceType)}</strong>
+                                    <span>${translateXpSource(item.sourceType)}${item.referenceLabel ? ` • ${item.referenceLabel}` : ""}</span>
+                                </div>
+                                <div class="profile-xp-history-meta">
+                                    <span>Saldo: ${item.balanceAfter || 0} XP</span>
+                                    <span>${item.createdAt ? formatDateTime(item.createdAt) : "Agora"}</span>
+                                </div>
+                            </article>
+                        `).join("")}
+                    </div>
+                ` : '<p class="empty-state">Nenhum historico de XP foi registrado ainda.</p>'}
+            </div>
+        </section>
     `;
 }
 
@@ -212,6 +329,7 @@ function renderRequirementProgressTab(progress) {
             ${items.length > 0 ? items.map((item) => `
                 <article class="profile-list-card ${item.completed ? "is-complete" : ""}">
                     <div class="profile-list-head">
+                        ${renderItemIcon(item, "#27408b", "book")}
                         <div>
                             <span class="profile-list-tag">${item.category || "Requisito"}</span>
                             <h4>${item.title}</h4>
@@ -259,6 +377,7 @@ function renderSpecialtyProgressTab(progress) {
                     <div class="specialty-accent" style="background: ${item.accentColor || "#386641"};"></div>
                     <div class="specialty-body">
                         <div class="profile-list-head">
+                            ${renderItemIcon(item, item.accentColor || "#386641", "fa-compass")}
                             <div>
                                 <span class="profile-list-tag">${item.area || "Especialidade"}</span>
                                 <h4>${item.name}</h4>
@@ -436,11 +555,12 @@ async function renderMyProfile(viewElement) {
     const attendancePromise = adminProfile ? Promise.resolve([]) : fetchApi("/api/chamada/history").catch(() => []);
 
     try {
-        const [user, backgroundsResponse, requirementsProgress, specialtiesProgress, group, attendanceHistory] = await Promise.all([
+        const [user, backgroundsResponse, requirementsProgress, specialtiesProgress, xpSummary, group, attendanceHistory] = await Promise.all([
             fetchApi("/api/profile/me"),
             fetchApi("/api/backgrounds?size=100"),
             fetchApi("/api/profile/me/requirements-progress").catch(() => null),
             fetchApi("/api/profile/me/specialties-progress").catch(() => null),
+            fetchApi("/api/profile/me/xp").catch(() => null),
             groupPromise,
             attendancePromise
         ]);
@@ -448,8 +568,9 @@ async function renderMyProfile(viewElement) {
         currentUserData = user;
 
         const backgrounds = getPageItems(backgroundsResponse);
-        const xpNeeded = calculateXpForNextLevel(user.level || 1);
-        const xpPercentage = xpNeeded > 0 ? Math.min(((user.xp || 0) / xpNeeded) * 100, 100) : 0;
+        const xpNeeded = xpSummary?.xpForNextLevel || calculateXpForNextLevel(user.level || 1);
+        const currentXp = xpSummary?.currentXp ?? user.xp ?? 0;
+        const xpPercentage = xpNeeded > 0 ? Math.min((currentXp / xpNeeded) * 100, 100) : 0;
 
         viewElement.innerHTML = `
             <div class="profile-container">
@@ -463,12 +584,14 @@ async function renderMyProfile(viewElement) {
                 <section class="profile-progress-block">
                     <div class="level-display">
                         <div class="level-badge">Nivel ${user.level || 1}</div>
-                        <div class="xp-text">${user.xp || 0} / ${xpNeeded} XP</div>
+                        <div class="xp-text">${currentXp} / ${xpNeeded} XP</div>
                     </div>
                     <div class="progress-bar-container">
                         <div class="progress-bar-fill" style="width: ${xpPercentage}%">${Math.round(xpPercentage)}%</div>
                     </div>
                 </section>
+
+                ${renderXpSummarySection(xpSummary)}
 
                 <section class="profile-achievements-block">
                     <div class="tabs">
@@ -503,16 +626,18 @@ async function renderExternalProfile(viewElement, userId) {
     viewElement.innerHTML = '<div class="profile-container"><p>A carregar perfil...</p></div>';
 
     try {
-        const [user, requirementsProgress, specialtiesProgress] = await Promise.all([
+        const [user, requirementsProgress, specialtiesProgress, xpSummary] = await Promise.all([
             fetchApi(`/api/users/${userId}`),
             fetchApi(`/api/admin/users/${userId}/requirements-progress`).catch(() => null),
-            fetchApi(`/api/admin/users/${userId}/specialties-progress`).catch(() => null)
+            fetchApi(`/api/admin/users/${userId}/specialties-progress`).catch(() => null),
+            fetchApi(`/api/admin/users/${userId}/xp`).catch(() => null)
         ]);
 
         const tokenPayload = getTokenPayload();
         const canManageAchievements = tokenPayload?.role === "DIRETOR" || tokenPayload?.role === "MONITOR";
-        const xpNeeded = calculateXpForNextLevel(user.level || 1);
-        const xpPercentage = xpNeeded > 0 ? Math.min(((user.xp || 0) / xpNeeded) * 100, 100) : 0;
+        const xpNeeded = xpSummary?.xpForNextLevel || calculateXpForNextLevel(user.level || 1);
+        const currentXp = xpSummary?.currentXp ?? user.xp ?? 0;
+        const xpPercentage = xpNeeded > 0 ? Math.min((currentXp / xpNeeded) * 100, 100) : 0;
 
         viewElement.innerHTML = `
             <div class="profile-container">
@@ -528,12 +653,14 @@ async function renderExternalProfile(viewElement, userId) {
                 <section class="profile-progress-block">
                     <div class="level-display">
                         <div class="level-badge">Nivel ${user.level || 1}</div>
-                        <div class="xp-text">${user.xp || 0} / ${xpNeeded} XP</div>
+                        <div class="xp-text">${currentXp} / ${xpNeeded} XP</div>
                     </div>
                     <div class="progress-bar-container">
                         <div class="progress-bar-fill" style="width: ${xpPercentage}%">${Math.round(xpPercentage)}%</div>
                     </div>
                 </section>
+
+                ${renderXpSummarySection(xpSummary)}
 
                 ${canManageAchievements ? `
                     <section class="profile-admin-actions">

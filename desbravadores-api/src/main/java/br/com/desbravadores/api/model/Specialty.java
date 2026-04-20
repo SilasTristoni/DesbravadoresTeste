@@ -27,6 +27,12 @@ public class Specialty {
     @Column(nullable = false)
     private String iconName;
 
+    @Column(nullable = true)
+    private String iconImageUrl;
+
+    @Column(nullable = true)
+    private Integer iconSize;
+
     @Column(nullable = false)
     private String accentColor;
 
@@ -40,6 +46,10 @@ public class Specialty {
     public void setDescription(String description) { this.description = description; }
     public String getIconName() { return iconName; }
     public void setIconName(String iconName) { this.iconName = iconName; }
+    public String getIconImageUrl() { return iconImageUrl; }
+    public void setIconImageUrl(String iconImageUrl) { this.iconImageUrl = iconImageUrl; }
+    public Integer getIconSize() { return iconSize; }
+    public void setIconSize(Integer iconSize) { this.iconSize = iconSize; }
     public String getAccentColor() { return accentColor; }
     public void setAccentColor(String accentColor) { this.accentColor = accentColor; }
 }

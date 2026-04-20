@@ -268,6 +268,143 @@
   gap: 1rem;
 }
 
+.profile-achievement-xp {
+    display: inline-flex;
+    margin-top: 0.5rem;
+    padding: 0.3rem 0.7rem;
+    border-radius: 999px;
+    background: rgba(217, 119, 6, 0.12);
+    color: #a65b00;
+    font-size: 0.82rem;
+    font-weight: 700;
+}
+
+.profile-xp-insights {
+    display: grid;
+    gap: 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+.profile-xp-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+}
+
+.profile-xp-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 18px;
+    padding: 1rem 1.1rem;
+    box-shadow: 0 10px 24px rgba(8, 25, 17, 0.08);
+}
+
+.profile-xp-card.highlight {
+    background: linear-gradient(135deg, rgba(39, 64, 139, 0.12), rgba(217, 119, 6, 0.12));
+}
+
+.profile-xp-card span,
+.profile-xp-card small {
+    display: block;
+}
+
+.profile-xp-card span {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    margin-bottom: 0.45rem;
+}
+
+.profile-xp-card strong {
+    display: block;
+    font-size: 1.45rem;
+    color: var(--text-primary);
+    margin-bottom: 0.3rem;
+}
+
+.profile-xp-card small {
+    color: var(--text-secondary);
+    line-height: 1.45;
+}
+
+.profile-xp-history {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 22px;
+    padding: 1.2rem;
+}
+
+.profile-section-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.profile-section-head h3 {
+    margin: 0.2rem 0 0;
+}
+
+.profile-xp-history-list {
+    display: grid;
+    gap: 0.85rem;
+}
+
+.profile-xp-history-item {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 1rem;
+    align-items: center;
+    padding: 0.95rem 1rem;
+    border-radius: 16px;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+}
+
+.profile-xp-history-item.positive {
+    border-color: rgba(46, 125, 50, 0.24);
+}
+
+.profile-xp-history-item.negative {
+    border-color: rgba(183, 28, 28, 0.2);
+}
+
+.profile-xp-history-value {
+    font-weight: 800;
+    font-size: 1rem;
+    color: var(--text-primary);
+    min-width: 72px;
+}
+
+.profile-xp-history-copy strong,
+.profile-xp-history-copy span {
+    display: block;
+}
+
+.profile-xp-history-copy span,
+.profile-xp-history-meta span {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}
+
+.profile-xp-history-meta {
+    text-align: right;
+}
+
+.profile-xp-history-meta span {
+    display: block;
+}
+
+@media (max-width: 720px) {
+    .profile-xp-history-item {
+        grid-template-columns: 1fr;
+    }
+
+    .profile-xp-history-meta {
+        text-align: left;
+    }
+}
+
 .profile-achievement-icon {
   width: 64px;
   height: 64px;

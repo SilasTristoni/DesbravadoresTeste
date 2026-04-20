@@ -21,6 +21,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.desbravadores.api.dto.XpAdjustmentRequestDTO;
+import br.com.desbravadores.api.dto.XpSummaryDTO;
 import br.com.desbravadores.api.dto.UserResponseDTO;
 import br.com.desbravadores.api.dto.UserSummaryDTO;
 import br.com.desbravadores.api.model.Role;
@@ -29,6 +31,7 @@ import br.com.desbravadores.api.repository.UserRepository;
 import br.com.desbravadores.api.service.ApiDtoMapper;
 import br.com.desbravadores.api.service.GamificationService;
 import br.com.desbravadores.api.service.UserService;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/admin")
@@ -109,16 +112,35 @@ public class AdminController {
 
     @PostMapping("/users/{userId}/achievements/{achievementId}")
     @PreAuthorize("hasAnyAuthority('DIRETOR', 'MONITOR')")
-    public ResponseEntity<?> grantAchievement(@PathVariable Long userId, @PathVariable Long achievementId) {
-        gamificationService.manuallyUnlockAchievement(userId, achievementId);
+    public ResponseEntity<?> grantAchievement(@PathVariable Long userId, @PathVariable Long achievementId, Authentication authentication) {
+        gamificationService.manuallyUnlockAchievement(userId, achievementId, authentication.getName());
         return ResponseEntity.ok().body(Map.of("message", "Conquista concedida com sucesso."));
     }
 
     @DeleteMapping("/users/{userId}/achievements/{achievementId}")
     @PreAuthorize("hasAnyAuthority('DIRETOR', 'MONITOR')")
-    public ResponseEntity<?> revokeAchievement(@PathVariable Long userId, @PathVariable Long achievementId) {
-        gamificationService.revokeAchievement(userId, achievementId);
+    public ResponseEntity<?> revokeAchievement(@PathVariable Long userId, @PathVariable Long achievementId, Authentication authentication) {
+        gamificationService.revokeAchievement(userId, achievementId, authentication.getName());
         return ResponseEntity.ok().body(Map.of("message", "Conquista revogada com sucesso."));
+    }
+
+    @GetMapping("/users/{id}/xp")
+    @PreAuthorize("hasAnyAuthority('DIRETOR', 'MONITOR')")
+    public ResponseEntity<XpSummaryDTO> getUserXpSummary(@PathVariable Long id) {
+        return ResponseEntity.ok(gamificationService.getXpSummary(id));
+    }
+
+    @PostMapping("/users/{id}/xp-adjustments")
+    @PreAuthorize("hasAuthority('DIRETOR')")
+    public ResponseEntity<?> adjustUserXp(
+            @PathVariable Long id,
+            @Valid @RequestBody XpAdjustmentRequestDTO payload,
+            Authentication authentication) {
+        try {
+            return ResponseEntity.ok(gamificationService.adjustXp(id, payload.amount(), payload.reason(), authentication.getName()));
+        } catch (RuntimeException error) {
+            return ResponseEntity.badRequest().body(Map.of("message", error.getMessage()));
+        }
     }
 
     @GetMapping("/users/{id}")

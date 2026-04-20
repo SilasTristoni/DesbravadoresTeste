@@ -11,6 +11,8 @@ public class SpecialtyProgressItemDTO {
     private String area;
     private String description;
     private String iconName;
+    private String iconImageUrl;
+    private Integer iconSize;
     private String accentColor;
     private SpecialtyProgressStatus status;
     private LocalDateTime updatedAt;
@@ -21,6 +23,8 @@ public class SpecialtyProgressItemDTO {
         this.area = specialty.getArea();
         this.description = specialty.getDescription();
         this.iconName = specialty.getIconName();
+        this.iconImageUrl = specialty.getIconImageUrl();
+        this.iconSize = specialty.getIconSize();
         this.accentColor = specialty.getAccentColor();
         this.status = status;
         this.updatedAt = updatedAt;
@@ -31,6 +35,8 @@ public class SpecialtyProgressItemDTO {
     public String getArea() { return area; }
     public String getDescription() { return description; }
     public String getIconName() { return iconName; }
+    public String getIconImageUrl() { return iconImageUrl; }
+    public Integer getIconSize() { return iconSize; }
     public String getAccentColor() { return accentColor; }
     public SpecialtyProgressStatus getStatus() { return status; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }

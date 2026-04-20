@@ -11,6 +11,7 @@ public record UserSummaryDTO(
         String unitRole,
         int level,
         int xp,
+        int totalXp,
         Role role,
         GroupSummaryDTO group,
         Long groupId,
