@@ -6,11 +6,13 @@ public class AttendanceHistoryDTO {
     private LocalDate date;
     private boolean present;
     private String groupName;
+    private String justification;
 
-    public AttendanceHistoryDTO(LocalDate date, boolean present, String groupName) {
+    public AttendanceHistoryDTO(LocalDate date, boolean present, String groupName, String justification) {
         this.date = date;
         this.present = present;
         this.groupName = groupName;
+        this.justification = justification;
     }
 
     // Getters e Setters
@@ -36,5 +38,13 @@ public class AttendanceHistoryDTO {
 
     public void setGroupName(String groupName) {
         this.groupName = groupName;
+    }
+
+    public String getJustification() {
+        return justification;
+    }
+
+    public void setJustification(String justification) {
+        this.justification = justification;
     }
 }

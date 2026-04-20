@@ -18,17 +18,19 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import br.com.desbravadores.api.dto.PasswordChangeDTO;
+import br.com.desbravadores.api.dto.UserResponseDTO;
 import br.com.desbravadores.api.model.Background;
 import br.com.desbravadores.api.model.User;
 import br.com.desbravadores.api.repository.BackgroundRepository;
 import br.com.desbravadores.api.repository.UserRepository;
+import br.com.desbravadores.api.service.ApiDtoMapper;
 import br.com.desbravadores.api.service.FileStorageService;
 import br.com.desbravadores.api.service.UserService;
 
 @RestController
 @RequestMapping("/api/profile")
 public class ProfileController {
-    
+
     private static final Logger logger = LoggerFactory.getLogger(ProfileController.class);
 
     @Autowired
@@ -43,33 +45,36 @@ public class ProfileController {
     @Autowired
     private FileStorageService fileStorageService;
 
+    @Autowired
+    private ApiDtoMapper apiDtoMapper;
+
     @GetMapping("/me")
     @Transactional
-    public ResponseEntity<User> getMyProfile(Authentication authentication) {
+    public ResponseEntity<UserResponseDTO> getMyProfile(Authentication authentication) {
         String username = authentication.getName();
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado com o identificador: " + username));
-        
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario nao encontrado com o identificador: " + username));
+
         Hibernate.initialize(user.getSelectedBackground());
         Hibernate.initialize(user.getGroup());
         Hibernate.initialize(user.getAchievements());
         Hibernate.initialize(user.getUnlockedBackgrounds());
-        
-        return ResponseEntity.ok(user);
+
+        return ResponseEntity.ok(apiDtoMapper.toUserResponse(user));
     }
-    
+
     @PutMapping("/me")
     @Transactional
-    public ResponseEntity<User> updateMyProfile(
+    public ResponseEntity<UserResponseDTO> updateMyProfile(
             @RequestParam("name") String name,
             @RequestParam("surname") String surname,
             @RequestParam(value = "avatarFile", required = false) MultipartFile avatarFile,
             Authentication authentication) {
-        
+
         String username = authentication.getName();
-        
+
         return userRepository.findByUsername(username).map(user -> {
-            
+
             if (name != null && !name.trim().isEmpty()) {
                 user.setName(name.trim());
             }
@@ -84,7 +89,7 @@ public class ProfileController {
                         fileStorageService.delete(oldFilename);
                     }
                 } catch (Exception e) {
-                    logger.warn("Não foi possível apagar o avatar antigo: " + e.getMessage());
+                    logger.warn("Nao foi possivel apagar o avatar antigo: {}", e.getMessage());
                 }
 
                 String filename = fileStorageService.store(avatarFile);
@@ -92,14 +97,14 @@ public class ProfileController {
             }
 
             User updatedUser = userRepository.save(user);
-            
+
             Hibernate.initialize(updatedUser.getSelectedBackground());
             Hibernate.initialize(updatedUser.getGroup());
             Hibernate.initialize(updatedUser.getAchievements());
             Hibernate.initialize(updatedUser.getUnlockedBackgrounds());
-            
-            return ResponseEntity.ok(updatedUser);
-            
+
+            return ResponseEntity.ok(apiDtoMapper.toUserResponse(updatedUser));
+
         }).orElse(ResponseEntity.notFound().build());
     }
 
@@ -137,7 +142,7 @@ public class ProfileController {
             Hibernate.initialize(updatedUser.getAchievements());
             Hibernate.initialize(updatedUser.getUnlockedBackgrounds());
 
-            return ResponseEntity.ok(updatedUser);
+            return ResponseEntity.ok(apiDtoMapper.toUserResponse(updatedUser));
         }).orElse(ResponseEntity.notFound().build());
     }
 }

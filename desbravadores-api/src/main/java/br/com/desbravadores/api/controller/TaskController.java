@@ -1,13 +1,14 @@
 package br.com.desbravadores.api.controller;
 
-import java.time.LocalDate;
-import java.time.YearMonth;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,56 +19,75 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.desbravadores.api.dto.TaskResponseDTO;
 import br.com.desbravadores.api.model.Task;
-import br.com.desbravadores.api.repository.TaskRepository;
+import br.com.desbravadores.api.service.TaskService;
 
 @RestController
 @RequestMapping("/api/tasks")
 public class TaskController {
 
     @Autowired
-    private TaskRepository taskRepository;
+    private TaskService taskService;
 
     @PostMapping
     @PreAuthorize("hasAnyAuthority('MONITOR', 'DIRETOR')")
-    public ResponseEntity<Task> createTask(@RequestBody Task task) {
-        Task savedTask = taskRepository.save(task);
-        return ResponseEntity.status(201).body(savedTask);
+    public ResponseEntity<?> createTask(@RequestBody Task task, Authentication authentication) {
+        try {
+            return ResponseEntity.status(201).body(taskService.createTask(task, authentication));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(java.util.Map.of("message", e.getMessage()));
+        }
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('MONITOR', 'DIRETOR')")
-    public ResponseEntity<Task> updateTask(@PathVariable Long id, @RequestBody Task taskDetails) {
-        return taskRepository.findById(id).map(task -> {
-            task.setTitle(taskDetails.getTitle());
-            task.setDescription(taskDetails.getDescription());
-            task.setDate(taskDetails.getDate());
-            task.setTime(taskDetails.getTime());
-            return ResponseEntity.ok(taskRepository.save(task));
-        }).orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<?> updateTask(@PathVariable Long id, @RequestBody Task taskDetails, Authentication authentication) {
+        try {
+            return ResponseEntity.ok(taskService.updateTask(id, taskDetails, authentication));
+        } catch (RuntimeException e) {
+            String message = e.getMessage() != null ? e.getMessage() : "Nao foi possivel atualizar a tarefa.";
+            if (message.contains("nao encontrada")) {
+                return ResponseEntity.notFound().build();
+            }
+            return ResponseEntity.badRequest().body(java.util.Map.of("message", message));
+        }
     }
 
     @GetMapping
     @PreAuthorize("hasAnyAuthority('DESBRAVADOR', 'MONITOR', 'DIRETOR')")
-    public ResponseEntity<Page<Task>> getTasksByMonth(
-            @RequestParam int year, 
+    public ResponseEntity<?> getTasksByMonth(
+            @RequestParam int year,
             @RequestParam int month,
-            Pageable pageable) {
-        
-        YearMonth yearMonth = YearMonth.of(year, month);
-        LocalDate startDate = yearMonth.atDay(1);
-        LocalDate endDate = yearMonth.atEndOfMonth();
+            @RequestParam(value = "groupId", required = false) Long groupId,
+            @RequestParam(value = "page", required = false) Integer page,
+            @RequestParam(value = "size", required = false) Integer size,
+            Pageable pageable,
+            Authentication authentication) {
 
-        return ResponseEntity.ok(taskRepository.findByDateBetween(startDate, endDate, pageable));
+        boolean pagedRequest = page != null || size != null || pageable.getSort().isSorted();
+        if (pagedRequest) {
+            Page<TaskResponseDTO> taskPage = taskService.getTasksPage(year, month, groupId, pageable, authentication);
+            return ResponseEntity.ok(taskPage);
+        }
+
+        Sort sort = Sort.by(Sort.Order.asc("date"), Sort.Order.asc("time"));
+        List<TaskResponseDTO> tasks = taskService.getTasksList(year, month, groupId, sort, authentication);
+        return ResponseEntity.ok(tasks);
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('MONITOR', 'DIRETOR')")
-    public ResponseEntity<Void> deleteTask(@PathVariable Long id) {
-        if (!taskRepository.existsById(id)) {
-            return ResponseEntity.notFound().build();
+    public ResponseEntity<?> deleteTask(@PathVariable Long id, Authentication authentication) {
+        try {
+            taskService.deleteTask(id, authentication);
+            return ResponseEntity.noContent().build();
+        } catch (RuntimeException e) {
+            String message = e.getMessage() != null ? e.getMessage() : "Nao foi possivel apagar a tarefa.";
+            if (message.contains("nao encontrada")) {
+                return ResponseEntity.notFound().build();
+            }
+            return ResponseEntity.badRequest().body(java.util.Map.of("message", message));
         }
-        taskRepository.deleteById(id);
-        return ResponseEntity.noContent().build();
     }
 }

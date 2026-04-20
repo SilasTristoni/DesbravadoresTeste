@@ -1,6 +1,5 @@
 package br.com.desbravadores.api.controller;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -12,11 +11,22 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
+import br.com.desbravadores.api.dto.UserResponseDTO;
+import br.com.desbravadores.api.dto.UserSummaryDTO;
 import br.com.desbravadores.api.model.Role;
 import br.com.desbravadores.api.model.User;
 import br.com.desbravadores.api.repository.UserRepository;
+import br.com.desbravadores.api.service.ApiDtoMapper;
 import br.com.desbravadores.api.service.GamificationService;
 import br.com.desbravadores.api.service.UserService;
 
@@ -33,112 +43,68 @@ public class AdminController {
     @Autowired
     private GamificationService gamificationService;
 
+    @Autowired
+    private ApiDtoMapper apiDtoMapper;
+
     @PreAuthorize("hasAuthority('DIRETOR')")
     @PostMapping("/users")
     public ResponseEntity<?> createUserByAdmin(@RequestBody User newUser) {
         try {
             User savedUser = userService.createUser(newUser);
-            return ResponseEntity.status(201).body(savedUser);
+            return ResponseEntity.status(201).body(apiDtoMapper.toUserSummary(savedUser));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
         }
     }
-    
+
     @PutMapping("/users/{userId}/remove-group")
     @PreAuthorize("hasAuthority('DIRETOR')")
-    public ResponseEntity<User> removeUserFromGroup(@PathVariable Long userId) {
+    public ResponseEntity<UserSummaryDTO> removeUserFromGroup(@PathVariable Long userId) {
         return userRepository.findById(userId).map(user -> {
             user.setGroup(null);
-            userRepository.save(user); 
-            return ResponseEntity.ok(user);
+            User savedUser = userRepository.save(user);
+            return ResponseEntity.ok(apiDtoMapper.toUserSummary(savedUser));
         }).orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/users")
     @PreAuthorize("hasAnyAuthority('MONITOR', 'DIRETOR')")
     @Transactional
-    public ResponseEntity<Page<Map<String, Object>>> getAllUsers(
-        @RequestParam(value = "groupId", required = false) Long groupId, 
-        Pageable pageable,
-        Authentication authentication) {
-        
+    public ResponseEntity<Page<UserSummaryDTO>> getAllUsers(
+            @RequestParam(value = "groupId", required = false) Long groupId,
+            Pageable pageable,
+            Authentication authentication) {
+
         User currentUser = userRepository.findByUsername(authentication.getName()).orElseThrow();
         boolean isDirector = authentication.getAuthorities().stream()
                 .anyMatch(role -> role.getAuthority().equals("DIRETOR"));
-        
+
         Page<User> userPage;
-        
+
         if (isDirector) {
-            if (groupId != null) {
-                userPage = userRepository.findByGroupIdAndRole(groupId, Role.DESBRAVADOR, pageable); 
-            } else {
-                userPage = userRepository.findByRole(Role.DESBRAVADOR, pageable); 
-            }
+            userPage = groupId != null
+                    ? userRepository.findByGroupIdAndRole(groupId, Role.DESBRAVADOR, pageable)
+                    : userRepository.findByRole(Role.DESBRAVADOR, pageable);
         } else {
             if (currentUser.getGroup() == null) {
-                return ResponseEntity.ok(Page.empty());
+                return ResponseEntity.ok(Page.empty(pageable));
             }
-            userPage = userRepository.findByGroupIdAndRole(currentUser.getGroup().getId(), Role.DESBRAVADOR, pageable); 
+            userPage = userRepository.findByGroupIdAndRole(currentUser.getGroup().getId(), Role.DESBRAVADOR, pageable);
         }
-        
-        Page<Map<String, Object>> dtoPage = userPage.map(user -> {
-            Map<String, Object> dto = new HashMap<>();
-            dto.put("id", user.getId());
-            dto.put("name", user.getName());
-            dto.put("surname", user.getSurname());
-            dto.put("username", user.getUsername());
-            dto.put("unitRole", user.getUnitRole());
-            dto.put("role", user.getRole());
-            dto.put("level", user.getLevel());
-            dto.put("xp", user.getXp());
-            dto.put("avatar", user.getAvatar());
-            
-            Hibernate.initialize(user.getGroup());
-            
-            if (user.getGroup() != null) {
-                dto.put("groupName", user.getGroup().getName());
-                dto.put("groupId", user.getGroup().getId());
-                Map<String, Object> simpleGroup = new HashMap<>();
-                simpleGroup.put("id", user.getGroup().getId());
-                simpleGroup.put("name", user.getGroup().getName());
-                dto.put("group", simpleGroup); 
-            } else {
-                dto.put("groupName", "Sem Grupo");
-                dto.put("groupId", null);
-                dto.put("group", null);
-            }
-            return dto;
-        });
-        
-        return ResponseEntity.ok(dtoPage);
+
+        return ResponseEntity.ok(userPage.map(apiDtoMapper::toUserSummary));
     }
 
     @GetMapping("/users/monitors")
     @PreAuthorize("hasAuthority('DIRETOR')")
-    @Transactional
-    public ResponseEntity<Page<User>> getAllMonitors(Pageable pageable) {
-        Page<User> monitorsPage = userRepository.findByRole(Role.MONITOR, pageable); 
-        monitorsPage.getContent().forEach(user -> {
-             Hibernate.initialize(user.getSelectedBackground());
-             Hibernate.initialize(user.getGroup());
-             Hibernate.initialize(user.getAchievements());
-             Hibernate.initialize(user.getUnlockedBackgrounds());
-        });
-        return ResponseEntity.ok(monitorsPage); 
+    public ResponseEntity<Page<UserSummaryDTO>> getAllMonitors(Pageable pageable) {
+        return ResponseEntity.ok(userRepository.findByRole(Role.MONITOR, pageable).map(apiDtoMapper::toUserSummary));
     }
 
     @GetMapping("/users/directors")
     @PreAuthorize("hasAuthority('DIRETOR')")
-    @Transactional
-    public ResponseEntity<Page<User>> getAllDirectors(Pageable pageable) {
-        Page<User> directorsPage = userRepository.findByRole(Role.DIRETOR, pageable); 
-        directorsPage.getContent().forEach(user -> {
-             Hibernate.initialize(user.getSelectedBackground());
-             Hibernate.initialize(user.getGroup());
-             Hibernate.initialize(user.getAchievements());
-             Hibernate.initialize(user.getUnlockedBackgrounds());
-        });
-        return ResponseEntity.ok(directorsPage); 
+    public ResponseEntity<Page<UserSummaryDTO>> getAllDirectors(Pageable pageable) {
+        return ResponseEntity.ok(userRepository.findByRole(Role.DIRETOR, pageable).map(apiDtoMapper::toUserSummary));
     }
 
     @PostMapping("/users/{userId}/achievements/{achievementId}")
@@ -158,13 +124,17 @@ public class AdminController {
     @GetMapping("/users/{id}")
     @PreAuthorize("hasAnyAuthority('DIRETOR', 'MONITOR')")
     @Transactional
-    public ResponseEntity<User> getUserById(@PathVariable Long id) {
+    public ResponseEntity<UserResponseDTO> getUserById(@PathVariable Long id) {
         Optional<User> user = userService.getUserById(id);
         user.ifPresent(u -> {
             Hibernate.initialize(u.getGroup());
             Hibernate.initialize(u.getAchievements());
+            Hibernate.initialize(u.getSelectedBackground());
+            Hibernate.initialize(u.getUnlockedBackgrounds());
         });
-        return user.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        return user.map(apiDtoMapper::toUserResponse)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PutMapping("/users/{id}")
@@ -172,7 +142,7 @@ public class AdminController {
     public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody User updateData) {
         try {
             User updatedUser = userService.updateUser(id, updateData);
-            return ResponseEntity.ok(updatedUser);
+            return ResponseEntity.ok(apiDtoMapper.toUserResponse(updatedUser));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
         }

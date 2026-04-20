@@ -1,5 +1,6 @@
 package br.com.desbravadores.api.controller;
 
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,28 +40,38 @@ public class AchievementController {
     }
 
     @PostMapping
-    public ResponseEntity<Achievement> createAchievement(
+    public ResponseEntity<?> createAchievement(
             @RequestParam("name") String name,
             @RequestParam("description") String description,
             @RequestParam("xpReward") int xpReward,
             @RequestParam("rewardType") String rewardType,
             @RequestParam("iconFile") MultipartFile iconFile) {
 
-        String iconFilename = fileStorageService.store(iconFile);
-        String iconUrl = "/file/" + iconFilename;
+        try {
+            if (iconFile == null || iconFile.isEmpty()) {
+                throw new IllegalArgumentException("O icone da conquista e obrigatorio.");
+            }
 
-        Achievement newAchievement = new Achievement();
-        newAchievement.setName(name);
-        newAchievement.setDescription(description);
-        newAchievement.setIcon(iconUrl);
-        newAchievement.setXpReward(xpReward);
-        newAchievement.setRewardType(RewardType.valueOf(rewardType));
+            String normalizedName = normalizeRequired(name, "O nome da conquista e obrigatorio.");
+            if (achievementRepository.existsByNameIgnoreCase(normalizedName)) {
+                throw new IllegalArgumentException("Ja existe uma conquista com esse nome.");
+            }
 
-        return ResponseEntity.status(201).body(achievementRepository.save(newAchievement));
+            Achievement newAchievement = new Achievement();
+            newAchievement.setName(normalizedName);
+            newAchievement.setDescription(normalizeRequired(description, "A descricao da conquista e obrigatoria."));
+            newAchievement.setXpReward(normalizeXp(xpReward));
+            newAchievement.setRewardType(parseRewardType(rewardType));
+            newAchievement.setIcon("/file/" + fileStorageService.store(iconFile));
+
+            return ResponseEntity.status(201).body(achievementRepository.save(newAchievement));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Achievement> updateAchievement(
+    public ResponseEntity<?> updateAchievement(
             @PathVariable Long id,
             @RequestParam("name") String name,
             @RequestParam("description") String description,
@@ -68,34 +79,43 @@ public class AchievementController {
             @RequestParam("rewardType") String rewardType,
             @RequestParam(value = "iconFile", required = false) MultipartFile iconFile) {
 
-        return achievementRepository.findById(id).map(achievement -> {
-            achievement.setName(name);
-            achievement.setDescription(description);
-            achievement.setXpReward(xpReward);
-            achievement.setRewardType(RewardType.valueOf(rewardType));
-
-            if (iconFile != null && !iconFile.isEmpty()) {
-                try {
-                    if (achievement.getIcon() != null && !achievement.getIcon().isEmpty()) {
-                        String oldFilename = achievement.getIcon().replace("/file/", "");
-                        fileStorageService.delete(oldFilename);
-                    }
-                } catch (Exception e) {
-                    // Logar erro se necessário
+        try {
+            return achievementRepository.findById(id).map(achievement -> {
+                String normalizedName = normalizeRequired(name, "O nome da conquista e obrigatorio.");
+                boolean duplicated = achievementRepository.findByNameIgnoreCase(normalizedName)
+                        .map(found -> !found.getId().equals(achievement.getId()))
+                        .orElse(false);
+                if (duplicated) {
+                    return ResponseEntity.badRequest().body(Map.of("message", "Ja existe uma conquista com esse nome."));
                 }
-                String iconFilename = fileStorageService.store(iconFile);
-                achievement.setIcon("/file/" + iconFilename);
-            }
 
-            return ResponseEntity.ok(achievementRepository.save(achievement));
-        }).orElse(ResponseEntity.notFound().build());
+                achievement.setName(normalizedName);
+                achievement.setDescription(normalizeRequired(description, "A descricao da conquista e obrigatoria."));
+                achievement.setXpReward(normalizeXp(xpReward));
+                achievement.setRewardType(parseRewardType(rewardType));
+
+                if (iconFile != null && !iconFile.isEmpty()) {
+                    try {
+                        if (achievement.getIcon() != null && !achievement.getIcon().isEmpty()) {
+                            fileStorageService.delete(achievement.getIcon().replace("/file/", ""));
+                        }
+                    } catch (Exception ignored) {
+                    }
+                    achievement.setIcon("/file/" + fileStorageService.store(iconFile));
+                }
+
+                return ResponseEntity.ok(achievementRepository.save(achievement));
+            }).orElse(ResponseEntity.notFound().build());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        }
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteAchievement(@PathVariable Long id) {
         Optional<Achievement> optionalAchievement = achievementRepository.findById(id);
 
-        if (!optionalAchievement.isPresent()) {
+        if (optionalAchievement.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
 
@@ -103,15 +123,39 @@ public class AchievementController {
 
         try {
             if (achievement.getIcon() != null && !achievement.getIcon().isEmpty()) {
-                String filename = achievement.getIcon().replace("/file/", "");
-                fileStorageService.delete(filename);
+                fileStorageService.delete(achievement.getIcon().replace("/file/", ""));
             }
-        } catch (Exception e) {
-             // Logar erro se necessário
+        } catch (Exception ignored) {
         }
-        
-        // Observação: Certifique-se que não existem chaves estrangeiras impedindo o delete
+
         achievementRepository.delete(achievement);
         return ResponseEntity.noContent().build();
+    }
+
+    private RewardType parseRewardType(String rewardType) {
+        try {
+            return RewardType.valueOf(normalizeRequired(rewardType, "O tipo de recompensa e obrigatorio."));
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Tipo de recompensa invalido.");
+        }
+    }
+
+    private int normalizeXp(int xpReward) {
+        if (xpReward < 0) {
+            throw new IllegalArgumentException("O XP da conquista nao pode ser negativo.");
+        }
+        return xpReward;
+    }
+
+    private String normalizeRequired(String value, String message) {
+        if (value == null) {
+            throw new IllegalArgumentException(message);
+        }
+
+        String normalized = value.trim();
+        if (normalized.isBlank()) {
+            throw new IllegalArgumentException(message);
+        }
+        return normalized;
     }
 }

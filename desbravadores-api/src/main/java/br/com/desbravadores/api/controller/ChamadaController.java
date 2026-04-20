@@ -28,7 +28,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import br.com.desbravadores.api.dto.AttendanceHistoryDTO;
 import br.com.desbravadores.api.dto.AttendanceReportDTO;
+import br.com.desbravadores.api.dto.MemberDTO;
 import br.com.desbravadores.api.model.AttendanceRecord;
 import br.com.desbravadores.api.model.CorrectionRequest;
 import br.com.desbravadores.api.model.Group;
@@ -39,6 +41,7 @@ import br.com.desbravadores.api.repository.AttendanceRecordRepository;
 import br.com.desbravadores.api.repository.CorrectionRequestRepository;
 import br.com.desbravadores.api.repository.NotificationRepository;
 import br.com.desbravadores.api.repository.UserRepository;
+import br.com.desbravadores.api.service.AttendanceService;
 
 @RestController
 @RequestMapping("/api/chamada")
@@ -51,6 +54,7 @@ public class ChamadaController {
     @Autowired private CorrectionRequestRepository correctionRepository;
     @Autowired private NotificationRepository notificationRepository;
     @Autowired private ObjectMapper objectMapper;
+    @Autowired private AttendanceService attendanceService;
 
     public static class AttendancePayload {
         private LocalDate date;
@@ -67,10 +71,21 @@ public class ChamadaController {
 
     @GetMapping("/my-group-members")
     @PreAuthorize("hasAnyAuthority('MONITOR', 'DIRETOR')")
-    public ResponseEntity<List<User>> getMyGroupMembers(Authentication authentication) {
+    public ResponseEntity<List<MemberDTO>> getMyGroupMembers(Authentication authentication) {
         User currentUser = userRepository.findByUsername(authentication.getName()).orElseThrow();
         if (currentUser.getGroup() == null) return ResponseEntity.ok(List.of());
-        return ResponseEntity.ok(userRepository.findByGroupIdAndRole(currentUser.getGroup().getId(), Role.DESBRAVADOR));
+        List<MemberDTO> members = userRepository.findByGroupIdAndRole(currentUser.getGroup().getId(), Role.DESBRAVADOR)
+                .stream()
+                .map(MemberDTO::new)
+                .toList();
+        return ResponseEntity.ok(members);
+    }
+
+    @GetMapping("/history")
+    @PreAuthorize("hasAuthority('DESBRAVADOR')")
+    public ResponseEntity<List<AttendanceHistoryDTO>> getAttendanceHistory(Authentication authentication) {
+        User currentUser = userRepository.findByUsername(authentication.getName()).orElseThrow();
+        return ResponseEntity.ok(attendanceService.getUserAttendanceHistory(currentUser));
     }
 
     @PostMapping("/submit")
@@ -247,7 +262,7 @@ public class ChamadaController {
         User user = userRepository.findByUsername(authentication.getName()).orElseThrow();
         if (user.getGroup() == null) return ResponseEntity.ok(Map.of("percentage", 0));
 
-        long totalClasses = attendanceRepository.countByGroupId(user.getGroup().getId());
+        long totalClasses = attendanceRepository.countDistinctDateByGroupId(user.getGroup().getId());
         long myPresence = attendanceRepository.countByUserIdAndPresentTrue(user.getId());
 
         double percentage = (totalClasses > 0) ? ((double) myPresence / totalClasses) * 100 : 0.0;

@@ -1,5 +1,6 @@
 package br.com.desbravadores.api.controller;
 
+import java.util.Map;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -14,7 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestParam; // Import estava faltando
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -40,61 +41,91 @@ public class BackgroundController {
 
     @PostMapping("/api/admin/backgrounds")
     @PreAuthorize("hasAuthority('DIRETOR')")
-    public ResponseEntity<Background> createBackground(
+    public ResponseEntity<?> createBackground(
             @RequestParam("name") String name,
             @RequestParam("textColor") String textColor,
-            @RequestParam("imageFile") MultipartFile imageFile) {
+            @RequestParam(value = "gradient", required = false) String gradient,
+            @RequestParam(value = "imageFile", required = false) MultipartFile imageFile) {
 
-        String filename = fileStorageService.store(imageFile);
-        String imageUrl = "/file/" + filename;
+        try {
+            String normalizedName = normalizeRequired(name, "O nome do fundo e obrigatorio.");
+            if (backgroundRepository.existsByNameIgnoreCase(normalizedName)) {
+                throw new IllegalArgumentException("Ja existe um fundo com esse nome.");
+            }
 
-        Background newBackground = new Background();
-        newBackground.setName(name);
-        newBackground.setImageUrl(imageUrl);
-        newBackground.setTextColor(textColor);
+            Background newBackground = new Background();
+            newBackground.setName(normalizedName);
+            newBackground.setTextColor(normalizeColor(textColor, "#FFFFFF"));
+            newBackground.setGradient(normalizeOptional(gradient));
 
-        Background savedBackground = backgroundRepository.save(newBackground);
-        return ResponseEntity.status(201).body(savedBackground);
+            if (imageFile != null && !imageFile.isEmpty()) {
+                newBackground.setImageUrl("/file/" + fileStorageService.store(imageFile));
+            }
+
+            if (newBackground.getImageUrl() == null && newBackground.getGradient() == null) {
+                throw new IllegalArgumentException("Informe uma imagem ou um gradiente para o fundo.");
+            }
+
+            return ResponseEntity.status(201).body(backgroundRepository.save(newBackground));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        }
     }
-    
+
     @PutMapping("/api/admin/backgrounds/{id}")
     @PreAuthorize("hasAuthority('DIRETOR')")
-    public ResponseEntity<Background> updateBackground(
+    public ResponseEntity<?> updateBackground(
             @PathVariable Long id,
             @RequestParam("name") String name,
             @RequestParam("textColor") String textColor,
+            @RequestParam(value = "gradient", required = false) String gradient,
             @RequestParam(value = "imageFile", required = false) MultipartFile imageFile) {
 
-        return backgroundRepository.findById(id).map(background -> {
-            background.setName(name);
-            background.setTextColor(textColor);
-
-            if (imageFile != null && !imageFile.isEmpty()) {
-                try {
-                    if (background.getImageUrl() != null && !background.getImageUrl().isEmpty()) {
-                        String oldFilename = background.getImageUrl().replace("/file/", "");
-                        fileStorageService.delete(oldFilename);
-                    }
-                } catch (Exception e) {
-                    log.warn("Failed to delete previous background image id={} reason={}", id, e.getMessage());
+        try {
+            return backgroundRepository.findById(id).map(background -> {
+                String normalizedName = normalizeRequired(name, "O nome do fundo e obrigatorio.");
+                boolean duplicated = backgroundRepository.findByNameIgnoreCase(normalizedName)
+                        .map(found -> !found.getId().equals(background.getId()))
+                        .orElse(false);
+                if (duplicated) {
+                    return ResponseEntity.badRequest().body(Map.of("message", "Ja existe um fundo com esse nome."));
                 }
 
-                String filename = fileStorageService.store(imageFile);
-                background.setImageUrl("/file/" + filename);
-            }
+                background.setName(normalizedName);
+                background.setTextColor(normalizeColor(textColor, "#FFFFFF"));
+                if (gradient != null) {
+                    background.setGradient(normalizeOptional(gradient));
+                }
 
-            Background updatedBackground = backgroundRepository.save(background);
-            return ResponseEntity.ok(updatedBackground);
-        }).orElse(ResponseEntity.notFound().build());
+                if (imageFile != null && !imageFile.isEmpty()) {
+                    try {
+                        if (background.getImageUrl() != null && !background.getImageUrl().isEmpty()) {
+                            fileStorageService.delete(background.getImageUrl().replace("/file/", ""));
+                        }
+                    } catch (Exception e) {
+                        log.warn("Failed to delete previous background image id={} reason={}", id, e.getMessage());
+                    }
+
+                    background.setImageUrl("/file/" + fileStorageService.store(imageFile));
+                }
+
+                if (background.getImageUrl() == null && background.getGradient() == null) {
+                    return ResponseEntity.badRequest().body(Map.of("message", "O fundo precisa ter imagem ou gradiente."));
+                }
+
+                return ResponseEntity.ok(backgroundRepository.save(background));
+            }).orElse(ResponseEntity.notFound().build());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        }
     }
 
     @DeleteMapping("/api/admin/backgrounds/{id}")
     @PreAuthorize("hasAuthority('DIRETOR')")
     public ResponseEntity<Void> deleteBackground(@PathVariable Long id) {
-        
         Optional<Background> optionalBackground = backgroundRepository.findById(id);
 
-        if (!optionalBackground.isPresent()) {
+        if (optionalBackground.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
 
@@ -102,14 +133,38 @@ public class BackgroundController {
 
         try {
             if (background.getImageUrl() != null && !background.getImageUrl().isEmpty()) {
-                String filename = background.getImageUrl().replace("/file/", "");
-                fileStorageService.delete(filename);
+                fileStorageService.delete(background.getImageUrl().replace("/file/", ""));
             }
         } catch (Exception e) {
             log.warn("Failed to delete background image id={} reason={}", id, e.getMessage());
         }
-        
+
         backgroundRepository.delete(background);
         return ResponseEntity.noContent().build();
+    }
+
+    private String normalizeRequired(String value, String message) {
+        String normalized = normalizeOptional(value);
+        if (normalized == null) {
+            throw new IllegalArgumentException(message);
+        }
+        return normalized;
+    }
+
+    private String normalizeOptional(String value) {
+        if (value == null) {
+            return null;
+        }
+
+        String normalized = value.trim();
+        return normalized.isBlank() ? null : normalized;
+    }
+
+    private String normalizeColor(String value, String fallback) {
+        String normalized = normalizeOptional(value);
+        if (normalized == null) {
+            normalized = fallback;
+        }
+        return normalized.startsWith("#") ? normalized : "#" + normalized;
     }
 }
