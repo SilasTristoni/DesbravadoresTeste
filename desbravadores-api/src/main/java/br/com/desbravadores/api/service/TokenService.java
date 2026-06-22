@@ -1,6 +1,7 @@
 package br.com.desbravadores.api.service;
 
 import java.security.Key;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,7 +14,6 @@ import org.springframework.stereotype.Service;
 import br.com.desbravadores.api.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 
 @Service
@@ -22,7 +22,15 @@ public class TokenService {
     @Value("${jwt.expiration.ms}")
     private long expirationTimeMillis;
 
-    private final Key secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    private final Key secretKey;
+
+    public TokenService(@Value("${jwt.secret}") String jwtSecret) {
+        byte[] secretBytes = jwtSecret.getBytes(StandardCharsets.UTF_8);
+        if (secretBytes.length < 32) {
+            throw new IllegalStateException("jwt.secret/JWT_SECRET must have at least 32 bytes for HS256.");
+        }
+        this.secretKey = Keys.hmacShaKeyFor(secretBytes);
+    }
 
     public String generateToken(User user) {
         Date expirationDate = new Date(System.currentTimeMillis() + expirationTimeMillis);

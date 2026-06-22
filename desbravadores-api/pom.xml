@@ -108,7 +108,7 @@
                 <directory>src/main/resources</directory>
             </resource>
             <resource>
-                <directory>..\desbravadores-frontend</directory>
+                <directory>../desbravadores-frontend</directory>
                 <targetPath>static</targetPath>
                 <includes>
                     <include>**/*</include>

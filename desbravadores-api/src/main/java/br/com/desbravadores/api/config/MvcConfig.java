@@ -1,5 +1,6 @@
 package br.com.desbravadores.api.config;
 
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -16,11 +17,11 @@ public class MvcConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         // Converte o caminho relativo (ex: 'file') para um caminho absoluto
-        String uploadPath = Paths.get(uploadDir).toFile().getAbsolutePath();
+        Path uploadPath = Paths.get(uploadDir).toAbsolutePath().normalize();
 
         // Mapeia requisições para a URL /file/** para a pasta física 'file'
         // O "file:/" é crucial para indicar que é um caminho no sistema de ficheiros.
-        registry.addResourceHandler("/" + uploadDir + "/**")
-                .addResourceLocations("file:/" + uploadPath + "/");
+        registry.addResourceHandler("/file/**")
+                .addResourceLocations(uploadPath.toUri().toString());
     }
 }
