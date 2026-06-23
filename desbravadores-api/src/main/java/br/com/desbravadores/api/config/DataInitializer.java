@@ -27,12 +27,14 @@ public class DataInitializer implements CommandLineRunner {
     public void run(String... args) throws Exception {
         String adminUsername = "adm";
 
-        if (userRepository.findByUsername(adminUsername).isEmpty()) {
+        var existingAdmin = userRepository.findByUsername(adminUsername);
+
+        if (existingAdmin.isEmpty()) {
             User adminUser = new User();
             adminUser.setName("Admin");
             adminUser.setSurname("do Sistema");
             adminUser.setUsername(adminUsername);
-            adminUser.setPassword(passwordEncoder.encode("adm123")); 
+            adminUser.setPassword(passwordEncoder.encode("adm123"));
             adminUser.setRole(Role.DIRETOR);
             adminUser.setAvatar("img/escoteiro.png");
             adminUser.setLevel(99);
@@ -42,8 +44,20 @@ public class DataInitializer implements CommandLineRunner {
 
             userRepository.save(adminUser);
             log.info("Default administrator created with username={}", adminUsername);
-        } else {
-            log.info("Default administrator already exists with username={}", adminUsername);
+            return;
         }
+
+        User adminUser = existingAdmin.get();
+        if (adminUser.getRole() != Role.DIRETOR) {
+            Role previousRole = adminUser.getRole();
+            adminUser.setRole(Role.DIRETOR);
+            adminUser.setGroup(null);
+            userRepository.save(adminUser);
+            log.warn("Default administrator role corrected username={} previousRole={} newRole={}",
+                    adminUsername, previousRole, Role.DIRETOR);
+            return;
+        }
+
+        log.info("Default administrator already exists with username={} role={}", adminUsername, adminUser.getRole());
     }
 }
