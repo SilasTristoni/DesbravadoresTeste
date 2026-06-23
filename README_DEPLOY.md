@@ -19,22 +19,45 @@ https://github.com/JoaoGarcia07/DesMobile.git
 
 Obrigatorias em producao:
 
+- `SPRING_PROFILES_ACTIVE=prod`
+- `PORT=8080`
+- `JAVA_TOOL_OPTIONS=-Xms128m -Xmx384m -XX:+UseSerialGC -XX:MaxMetaspaceSize=128m`
 - `SPRING_DATASOURCE_URL`: URL JDBC do banco online.
 - `SPRING_DATASOURCE_USERNAME`: usuario do banco.
 - `SPRING_DATASOURCE_PASSWORD`: senha do banco.
+- `SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE=3`
+- `SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE=1`
+- `SERVER_TOMCAT_THREADS_MAX=50`
+- `SERVER_TOMCAT_THREADS_MIN_SPARE=5`
 - `JWT_SECRET`: chave segura com pelo menos 32 caracteres/bytes para assinar JWT.
 - `CORS_ALLOWED_ORIGINS`: origens autorizadas a consumir a API.
 
 Recomendadas/opcionais:
 
-- `PORT`: porta definida pela plataforma. Padrao: `8080`.
 - `FILE_UPLOAD_DIR`: diretorio persistente para uploads. Padrao local: `file`; exemplo em producao: `/data/uploads`.
-- `SPRING_PROFILES_ACTIVE`: use `prod` no Render/Railway.
 
 Para teste inicial, `CORS_ALLOWED_ORIGINS=*` funciona. Em producao, prefira URLs exatas, por exemplo:
 
 ```text
 CORS_ALLOWED_ORIGINS=https://seu-web.onrender.com,https://seu-mobile.vercel.app
+```
+
+Exemplo Railway com MySQL plugin:
+
+```text
+SPRING_PROFILES_ACTIVE=prod
+PORT=8080
+JAVA_TOOL_OPTIONS=-Xms128m -Xmx384m -XX:+UseSerialGC -XX:MaxMetaspaceSize=128m
+SPRING_DATASOURCE_URL=jdbc:mysql://${{MySQL.MYSQLHOST}}:${{MySQL.MYSQLPORT}}/${{MySQL.MYSQLDATABASE}}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+SPRING_DATASOURCE_USERNAME=${{MySQL.MYSQLUSER}}
+SPRING_DATASOURCE_PASSWORD=${{MySQL.MYSQLPASSWORD}}
+SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE=3
+SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE=1
+SERVER_TOMCAT_THREADS_MAX=50
+SERVER_TOMCAT_THREADS_MIN_SPARE=5
+JWT_SECRET=uma-chave-segura-com-pelo-menos-32-caracteres
+FILE_UPLOAD_DIR=/data/uploads
+CORS_ALLOWED_ORIGINS=*
 ```
 
 ## Rodar localmente
@@ -113,7 +136,12 @@ Crie um Web Service usando Docker ou o `render.yaml` deste repositorio. Configur
 - `SPRING_DATASOURCE_URL`
 - `SPRING_DATASOURCE_USERNAME`
 - `SPRING_DATASOURCE_PASSWORD`
+- `SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE=3`
+- `SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE=1`
 - `JWT_SECRET`
+- `JAVA_TOOL_OPTIONS=-Xms128m -Xmx384m -XX:+UseSerialGC -XX:MaxMetaspaceSize=128m`
+- `SERVER_TOMCAT_THREADS_MAX=50`
+- `SERVER_TOMCAT_THREADS_MIN_SPARE=5`
 - `CORS_ALLOWED_ORIGINS`
 - `FILE_UPLOAD_DIR`, se usar uploads persistentes
 
@@ -124,4 +152,18 @@ Teste no backend/web:
 - `/login`
 - `/app`
 - `/admin`
-- `/api/auth/login`
+- `/auth/login`
+- `/api/admin/users/monitors`
+- `/api/admin/users`
+
+Smoke test local ou Railway:
+
+```powershell
+$env:BASE_URL='http://localhost:8080'
+.\scripts\smoke-test.ps1
+
+$env:BASE_URL='https://seu-backend.up.railway.app'
+.\scripts\smoke-test.ps1
+```
+
+Depois de deploys que corrigem roles/JWT, limpe o `localStorage` do navegador ou faca logout/login para descartar tokens antigos.

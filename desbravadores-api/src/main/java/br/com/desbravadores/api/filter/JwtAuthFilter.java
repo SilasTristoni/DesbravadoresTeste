@@ -53,7 +53,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
-                log.info("Authenticated request path={} user={}", request.getRequestURI(), username);
+                log.info("Authenticated request path={} user={} authorities={}",
+                        request.getRequestURI(), username, userDetails.getAuthorities());
             } else {
                 log.warn("Rejected JWT path={} user={}", request.getRequestURI(), username);
             }

@@ -1,0 +1,8 @@
+.git
+.github
+.idea
+.vscode
+**/target
+**/.mvn/wrapper/maven-wrapper.jar
+**/*.log
+desbravadores-api/log-run.txt
