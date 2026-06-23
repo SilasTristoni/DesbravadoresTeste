@@ -1,7 +1,7 @@
 package br.com.desbravadores.api.service;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -24,10 +24,16 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = repository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
-        
-        GrantedAuthority authority = new SimpleGrantedAuthority(user.getRole().name());
-        Collection<GrantedAuthority> authorities = Collections.singletonList(authority);
 
-        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), authorities);
+        Collection<GrantedAuthority> authorities = List.of(
+                new SimpleGrantedAuthority(user.getRole().name()),
+                new SimpleGrantedAuthority("ROLE_" + user.getRole().name())
+        );
+
+        return new org.springframework.security.core.userdetails.User(
+                user.getUsername(),
+                user.getPassword(),
+                authorities
+        );
     }
 }
