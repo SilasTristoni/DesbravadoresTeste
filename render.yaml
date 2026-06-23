@@ -1,0 +1,46 @@
+services:
+  - type: web
+    name: desbravadores-web
+    env: docker
+    plan: free
+    branch: deploy/mvp-release-render
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+
+      - key: PORT
+        value: 10000
+
+      - key: JAVA_TOOL_OPTIONS
+        value: -Xms128m -Xmx384m -XX:+UseSerialGC -XX:MaxMetaspaceSize=128m
+
+      - key: SPRING_DATASOURCE_URL
+        sync: false
+
+      - key: SPRING_DATASOURCE_USERNAME
+        sync: false
+
+      - key: SPRING_DATASOURCE_PASSWORD
+        sync: false
+
+      - key: SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE
+        value: 3
+
+      - key: SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE
+        value: 1
+
+      - key: SERVER_TOMCAT_THREADS_MAX
+        value: 50
+
+      - key: SERVER_TOMCAT_THREADS_MIN_SPARE
+        value: 5
+
+      - key: JWT_SECRET
+        sync: false
+
+      - key: FILE_UPLOAD_DIR
+        value: /data/uploads
+
+      - key: CORS_ALLOWED_ORIGINS
+        value: "*"
